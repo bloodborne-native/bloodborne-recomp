@@ -639,6 +639,28 @@ static int translate_vector(uint64_t off, const BbInsn *in) {
              a.s, w / 4, odd, s.s);
         return 1;
     }
+    /* SSE4A, as the interpreter: a bit field of the low quadword; the upper quadword zeroed. */
+    case M(EXTRQ): case M(INSERTQ): {
+        const BbOp *d0 = &in->op[0];
+        if (!vreg(d0) || !vread(off, in, d0, &a) || !vwrite(off, in, d0, "dd", 16, &s)) return 0;
+        Str ctl;
+        if (m == M(EXTRQ) && in->op[1].type == OP_IMM) {
+            ctl = str("%lluull", (unsigned long long)((in->op[1].disp & 63) | (in->op[2].disp & 63) << 8));
+            b = str("dd");
+        } else {
+            if (!vread(off, in, &in->op[1], &b)) return 0;
+            if (m == M(EXTRQ)) ctl = str("sv.q[0]");
+            else if (in->count > 2 && in->op[2].type == OP_IMM)
+                ctl = str("%lluull", (unsigned long long)((in->op[2].disp & 63) | (in->op[3].disp & 63) << 8));
+            else ctl = str("sv.q[1]");
+        }
+        emit("{ BbVec dd = %s; const BbVec sv = %s; const uint64_t ctl = %s; const unsigned length = ctl & 63, index = ctl >> 8 & 63; "
+             "const uint64_t mask = length == 0 ? ~0ull : (1ull << length) - 1; ", a.s, b.s, ctl.s);
+        if (m == M(EXTRQ)) emit("dd.q[0] = dd.q[0] >> index & mask; ");
+        else emit("const uint64_t field = mask << index; dd.q[0] = (dd.q[0] & ~field) | (sv.q[0] << index & field); ");
+        emit("dd.q[1] = 0; %s }\n", s.s);
+        return 1;
+    }
     case M(PADDD): case M(VPADDD): return vbinary(off, in, w / 4, w, 1, "rr.d[i] = a.d[i] + b.d[i];");
     case M(PSUBD): case M(VPSUBD): return vbinary(off, in, w / 4, w, 1, "rr.d[i] = a.d[i] - b.d[i];");
     case M(PADDQ): case M(VPADDQ): return vbinary(off, in, w / 8, w, 1, "rr.q[i] = a.q[i] + b.q[i];");
