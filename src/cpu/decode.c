@@ -172,6 +172,11 @@ static BbBlock *decode_block(uint64_t rip) {
     return block;
 }
 
+/* A block decoded for the caller alone, not cached (the caller frees it): hashing every
+ * recompiled function at load (recomp.c) would otherwise keep the decoded blocks of the whole
+ * game, which the translator never runs once the library replaced them. */
+BbBlock *bbcpu_block_uncached(uint64_t rip) { return decode_block(rip); }
+
 static uint32_t hash(uint64_t rip) { return (uint32_t)((rip * 0x9E3779B97F4A7C15ull) >> 44); }
 
 const BbBlock *bbcpu_block(uint64_t rip) {
