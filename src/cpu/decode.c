@@ -1,6 +1,7 @@
 /* bbcpu decode cache: guest code decoded once per basic block with Zydis into compact BbInsn
  * records. Blocks are immutable once published; lookups are lock-free, inserts take a mutex. */
 #include "cpu_internal.h"
+#include "trace.h"
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -128,6 +129,11 @@ static BbBlock *decode_block(uint64_t rip) {
     uint32_t count = 0;
     uint64_t at = rip;
     while (count < MAX_BLOCK) {
+        /* A native or recompiled function starts its own block: the interpreter looks them up
+         * at block starts only (bbcpu_step). */
+        if (count && ((bbcpu_native_count && bbcpu_native_at(at)) ||
+                      (bbcpu_recomp_count && bbcpu_recomp_at(at))))
+            break;
         ZydisDecodedInstruction zi;
         ZydisDecodedOperand zo[ZYDIS_MAX_OPERAND_COUNT];
         BbInsn *in = &insns[count];

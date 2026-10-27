@@ -946,6 +946,15 @@ uint64_t bbcpu_step(BbCpu *cpu, const BbInsn *in) {
     return bbcpu_step_insn(cpu, in);
 }
 
+/* An instruction after a block's first: no function starts there (decode.c ends blocks before
+ * native and recompiled functions), so only probes and recording are checked. */
+static uint64_t step_inside(BbCpu *cpu, const BbInsn *in) {
+    if (__builtin_expect(bbcpu_probe_count, 0)) bbcpu_run_probe(cpu);
+    if (__builtin_expect(bbcpu_record_armed, 0) && bbcpu_record_wants(cpu->rip))
+        return bbcpu_record_call(cpu);
+    return bbcpu_step_insn(cpu, in);
+}
+
 uint64_t bbcpu_step_insn(BbCpu *cpu, const BbInsn *in) {
     const int locked = in->lock || (in->mnemonic == M(XCHG) &&
                                     (in->op[0].type == OP_MEM || in->op[1].type == OP_MEM));
@@ -992,7 +1001,7 @@ void bbcpu_run(BbCpu *cpu, uint64_t stop) {
         const BbBlock *block = bbcpu_block(cpu->rip);
         for (uint32_t i = 0; i < block->count; ++i) {
             const BbInsn *in = &block->insn[i];
-            const uint64_t next = bbcpu_step(cpu, in);
+            const uint64_t next = i ? step_inside(cpu, in) : bbcpu_step(cpu, in);
             ++cpu->instructions;
             if (in->branch || next != cpu->rip + in->length) {
                 cpu->rip = next;
