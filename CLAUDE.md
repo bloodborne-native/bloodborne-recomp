@@ -79,10 +79,10 @@ The milestones and progress are in `docs/RECOMPILATION.md` (Milestones, Progress
 the order of work is the app's `docs/ROADMAP.md`. In short (2026-10-28): R0–R4 are done (every
 function recompiled, 14% less CPU time than the translator, the library built from the launcher,
 the engine's render code, synchronization and busiest functions named in `annotations/`). Next:
-the native renderer's N6 (bloodborne-runtime, using R4's names), then the generator's CPU work:
-flags only where read, a function's own frame as host locals when its address never escapes,
-ordering kept only around the engine's synchronization (the maintainer's conditions for the last:
-the generator's analysis, a safety case and a long play session).
+the CPU work: the runtime's share of the main thread (`rc_call`, host calls, code left to the
+translator), then ordering kept only around the engine's synchronization (the maintainer's
+conditions: the generator's analysis, a safety case and a long play session). Measured without a
+gain (stashed): plain accesses to private frames; clang already drops unread flags.
 
 - **Measuring:** CPU time (`ps -o cputime=` over 30 s in the level), alternating with the
   translator; `SAVE_FROM=DIR` in the environment (not as a `test_run.sh` argument) for a fixed save;

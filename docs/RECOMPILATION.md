@@ -52,10 +52,12 @@ The recompiled code is produced on the player's machine from their copy, and sta
 **Now and next.** The recompiler's milestones are done; the game runs on the recompiled library,
 which the launcher builds on the player's device. Next, in the app's
 [roadmap](https://github.com/bloodborne-native/bloodborne-mac/blob/main/docs/ROADMAP.md) order:
-the native renderer's N6, which uses R4's names (bloodborne-runtime), then the generator's CPU
-work here: flags only where they are read, a function's own stack frame as host locals when its
-address never escapes, and memory ordering kept only around the engine's synchronization (its
-measured ceiling is in "Where the CPU time goes").
+the CPU work here. Its first plan is measured ("Where the CPU time goes"): clang already drops the
+flags nothing reads, and plain accesses to private frames gain nothing. Next: the runtime's share
+of the game's main thread (about 11% of its busy time in Cathedral Ward: `rc_call` 5%, host calls
+3.5%, code left to the translator 2.5%); then, with the maintainer's conditions (the generator's
+analysis, a safety case and a long play session), memory ordering kept only around the engine's
+synchronization.
 
 ## Progress
 
@@ -468,14 +470,17 @@ one core against 402% at the 1st Floor Sickroom lamp (about 1,283 draws a frame)
 **Tried without a measurable gain,** left out: a cache at each indirect call site (it took 7.8 of
 11.4 million calls a second off `rc_call`; what `rc_call` costs is its indirect jump); vector
 accesses as two 8-byte `ldapr`/`stlr`; `ldapur`/`stlur` with their offsets (and the M1 lacks
-them); plain accesses for a thread's private stack slots (push, pop, return addresses).
+them); plain accesses for a thread's private stack slots (push, pop, return addresses); plain
+accesses, scalar and vector, to a function's whole frame when no address in it leaves the function
+(13% of the library's accesses; 344% against 345% in three alternating pairs in Cathedral Ward).
+Without any barrier on vector accesses (unsafe, measured only) the library took about 2% less CPU
+time per frame: vector barriers are not where ordering costs either.
 
 **The ceiling of memory ordering:** a library with none (unsafe, not published) took 311% against
 the translator's 407%, about 33 points under the ordered library. Those points are the ordering of
-ordinary accesses. Part of them is reachable safely with plain accesses to a function's own frame
-when it never computes an address in its stack, so no other thread can reach it; that needs an
-analysis in the generator, a safety case and a long play session (the generator's CPU work, next
-after N6).
+ordinary accesses. Neither the frame (no gain) nor the vector barriers (about 2%) hold them, which
+leaves the scalar accesses to shared memory, where no analysis in the generator can tell which ones
+another thread reads.
 
 **Open:** the calls that still go into the translator (about 565,000 a second at the Sickroom;
 `BB_RECOMP_TARGETS=1` names them), and the library running about 0.5 FPS under the translator at
