@@ -61,7 +61,7 @@ The recompiled code is produced on the player's machine from their copy, and sta
 | CPU time recompiled, against the translator | `█████████████████░░░` 86% | 344% of one core against 402% (1st Floor Sickroom), 360% against 397% (Cathedral Ward, 2026-10-27) |
 | Functions checked call by call (recordings) | `░░░░░░░░░░░░░░░░░░░░` 0.4% | 933 of 241,821 |
 | Functions labelled by library (2026-10-24) | `█████████████░░░░░░░` 62.7% | 151,562 of 241,821 |
-| Functions named (R4, 2026-10-28) | `░░░░░░░░░░░░░░░░░░░░` 0.05% | 120 of 241,821 (libGnm's command buffer methods, the engine's draw boundary) |
+| Functions named (R4, 2026-10-28) | `░░░░░░░░░░░░░░░░░░░░` 0.05% | 125 of 241,821 (libGnm's command buffer methods, the engine's draw boundary) |
 
 Every function is generated; the ones left to the translator are the 660 import stubs, the 130
 functions that call `setjmp`, and 53 that the game's patches (51) or the runtime's live switches
@@ -270,8 +270,8 @@ call of it, `?` after a guess. The names change comments only: the full library'
 spaces removed, is the same with and without them. `build_library.py` generates the C again when
 the file changes.
 
-So far, 120 functions: libGnm's command buffer methods (83) and the engine's render boundary
-and what is above it (37).
+So far, 125 functions: libGnm's command buffer methods (83) and the engine's render boundary
+and what is above it (42).
 
 **The render boundary.** Every draw of CoreGraphics2 goes through seven methods of its graphics
 context: `draw`, `drawInstanced`, `drawIndexed`, `drawIndexedInstanced`, `drawIndirect`,
@@ -343,8 +343,13 @@ material has its own shaders for each kind of pass), `CG::ShaderProgram::bind` s
 stages' shaders through the context's setters, and the material's parameter block (+0x88) binds
 its constants and textures; it also sets the depth-stencil state.
 
-Next: the effect's program choice and the parameter block (which textures and constants), the next callers
-(0x22bc720 18%, 0x28f8a30 7.5%, 0x22bdb00 5.9%), and the compute passes.
+**Lights.** The next callers of the draw methods (18%, and 5.9% from a function of the same size,
+one of three variants) are deferred lighting: lights in batches of up to 12, each batch's depth
+range projected into the draw state's depth bounds, each light's constants written into constant
+buffers, an optional stencil pass without a pixel shader, then a full-screen triangle strip.
+
+Next: the effect's program choice and the parameter block (which textures and constants), the
+caller with 7.5% (0x28f8a30), and the compute passes.
 
 ## Record and replay
 

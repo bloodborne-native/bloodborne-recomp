@@ -97,6 +97,7 @@
 0x11fd230	Gnm::ConstantCommandBuffer::waitOnDeCounterDiff	sure	pm4
 0x11fd280	Gnm::ConstantCommandBuffer::writeToCpRam	guess	pm4
 0x11fd320	Gnm::ConstantCommandBuffer::cpRamDump	guess	pm4
+0x2168a20	CG::GraphicsContext::updateConstantBuffer	guess	calls
 0x2168e00	CG::GraphicsContext::setVertexShader	sure	calls	void (CG::GraphicsContext *, CG::DrawState *, const CG::Shader *)
 0x2168f30	CG::GraphicsContext::setHullShader	sure	calls	void (CG::GraphicsContext *, CG::DrawState *, const CG::Shader *)
 0x2169060	CG::GraphicsContext::setDomainShader	sure	calls	void (CG::GraphicsContext *, CG::DrawState *, const CG::Shader *)
@@ -113,6 +114,10 @@
 0x2190d30	CG::ImmediateDraw::drawIndexedUserPrimitives	sure	calls	void (CG::ImmediateDraw *, uint32_t topology, uint32_t min_index, uint32_t max_index, uint32_t index_count, const void *indices, uint32_t index_format, const void *vertices, uint32_t stride)
 0x21cfb30	CG::ModelRenderer::drawModel	sure	calls	void (const CG::Model *model, void *materials, void *pass, uint32_t instance_count, void **instances, bool)
 0x21d0640	CG::MeshRenderer::drawMesh	sure	calls	void (const CG::Model *model, void *pass, const CG::Mesh *mesh, const void *, const void *, uint32_t instances)
+0x22bc720	FD4::LightRenderer::drawLightBatches	sure	calls
+0x22bd110	FD4::LightRenderer::drawLightBatches#2	guess	calls
+0x22bdb00	FD4::LightRenderer::drawLightBatches#3	guess	calls
+0x22be4f0	FD4::LightRenderer::drawLightBatches#4	guess	calls
 0x2382eb0	FD4::TextRenderer::drawString	guess	calls
 0x26b55a0	CG::SurfaceOps::resolve	sure	calls
 0x26b5a70	CG::SurfaceOps::eliminateFastClear	sure	calls
