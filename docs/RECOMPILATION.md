@@ -61,7 +61,7 @@ The recompiled code is produced on the player's machine from their copy, and sta
 | CPU time recompiled, against the translator | `█████████████████░░░` 86% | 344% of one core against 402% (1st Floor Sickroom), 360% against 397% (Cathedral Ward, 2026-10-27) |
 | Functions checked call by call (recordings) | `░░░░░░░░░░░░░░░░░░░░` 0.4% | 933 of 241,821 |
 | Functions labelled by library (2026-10-24) | `█████████████░░░░░░░` 62.7% | 151,562 of 241,821 |
-| Functions named (R4, 2026-10-28) | `░░░░░░░░░░░░░░░░░░░░` 0.04% | 108 of 241,821 (libGnm's command buffer methods, the engine's draw boundary) |
+| Functions named (R4, 2026-10-28) | `░░░░░░░░░░░░░░░░░░░░` 0.05% | 109 of 241,821 (libGnm's command buffer methods, the engine's draw boundary) |
 
 Every function is generated; the ones left to the translator are the 660 import stubs, the 130
 functions that call `setjmp`, and 53 that the game's patches (51) or the runtime's live switches
@@ -270,8 +270,8 @@ call of it, `?` after a guess. The names change comments only: the full library'
 spaces removed, is the same with and without them. `build_library.py` generates the C again when
 the file changes.
 
-So far, 108 functions: libGnm's command buffer methods (83) and the engine's render boundary
-(25).
+So far, 109 functions: libGnm's command buffer methods (83) and the engine's render boundary
+and what is above it (26).
 
 **The render boundary.** Every draw of CoreGraphics2 goes through seven methods of its graphics
 context: `draw`, `drawInstanced`, `drawIndexed`, `drawIndexedInstanced`, `drawIndirect`,
@@ -296,15 +296,16 @@ Scaleform's renderer and one small wrapper outside CoreGraphics2. The breakdown 
 bloodborne-runtime's NATIVE_RENDERER.md.
 
 **The draw state** (`annotations/structs.h`, R4.3): one object carries everything a draw sets,
-at least 0x2360 bytes, modelled on Direct3D 11: its stages and slot counts, DXGI index formats,
+0x1e70 bytes, modelled on Direct3D 11: its stages and slot counts, DXGI index formats,
 and a topology in Direct3D 11's order without its gaps. Known so far: the topology, the index
 buffer, format and offset; 32 vertex buffers with their strides and offsets; the
 rasterizer state, 16 viewports and 16 scissors; the blend and depth-stencil states; the eight
-colour targets and the depth target; the blend colour, depth bounds and stencil reference; six
-shader stages of 0x4f8 bytes from 0x590, in Direct3D 11's order (vertex, hull, domain, geometry,
-pixel, compute: the pixel stage's libGnm calls name stage 1, the geometry's 3, the hull's 5), each
-its shader, 16 samplers, 128 textures and 14 constant buffers (Direct3D 11's counts but for the
-textures). The resource binder copies the samplers' S#s and the textures' T#s that changed into its
+colour targets and the depth target; the blend colour, depth bounds and stencil reference; five
+graphics stages of 0x4f8 bytes from 0x598, in Direct3D 11's order (vertex, hull, domain, geometry,
+pixel: the pixel stage's libGnm calls name GCN stage 1, the geometry's 3, the hull's 5; compute
+has a state of its own), each 16 samplers, 128 textures and 14 constant buffers (Direct3D 11's
+counts but for the textures), then its shader. Extra viewports are set only with a geometry
+shader, the one stage that can choose a viewport. The resource binder copies the samplers' S#s and the textures' T#s that changed into its
 own descriptor tables in GPU memory it allocates, makes V#s of the constant buffers and points
 each stage's user data at them. The
 state objects it points to hold libGnm's register values. When a colour or depth target changes,

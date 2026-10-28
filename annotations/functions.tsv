@@ -3,7 +3,8 @@
 # Sorted by offset, one row per function; no tabs and no "*/".
 # Name: Namespace::Class::method, #variant for a second copy of one method. Gnm:: is Sony's
 # libGnm (linked into the game); CG:: is Dantelion2's CoreGraphics2, whose own classes use a CG
-# prefix. Class names are the project's unless the evidence is "source".
+# prefix; FD4:: is FromSoftware's engine above it (the libraries of tools/recomp/label.py).
+# Class names are the project's unless the evidence is "source".
 # Confidence: sure (what the function does is established) or guess.
 # Evidence: pm4 (a libGnm function, from the packets it writes; bloodborne-runtime's
 # gpu/shim/bbport_gnm_table.inc), calls (the functions it calls and how its arguments reach them),
@@ -102,6 +103,7 @@
 0x2169ab0	CG::GraphicsContext::drawIndexedIndirect	sure	calls	void (CG::GraphicsContext *, const CG::DrawState *, const CG::Buffer *arguments, uint32_t offset)
 0x2190be0	CG::ImmediateDraw::drawUserPrimitives	sure	calls	void (CG::ImmediateDraw *, uint32_t topology, uint32_t vertex_count, const void *vertices, uint32_t stride)
 0x2190d30	CG::ImmediateDraw::drawIndexedUserPrimitives	sure	calls	void (CG::ImmediateDraw *, uint32_t topology, uint32_t min_index, uint32_t max_index, uint32_t index_count, const void *indices, uint32_t index_format, const void *vertices, uint32_t stride)
+0x2382eb0	FD4::TextRenderer::drawString	guess	calls
 0x26b55a0	CG::SurfaceOps::resolve	sure	calls
 0x26b5a70	CG::SurfaceOps::eliminateFastClear	sure	calls
 0x26b5f50	CG::SurfaceOps::clearDepthStencil	guess	calls

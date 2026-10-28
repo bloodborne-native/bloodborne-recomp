@@ -45,10 +45,10 @@ typedef struct CgScissor {
     int32_t left, top, right, bottom; /* negative values are clamped to 0 */
 } CgScissor;
 
-/* A shader stage of a draw state. The stages are in Direct3D 11's order (CgStage); the
+/* A draw state's graphics stages, in Direct3D 11's order (compute has a state of its own). The
  * vertex shader runs on GCN's LS, ES or VS stage and the domain shader on its ES or VS stage,
  * by whether tessellation and a geometry shader are on. */
-typedef enum CgStage { CG_VERTEX, CG_HULL, CG_DOMAIN, CG_GEOMETRY, CG_PIXEL, CG_COMPUTE } CgStage;
+typedef enum CgStage { CG_VERTEX, CG_HULL, CG_DOMAIN, CG_GEOMETRY, CG_PIXEL } CgStage;
 /* A shader the draw state names (the resource binder prefetches its code into L2 before a draw). */
 typedef struct CgShader {
     uint8_t unknown_000[0x100];
@@ -76,15 +76,15 @@ typedef struct CgConstantBuffer {
  * own descriptor tables, constant buffers become V#s (initAsConstantBuffer); a missing sampler
  * is the engine's default one. */
 typedef struct CgShaderStage {
-    const CgShader *shader;                    /* 0x000: NULL when the stage is off (setActiveShaderStages) */
-    const CgSampler *samplers[16];             /* 0x008 */
-    const CgTexture *textures[64];             /* 0x088 */
-    const CgTexture *more_textures[64];        /* 0x288: placed after the first 64 in the binder's table */
-    const CgConstantBuffer *constant_buffers[14]; /* 0x488 */
+    const CgSampler *samplers[16];                /* 0x000 */
+    const CgTexture *textures[64];                /* 0x080 */
+    const CgTexture *more_textures[64];           /* 0x280: placed after the first 64 in the binder's table */
+    const CgConstantBuffer *constant_buffers[14]; /* 0x480 */
+    const CgShader *shader;                       /* 0x4f0: NULL when the stage is off (setActiveShaderStages) */
 } CgShaderStage;
 
 /* What every draw method of CG::GraphicsContext takes after the context: the whole state of a
- * draw, at least 0x2360 bytes, modelled on Direct3D 11 (its stages, slot counts and DXGI formats).
+ * draw (0x1e70 bytes), modelled on Direct3D 11 (its stages, slot counts and DXGI formats).
  * The graphics context holds one of its own at +0xb730 (its immediate draws fill it). */
 typedef struct CgDrawState {
     uint8_t unknown_000[0x8];
@@ -113,8 +113,8 @@ typedef struct CgDrawState {
     float depth_bounds[2];               /* 0x578: setDepthBoundsRange (minimum, maximum) */
     uint8_t unknown_580[0x4];
     uint8_t stencil_reference;           /* 0x584: setStencil's reference, front and back */
-    uint8_t unknown_585[0xb];
-    CgShaderStage stages[6];             /* 0x590: by CgStage */
+    uint8_t unknown_585[0x13];
+    CgShaderStage stages[5];             /* 0x598: by CgStage */
 } CgDrawState;
 
 #define CG_AT(type, field, offset) _Static_assert(offsetof(type, field) == (offset), #type "." #field)
@@ -138,13 +138,16 @@ CG_AT(CgDrawState, depth_target, 0x520);
 CG_AT(CgDrawState, blend_color, 0x568);
 CG_AT(CgDrawState, depth_bounds, 0x578);
 CG_AT(CgDrawState, stencil_reference, 0x584);
-CG_AT(CgDrawState, stages, 0x590);
+CG_AT(CgDrawState, stages, 0x598);
 _Static_assert(sizeof(CgShaderStage) == 0x4f8, "CgShaderStage");
-CG_AT(CgShaderStage, textures, 0x088);
-CG_AT(CgShaderStage, more_textures, 0x288);
-CG_AT(CgShaderStage, constant_buffers, 0x488);
+CG_AT(CgShaderStage, textures, 0x080);
+CG_AT(CgShaderStage, more_textures, 0x280);
+CG_AT(CgShaderStage, constant_buffers, 0x480);
+CG_AT(CgShaderStage, shader, 0x4f0);
 CG_AT(CgTexture, tsharp, 0x10);
 CG_AT(CgShader, code_address, 0x108);
 CG_AT(CgConstantBuffer, size, 0x2c);
-_Static_assert(offsetof(CgDrawState, stages[CG_PIXEL]) == 0x1970, "the pixel stage");
+_Static_assert(offsetof(CgDrawState, stages[CG_PIXEL].shader) == 0x1e68, "the pixel shader");
+_Static_assert(offsetof(CgDrawState, stages[CG_GEOMETRY].shader) == 0x1970, "the geometry shader");
+_Static_assert(sizeof(CgDrawState) == 0x1e70, "CgDrawState");
 #undef CG_AT
