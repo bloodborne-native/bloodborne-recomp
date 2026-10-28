@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # tools/recomp/inspect.sh OFFSET...: Ghidra's C for functions of the game image (image offsets), into
 # out/recomp/c/<offset>.c (docs/RECOMPILATION.md). The first run imports out/eboot.elf into the Ghidra
-# project out/recomp/ghidra and analyses it once (long; without the analysis Ghidra merges
+# project out/recomp/ghidra and analyses it once (702 s on an M3 Pro; without it Ghidra merges
 # functions and its C is wrong). Needs Ghidra (brew install ghidra).
 set -euo pipefail
 cd -- "$(dirname -- "$0")/../.."
