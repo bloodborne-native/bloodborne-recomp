@@ -57,7 +57,14 @@ C changed are compiled again.
   bound. `BB_REPLAY_WATCH=ADDRESS` traces one byte in a replay.
 - REA (an MCP server with Ghidra, on the user's machine) answers "who calls this", "decompile
   this" and "what references this address" about the game's code; its output is game code and
-  never goes into a repository.
+  never goes into a repository. Open `out/recomp/eboot_ghidra.elf` (inspect.sh writes it: Ghidra's
+  loader does not know the PS4's ELF type), not `out/eboot.elf`. A new session analyses the whole
+  image before answering: its MCP entry sets `GHIDRA_HEADLESS_MAXMEM=6G` and
+  `REA_GHIDRA_STARTUP_TIMEOUT_MS` (REA's default, 330 s, is too short for this image). Close it
+  with a `snapshot_path` in `out/recomp/rea/` and open later sessions from that snapshot.
+- `tools/recomp/inspect.sh` is the same without REA: Ghidra headless on the project
+  `out/recomp/ghidra`, analysed once (6 GB heap). Disassembly with the annotations' names at each
+  call is often enough for small functions (`llvm-objdump` over `out/eboot.elf`).
 - Fault diagnostics: `BB_JIT_FAULT_MAP=1` reports the exact translated guest instruction;
   `BB_JIT_WATCH` records selected field accesses without function-entry callbacks. Usage is in
   `docs/ARM64_NATIVE.md`. Their game-derived output stays outside Git and the wiki.
