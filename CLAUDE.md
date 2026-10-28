@@ -60,10 +60,12 @@ C changed are compiled again.
   never goes into a repository. Open `out/recomp/eboot_ghidra.elf` (inspect.sh writes it: Ghidra's
   loader does not know the PS4's ELF type), not `out/eboot.elf`. A new session analyses the whole
   image before answering: its MCP entry sets `GHIDRA_HEADLESS_MAXMEM=6G` and
-  `REA_GHIDRA_STARTUP_TIMEOUT_MS` (REA's default, 330 s, is too short for this image). Close it
-  with a `snapshot_path` in `out/recomp/rea/` and open later sessions from that snapshot.
-- `tools/recomp/inspect.sh` is the same without REA: Ghidra headless on the project
-  `out/recomp/ghidra`, analysed once (6 GB heap). Disassembly with the annotations' names at each
+  `REA_GHIDRA_STARTUP_TIMEOUT_MS` (30 min; REA's default, 330 s, is too short for this image).
+  Every session imports and analyses again (about 11.5 minutes on the M3 Pro before the first
+  answer; REA's snapshots keep its query results, not Ghidra's analysis): open it once and keep
+  it open. Ghidra places the image at 0x100000: image offset + 0x100000 is REA's address.
+- `tools/recomp/inspect.sh` is the same without REA and without the wait: Ghidra headless on the
+  project `out/recomp/ghidra`, analysed once (702 s, 6 GB heap) and kept; a few seconds a call. Disassembly with the annotations' names at each
   call is often enough for small functions (`llvm-objdump` over `out/eboot.elf`).
 - Fault diagnostics: `BB_JIT_FAULT_MAP=1` reports the exact translated guest instruction;
   `BB_JIT_WATCH` records selected field accesses without function-entry callbacks. Usage is in
