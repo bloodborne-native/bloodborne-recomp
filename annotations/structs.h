@@ -34,7 +34,8 @@ typedef struct CgRasterizerState {
     uint32_t clip_control;    /* 0x00: setClipControl */
     uint32_t primitive_setup; /* 0x04: setPrimitiveSetup (culling, fill, polygon offset enables) */
     float polygon_offset[3];  /* 0x08: setPolygonOffsetFront/Back and Clamp */
-    uint8_t scan_mode[2];     /* 0x14: setScanModeControl */
+    uint8_t scan_mode[2];     /* 0x14: setScanModeControl: [0] multisampling, [1] the viewport scissor
+                                 (the draw state's scissor 0 is applied only when it is set) */
 } CgRasterizerState;
 
 typedef struct CgViewport {
@@ -117,8 +118,12 @@ typedef struct CgDrawState {
     uint8_t unknown_4c8[0x8];
     const CgBlendState *blend;                  /* 0x4d0: NULL for the defaults */
     const CgDepthStencilState *depth_stencil;   /* 0x4d8: NULL for the defaults */
-    const void *render_targets[8];       /* 0x4e0: changing one first resolves the old one's fast clear */
-    const void *depth_target;            /* 0x520: changing it first decompresses the old one */
+    const void *render_targets[8];       /* 0x4e0: changing one first resolves the old one's fast clear;
+                                            each holds libGnm's RenderTarget at +0x10 (its first
+                                            dword CB_COLOR_BASE, the address shifted by 8) */
+    const void *depth_target;            /* 0x520: changing it first decompresses the old one; holds
+                                            libGnm's DepthRenderTarget at +0x10 (its third dword
+                                            DB_Z_READ_BASE) */
     uint8_t unknown_528[0x40];
     float blend_color[4];                /* 0x568: setBlendColor */
     float depth_bounds[2];               /* 0x578: setDepthBoundsRange (minimum, maximum) */
