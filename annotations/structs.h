@@ -128,6 +128,22 @@ typedef struct CgDrawState {
     CgShaderStage stages[5];             /* 0x598: by CgStage */
 } CgDrawState;
 
+/* A texture of a material (0x38 bytes; FD4::MaterialTextures::bind walks the material's list at
+ * +0xb0): bound to the pixel stage's slot, and to the domain stage's too for some kinds (the
+ * flag below), with its UV transform gathered into a constant buffer for the same stages. */
+typedef struct CgMaterialTexture {
+    uint32_t slot;           /* 0x00: the texture slot (and the transform's register below 25) */
+    uint8_t unknown_04[0x4];
+    const void *texture;     /* 0x08: an object whose virtual method +0x18 gives the texture */
+    uint32_t kind;           /* 0x10: 8 is skipped in some passes; 0xb also binds to the domain stage */
+    float transform[2];      /* 0x14: the UV scale (or offset) written to the transform buffer */
+    uint8_t unknown_1c[0x10];
+    uint8_t always_transform; /* 0x2c */
+    uint8_t unknown_2d[0x3];
+    uint32_t transform_register; /* 0x30: 0xffffffff for the slot's own */
+    uint32_t flags;          /* 0x34: bit 2 also binds it to the domain stage */
+} CgMaterialTexture;
+
 /* A model's index range drawn with one state (read by CG::MeshRenderer::drawMesh). */
 typedef struct CgFaceSet {
     uint32_t flags;          /* 0x00: bits 24-27 select the pass the face set draws in; the sign
@@ -197,6 +213,8 @@ _Static_assert(sizeof(CgFaceSet) == 0x20, "CgFaceSet");
 CG_AT(CgModelVertexBuffer, offset, 0x78);
 _Static_assert(sizeof(CgModelVertexBuffer) == 0x90, "CgModelVertexBuffer");
 CG_AT(CgMesh, input_layouts, 0x40);
+CG_AT(CgMaterialTexture, transform_register, 0x30);
+_Static_assert(sizeof(CgMaterialTexture) == 0x38, "CgMaterialTexture");
 CG_AT(CgMesh, lod_mask, 0x14);
 _Static_assert(sizeof(CgMesh) == 0x48, "CgMesh");
 CG_AT(CgModel, meshes, 0x0a8);

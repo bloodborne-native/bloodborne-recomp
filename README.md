@@ -28,8 +28,8 @@ than the translator (344% of one core against 402% at the 1st Floor Sickroom lam
 392% in Cathedral Ward, 2026-10-25), at the same frame rate. Players build the library from the
 launcher, with the LLVM toolchain these releases hold (below).
 
-R4 (annotations) is at 51% of its steps (`██████████░░░░░░░░░░`, [the steps](docs/RECOMPILATION.md#annotations)): [`annotations/`](annotations) holds the project's names for 130 of
-the game's functions and the layouts of the engine's draw state, shaders, models, meshes and shader
+R4 (annotations) is at 54% of its steps (`██████████░░░░░░░░░░`, [the steps](docs/RECOMPILATION.md#annotations)): [`annotations/`](annotations) holds the project's names for 139 of
+the game's functions and the layouts of the engine's draw state, shaders, models, meshes, materials and shader
 programs, aimed at the engine's render code first for the native renderer. The generator writes the
 names into the generated C. See [docs/RECOMPILATION.md](docs/RECOMPILATION.md)
 and the [status page](https://github.com/bloodborne-native/bloodborne-recomp/wiki/Recompilation-status).

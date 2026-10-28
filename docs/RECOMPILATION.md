@@ -46,7 +46,7 @@ The recompiled code is produced on the player's machine from their copy, and sta
 | R1 | Recompiler prototype: generated C for the recorded functions, checked by replay | Done |
 | R2 | Coverage: every function generated; the game runs recompiled, the translator as fallback | Done |
 | R3 | Speed: integer, flags and vector instructions in C; memory ordering relaxed where safe | Done: 99.1% of instructions in C; the library takes 14% less CPU time than the translator at the same frame rate |
-| R4 | Annotations: names, signatures and structs make the generated C readable; the engine's render functions first, for the native renderer's N6 | 51% `██████████░░░░░░░░░░` (by its steps, below): 130 functions named and the engine's draw state, shaders, models, meshes and shader programs described (`annotations/`); the draw paths counted in the game (mesh draw, deferred lighting, upload-ring draw); next: the materials' textures and constants, the compute passes |
+| R4 | Annotations: names, signatures and structs make the generated C readable; the engine's render functions first, for the native renderer's N6 | 54% `██████████░░░░░░░░░░` (by its steps, below): 139 functions named and the engine's draw state, shaders, models, meshes, materials and shader programs described (`annotations/`); the draw paths counted in the game (mesh draw, deferred lighting, upload-ring draw); next: the upload-ring draw's callers, the compute passes |
 | R5 | The engine's graphics on each platform's own GPU API: [native renderer](https://github.com/bloodborne-native/bloodborne-runtime/blob/main/docs/NATIVE_RENDERER.md) (bloodborne-runtime) | N1 and N4 done; N5 (Metal backend): the default renderer on macOS, acceptance pending |
 
 ## Progress
@@ -61,8 +61,8 @@ The recompiled code is produced on the player's machine from their copy, and sta
 | CPU time recompiled, against the translator | `█████████████████░░░` 86% | 344% of one core against 402% (1st Floor Sickroom), 360% against 397% (Cathedral Ward, 2026-10-27) |
 | Functions checked call by call (recordings) | `░░░░░░░░░░░░░░░░░░░░` 0.4% | 933 of 241,821 |
 | Functions labelled by library (2026-10-24) | `█████████████░░░░░░░` 62.7% | 151,562 of 241,821 |
-| R4 (annotations), by its steps | `██████████░░░░░░░░░░` 51% | R4.1 done, R4.2 and R4.3 in progress, R4.4 and R4.5 not started |
-| Functions named (R4, 2026-10-28) | `░░░░░░░░░░░░░░░░░░░░` 0.05% | 130 of 241,821 (libGnm's command buffer methods; the engine's draw methods, state setters, mesh, model, material and lighting code) |
+| R4 (annotations), by its steps | `██████████░░░░░░░░░░` 54% | R4.1 done, R4.2 and R4.3 in progress, R4.4 and R4.5 not started |
+| Functions named (R4, 2026-10-28) | `░░░░░░░░░░░░░░░░░░░░` 0.05% | 139 of 241,821 (libGnm's command buffer methods; the engine's draw methods, state setters, mesh, model, material and lighting code) |
 
 Every function is generated; the ones left to the translator are the 660 import stubs, the 130
 functions that call `setjmp`, and 53 that the game's patches (51) or the runtime's live switches
@@ -254,13 +254,13 @@ render functions of the engine first: the native renderer's N6 takes the engine'
 boundary instead of decoding the PS4's command buffers.
 
 **Progress.** Each bar has 20 blocks, one per 5% of the step's items; R4 as a whole is the mean
-of its steps (51%).
+of its steps (54%).
 
 | Step | Progress | Items |
 |---|---|---|
 | R4.1 · the annotation file | 100% `████████████████████` | the file (`annotations/functions.tsv`); the generator writes its names into the C; the app's kit carries it |
 | R4.2 · the render boundary | 83% `████████████████░░░░` | done: CoreGraphics2's draw and dispatch methods, the state blocks they apply, the resource binder's steps, the render-target passes, the counts in the game; left: the compute passes |
-| R4.3 · the objects above it | 75% `███████████████░░░░░` | done: the draw state, the shader stages and their resources, the shader object, models and meshes, materials and shader programs, deferred lighting; left: the material's parameter block (textures, constants), the upload-ring draw's callers |
+| R4.3 · the objects above it | 87% `█████████████████░░░` | done: the draw state, the shader stages and their resources, the shader object, models and meshes, materials and shader programs, the materials' textures and constants, deferred lighting; left: the upload-ring draw's callers |
 | R4.4 · synchronization primitives | 0% `░░░░░░░░░░░░░░░░░░░░` | the engine's locks and atomics named (for the generator's memory ordering) |
 | R4.5 · the hottest signatures | 0% `░░░░░░░░░░░░░░░░░░░░` | signatures for the busiest functions |
 
@@ -282,8 +282,8 @@ call of it, `?` after a guess. The names change comments only: the full library'
 spaces removed, is the same with and without them. `build_library.py` generates the C again when
 the file changes.
 
-So far, 130 functions: libGnm's command buffer methods (83) and the engine's render boundary
-and what is above it (47).
+So far, 139 functions: libGnm's command buffer methods (83) and the engine's render boundary
+and what is above it (56).
 
 **The render boundary.** Every draw of CoreGraphics2 goes through seven methods of its graphics
 context: `draw`, `drawInstanced`, `drawIndexed`, `drawIndexedInstanced`, `drawIndirect`,
@@ -365,8 +365,16 @@ The caller with 7.5% draws what was last written into an upload ring (a topology
 draw state through the context's setters (`setTopology`, `setVertexBuffers`, `setIndexBuffer`, as
 the five shader stages have theirs).
 
-Next: the effect's program choice and the parameter block (which textures and constants), what
-the upload-ring draw's callers are, and the compute passes.
+**A material's textures and constants.** The material's texture list (+0xb0, `CgMaterialTexture`,
+0x38 bytes each) binds each texture into its pixel-stage slot through
+`CG::GraphicsContext::setPixelTextures`, and into the domain stage too for some kinds (maps the
+tessellation reads), and gathers their UV transforms into a constant buffer bound to the same
+stages. Its parameter block (+0x88) holds a list of parameter objects (seven kinds counted in
+the game with `BB_DRAW_CENSUS=1`), each writing float4 registers into the material's constant
+buffer (`FD4::ConstantBuffer::setVectors`), which is then bound; an instance's overrides go into
+a copy, and some parameters are looked up by name (such as `ExParam_SoftVolume`).
+
+Next: what the upload-ring draw's callers are, and the compute passes.
 
 ## Record and replay
 
