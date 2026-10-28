@@ -309,8 +309,11 @@ state objects it points to hold libGnm's register values. When a colour or depth
 the output merger first resolves the old one's fast clear or decompresses it: most of the
 render-target passes come from there.
 
-Next: the shader object (what N2's shaders ahead of time key on), the vertex buffers, and the
-compute passes.
+A stage's shader object holds the code's GPU address (+0x108) and the PS4 shader's own header
+(+0x100, the code's size in its first word): the same code the runtime's shader recompiler reads
+from the command buffers, so N2's shaders ahead of time can key on it at the boundary.
+
+Next: the vertex buffers, and the compute passes.
 
 ## Record and replay
 

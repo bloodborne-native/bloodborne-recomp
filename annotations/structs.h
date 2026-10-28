@@ -48,6 +48,14 @@ typedef struct CgScissor {
  * vertex shader runs on GCN's LS, ES or VS stage and the domain shader on its ES or VS stage,
  * by whether tessellation and a geometry shader are on. */
 typedef enum CgStage { CG_VERTEX, CG_HULL, CG_DOMAIN, CG_GEOMETRY, CG_PIXEL, CG_COMPUTE } CgStage;
+/* A shader the draw state names (the resource binder prefetches its code into L2 before a draw). */
+typedef struct CgShader {
+    uint8_t unknown_000[0x100];
+    const uint32_t *gnm_shader; /* 0x100: the PS4 shader's own header: the code's size in bytes in
+                                   the low 23 bits of its first word */
+    uint64_t code_address;      /* 0x108: the code's GPU address */
+} CgShader;
+
 typedef struct CgSampler {
     uint32_t ssharp[4]; /* 0x00: the GCN sampler descriptor (S#) */
 } CgSampler;
@@ -67,7 +75,7 @@ typedef struct CgConstantBuffer {
  * own descriptor tables, constant buffers become V#s (initAsConstantBuffer); a missing sampler
  * is the engine's default one. */
 typedef struct CgShaderStage {
-    const void *shader;                        /* 0x000: NULL when the stage is off (setActiveShaderStages) */
+    const CgShader *shader;                    /* 0x000: NULL when the stage is off (setActiveShaderStages) */
     const CgSampler *samplers[16];             /* 0x008 */
     const CgTexture *textures[64];             /* 0x088 */
     const CgTexture *more_textures[64];        /* 0x288: placed after the first 64 in the binder's table */
@@ -125,6 +133,7 @@ CG_AT(CgShaderStage, textures, 0x088);
 CG_AT(CgShaderStage, more_textures, 0x288);
 CG_AT(CgShaderStage, constant_buffers, 0x488);
 CG_AT(CgTexture, tsharp, 0x10);
+CG_AT(CgShader, code_address, 0x108);
 CG_AT(CgConstantBuffer, size, 0x2c);
 _Static_assert(offsetof(CgDrawState, stages[CG_PIXEL]) == 0x1970, "the pixel stage");
 #undef CG_AT
