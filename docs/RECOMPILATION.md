@@ -46,7 +46,7 @@ The recompiled code is produced on the player's machine from their copy, and sta
 | R1 | Recompiler prototype: generated C for the recorded functions, checked by replay | Done |
 | R2 | Coverage: every function generated; the game runs recompiled, the translator as fallback | Done |
 | R3 | Speed: integer, flags and vector instructions in C; memory ordering relaxed where safe | Done: 99.1% of instructions in C; the library takes 14% less CPU time than the translator at the same frame rate |
-| R4 | Annotations: names, signatures and structs make the generated C readable; the engine's render functions first, for the native renderer's N6 | 56% `███████████░░░░░░░░░` (by its steps, below): 148 functions named and the engine's draw state, shaders, models, meshes, materials and shader programs described (`annotations/`); the draw paths counted in the game (mesh draw, deferred lighting, upload-ring draw); next: the compute passes, then R4.4 and R4.5 |
+| R4 | Annotations: names, signatures and structs make the generated C readable; the engine's render functions first, for the native renderer's N6 | 60% `████████████░░░░░░░░` (by its steps, below): 156 functions named and the engine's draw state, shaders, models, meshes, materials and shader programs described (`annotations/`); the draw paths counted in the game (mesh draw, deferred lighting, upload-ring draw); next: R4.4 (synchronization primitives) and R4.5 (the hottest signatures) |
 | R5 | The engine's graphics on each platform's own GPU API: [native renderer](https://github.com/bloodborne-native/bloodborne-runtime/blob/main/docs/NATIVE_RENDERER.md) (bloodborne-runtime) | N1 and N4 done; N5 (Metal backend): the default renderer on macOS, acceptance pending |
 
 ## Progress
@@ -61,8 +61,8 @@ The recompiled code is produced on the player's machine from their copy, and sta
 | CPU time recompiled, against the translator | `█████████████████░░░` 86% | 344% of one core against 402% (1st Floor Sickroom), 360% against 397% (Cathedral Ward, 2026-10-27) |
 | Functions checked call by call (recordings) | `░░░░░░░░░░░░░░░░░░░░` 0.4% | 933 of 241,821 |
 | Functions labelled by library (2026-10-24) | `█████████████░░░░░░░` 62.7% | 151,562 of 241,821 |
-| R4 (annotations), by its steps | `███████████░░░░░░░░░` 56% | R4.1 and R4.3 done, R4.2 in progress, R4.4 and R4.5 not started |
-| Functions named (R4, 2026-10-28) | `░░░░░░░░░░░░░░░░░░░░` 0.05% | 148 of 241,821 (libGnm's command buffer methods; the engine's draw methods, state setters, mesh, model, material and lighting code) |
+| R4 (annotations), by its steps | `████████████░░░░░░░░` 60% | R4.1, R4.2 and R4.3 done, R4.4 and R4.5 not started |
+| Functions named (R4, 2026-10-28) | `░░░░░░░░░░░░░░░░░░░░` 0.05% | 156 of 241,821 (libGnm's command buffer methods; the engine's draw methods, state setters, mesh, model, material and lighting code) |
 
 Every function is generated; the ones left to the translator are the 660 import stubs, the 130
 functions that call `setjmp`, and 53 that the game's patches (51) or the runtime's live switches
@@ -254,12 +254,12 @@ render functions of the engine first: the native renderer's N6 takes the engine'
 boundary instead of decoding the PS4's command buffers.
 
 **Progress.** Each bar has 20 blocks, one per 5% of the step's items; R4 as a whole is the mean
-of its steps (56%).
+of its steps (60%).
 
 | Step | Progress | Items |
 |---|---|---|
 | R4.1 · the annotation file | 100% `████████████████████` | the file (`annotations/functions.tsv`); the generator writes its names into the C; the app's kit carries it |
-| R4.2 · the render boundary | 83% `████████████████░░░░` | done: CoreGraphics2's draw and dispatch methods, the state blocks they apply, the resource binder's steps, the render-target passes, the counts in the game; left: the compute passes |
+| R4.2 · the render boundary | 100% `████████████████████` | done: CoreGraphics2's draw and dispatch methods, the state blocks they apply, the resource binder's steps, the render-target passes, the counts in the game, the compute passes |
 | R4.3 · the objects above it | 100% `████████████████████` | done: the draw state, the shader stages and their resources, the shader object, models and meshes, materials and shader programs, the materials' textures and constants, deferred lighting, the upload-ring draw's callers |
 | R4.4 · synchronization primitives | 0% `░░░░░░░░░░░░░░░░░░░░` | the engine's locks and atomics named (for the generator's memory ordering) |
 | R4.5 · the hottest signatures | 0% `░░░░░░░░░░░░░░░░░░░░` | signatures for the busiest functions |
@@ -282,8 +282,8 @@ call of it, `?` after a guess. The names change comments only: the full library'
 spaces removed, is the same with and without them. `build_library.py` generates the C again when
 the file changes.
 
-So far, 148 functions: libGnm's command buffer methods (83) and the engine's render boundary
-and what is above it (65).
+So far, 156 functions: libGnm's command buffer methods (83) and the engine's render boundary
+and what is above it (73).
 
 **The render boundary.** Every draw of CoreGraphics2 goes through seven methods of its graphics
 context: `draw`, `drawInstanced`, `drawIndexed`, `drawIndexedInstanced`, `drawIndirect`,
@@ -380,8 +380,12 @@ vertices on the CPU and draws them; one of them draws an instance's points, tran
 matrix, as lines. They are most likely the visual effects' particles, lines and ribbons (the
 names, `FX::PrimitiveRenderer`, are a guess).
 
-Next: the compute passes (R4.2), then synchronization primitives (R4.4) and the hottest
-signatures (R4.5).
+**Compute passes.** CoreGraphics2's own dispatches are memory operations of its `SurfaceOps`, each
+with a compute shader of the engine's and the resource binder's compute steps: buffer copies (one,
+or a batch split into 64-dword jobs), buffer fills with a 16-byte pattern, texture clears and
+texture region copies (1D, 2D and 3D shaders).
+
+Next: synchronization primitives (R4.4) and the hottest signatures (R4.5).
 
 ## Record and replay
 

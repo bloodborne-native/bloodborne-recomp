@@ -132,6 +132,11 @@
 0x22bdb00	FD4::LightRenderer::drawLightBatches#3	guess	calls
 0x22be4f0	FD4::LightRenderer::drawLightBatches#4	guess	calls
 0x2382eb0	FD4::TextRenderer::drawString	guess	calls
+0x26b2670	CG::SurfaceOps::copyBuffer	sure	calls
+0x26b2810	CG::SurfaceOps::copyBuffers	sure	calls
+0x26b2f40	CG::SurfaceOps::copyTexture	sure	calls
+0x26b4ef0	CG::SurfaceOps::clearTexture	sure	calls
+0x26b5380	CG::SurfaceOps::fillBuffer	sure	calls
 0x26b55a0	CG::SurfaceOps::resolve	sure	calls
 0x26b5a70	CG::SurfaceOps::eliminateFastClear	sure	calls
 0x26b5f50	CG::SurfaceOps::clearDepthStencil	guess	calls
@@ -145,6 +150,9 @@
 0x26cbe50	CG::ResourceBinder::beforeDispatch	guess	calls	void (CG::ResourceBinder *, CG::GraphicsContext *, const CG::ComputeState *)
 0x26cbe90	CG::ResourceBinder::commitCompute	guess	calls	void (CG::ResourceBinder *, CG::GraphicsContext *, const CG::ComputeState *)
 0x26ccf20	CG::ResourceBinder::afterDispatch	guess	calls	void (CG::ResourceBinder *, CG::GraphicsContext *, const CG::ComputeState *)
+0x26cd400	CG::ResourceBinder::setComputeShader	guess	calls
+0x26cd5d0	CG::ResourceBinder::commitComputePass	guess	calls
+0x26ce110	CG::ResourceBinder::endComputePass	guess	calls
 0x26d2230	CG::OutputMergerState::apply	sure	calls	void (CG::OutputMergerState *, CG::GraphicsContext *, const CG::DrawState *)
 0x26d3370	CG::RasterizerState::apply	sure	calls	void (CG::RasterizerState *, CG::GraphicsContext *, const CG::DrawState *)
 0x26db1b0	CG::UploadRing::allocate	guess	calls	int (CG::UploadRing *, void **memory, CG::GraphicsContext *, uint32_t size)
