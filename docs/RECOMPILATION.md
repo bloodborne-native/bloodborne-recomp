@@ -61,7 +61,7 @@ The recompiled code is produced on the player's machine from their copy, and sta
 | CPU time recompiled, against the translator | `█████████████████░░░` 86% | 344% of one core against 402% (1st Floor Sickroom), 360% against 397% (Cathedral Ward, 2026-10-27) |
 | Functions checked call by call (recordings) | `░░░░░░░░░░░░░░░░░░░░` 0.4% | 933 of 241,821 |
 | Functions labelled by library (2026-10-24) | `█████████████░░░░░░░` 62.7% | 151,562 of 241,821 |
-| Functions named (R4, 2026-10-28) | `░░░░░░░░░░░░░░░░░░░░` 0.04% | 103 of 241,821 (libGnm's command buffer methods, the engine's draw boundary) |
+| Functions named (R4, 2026-10-28) | `░░░░░░░░░░░░░░░░░░░░` 0.04% | 104 of 241,821 (libGnm's command buffer methods, the engine's draw boundary) |
 
 Every function is generated; the ones left to the translator are the 660 import stubs, the 130
 functions that call `setjmp`, and 53 that the game's patches (51) or the runtime's live switches
@@ -270,7 +270,7 @@ call of it, `?` after a guess. The names change comments only: the full library'
 spaces removed, is the same with and without them. `build_library.py` generates the C again when
 the file changes.
 
-So far, 103 functions: libGnm's command buffer methods (82) and the engine's render boundary
+So far, 104 functions: libGnm's command buffer methods (83) and the engine's render boundary
 (21).
 
 **The render boundary.** Every draw of CoreGraphics2 goes through seven methods of its graphics
@@ -301,14 +301,16 @@ rasterizer state, 16 viewports and 16 scissors; the blend and depth-stencil stat
 colour targets and the depth target; the blend colour, depth bounds and stencil reference; six
 shader stages of 0x4f8 bytes from 0x590, in Direct3D 11's order (vertex, hull, domain, geometry,
 pixel, compute: the pixel stage's libGnm calls name stage 1, the geometry's 3, the hull's 5), each
-its shader and its resource tables. The
+its shader, 16 samplers, 128 textures and 14 constant buffers (Direct3D 11's counts but for the
+textures). The resource binder copies the samplers' S#s and the textures' T#s that changed into its
+own descriptor tables in GPU memory it allocates, makes V#s of the constant buffers and points
+each stage's user data at them. The
 state objects it points to hold libGnm's register values. When a colour or depth target changes,
 the output merger first resolves the old one's fast clear or decompresses it: most of the
 render-target passes come from there.
 
-Next: which of a stage's resource tables holds constant buffers, buffers, textures and samplers
-(the resource binder copies them into its own tables first), the shader object, and the compute
-passes.
+Next: the shader object (what N2's shaders ahead of time key on), the vertex buffers, and the
+compute passes.
 
 ## Record and replay
 

@@ -10,6 +10,7 @@
 # source (a source path in its messages names the class).
 # Signature: the arguments in register order, in the project's types (empty: not worked out yet).
 # Types named CG:: are described in annotations/structs.h (CG::DrawState: CgDrawState).
+0x1070960	Gnm::Buffer::initAsConstantBuffer	sure	pm4	void (Gnm::Buffer *, uint64_t address, uint32_t size)
 0x1072ed0	Gnm::DrawCommandBuffer::setScratchSize	sure	pm4
 0x1072fd0	Gnm::DrawCommandBuffer::setRenderTargetMask	sure	pm4
 0x1073030	Gnm::DrawCommandBuffer::setAlphaToMaskControl	sure	pm4

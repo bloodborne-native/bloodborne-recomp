@@ -48,12 +48,30 @@ typedef struct CgScissor {
  * vertex shader runs on GCN's LS, ES or VS stage and the domain shader on its ES or VS stage,
  * by whether tessellation and a geometry shader are on. */
 typedef enum CgStage { CG_VERTEX, CG_HULL, CG_DOMAIN, CG_GEOMETRY, CG_PIXEL, CG_COMPUTE } CgStage;
+typedef struct CgSampler {
+    uint32_t ssharp[4]; /* 0x00: the GCN sampler descriptor (S#) */
+} CgSampler;
+
+typedef struct CgTexture {
+    uint8_t unknown_00[0x10];
+    uint32_t tsharp[8]; /* 0x10: the GCN texture descriptor (T#) */
+} CgTexture;
+
+typedef struct CgConstantBuffer {
+    uint8_t unknown_00[0x18];
+    uint8_t memory[0x14]; /* 0x18: what the context turns into the buffer's GPU address */
+    uint32_t size;        /* 0x2c: bytes, for initAsConstantBuffer */
+} CgConstantBuffer;
+
+/* The resource binder sets each table that changed: samplers and textures are copied into its
+ * own descriptor tables, constant buffers become V#s (initAsConstantBuffer); a missing sampler
+ * is the engine's default one. */
 typedef struct CgShaderStage {
-    const void *shader;      /* 0x000: NULL when the stage is off (setActiveShaderStages) */
-    uint8_t resources[0x4f0]; /* 0x008: the stage's resource tables (arrays from 0x008, 0x088,
-                                 0x288 and 0x488), copied into the resource binder's own tables;
-                                 which holds constant buffers, buffers, textures and samplers is
-                                 not worked out yet */
+    const void *shader;                        /* 0x000: NULL when the stage is off (setActiveShaderStages) */
+    const CgSampler *samplers[16];             /* 0x008 */
+    const CgTexture *textures[64];             /* 0x088 */
+    const CgTexture *more_textures[64];        /* 0x288: placed after the first 64 in the binder's table */
+    const CgConstantBuffer *constant_buffers[14]; /* 0x488 */
 } CgShaderStage;
 
 /* What every draw method of CG::GraphicsContext takes after the context: the whole state of a
@@ -103,5 +121,10 @@ CG_AT(CgDrawState, depth_bounds, 0x578);
 CG_AT(CgDrawState, stencil_reference, 0x584);
 CG_AT(CgDrawState, stages, 0x590);
 _Static_assert(sizeof(CgShaderStage) == 0x4f8, "CgShaderStage");
+CG_AT(CgShaderStage, textures, 0x088);
+CG_AT(CgShaderStage, more_textures, 0x288);
+CG_AT(CgShaderStage, constant_buffers, 0x488);
+CG_AT(CgTexture, tsharp, 0x10);
+CG_AT(CgConstantBuffer, size, 0x2c);
 _Static_assert(offsetof(CgDrawState, stages[CG_PIXEL]) == 0x1970, "the pixel stage");
 #undef CG_AT
