@@ -23,7 +23,8 @@
 0x43b7e0	hk::Matrix4::setTransform	sure	calls	void (const float (*transform)[16], float (*matrix)[16])
 0x43d4d0	hk::QsTransform::toMatrix	sure	calls	void (const hk::QsTransform *, float (*matrix)[16])
 0x44b9d0	hk::Matrix3::multiply	sure	calls	void (float (*result)[12], const float (*a)[12], const float (*b)[12])
-0x76b150	hk::Cloth::meshDeform	guess	message
+0x76b150	hk::Cloth::meshDeform	guess	message	void (void *deformer, void *buffers, uint64_t)
+0x9b3a10	hk::AnimatedSkeleton::samplePose	guess	calls	void (float time, void *, void *character, void *animation, const float *reference_pose, void *, void *, int32_t bone_count, int32_t float_count, int32_t, void **pose)
 0xd1acd0	FMOD::CriticalSection::enter	sure	calls
 0xd1acf0	FMOD::CriticalSection::leave	sure	calls
 0xe4b060	FD4::ConstantBuffer::setVectors	sure	calls	void (FD4::ConstantBuffer *, uint32_t first_register, uint32_t count, const float (*)[4])
@@ -118,10 +119,11 @@
 0x11fd320	Gnm::ConstantCommandBuffer::cpRamDump	guess	pm4
 0x12acfa0	Sprj::ParamList::selectActive	guess	calls	void *(void *)
 0x1399bf0	Sprj::EventFlagManager::getFlag	sure	message	bool (void *, uint32_t flag)
-0x193ac10	Sprj::World::update	guess	message
+0x193ac10	Sprj::World::update	guess	message	void (float frame_time, void *world)
 0x1d34880	FD4::Skeleton::getBoneMatrices	guess	calls	uint32_t (const FD4::Skeleton *, float (*matrices)[12], uint32_t count, uint32_t first)
 0x1d37400	FD4::ModelInstance::updateBoundsAndSkinning	guess	calls	void (FD4::ModelInstance *, void *)
 0x1d3ae20	FD4::Skeleton::getWorldBoneMatrices	guess	calls	int (const FD4::Skeleton *, float (*matrices)[12], uint32_t count, uint32_t first)
+0x1d6f9d0	FD4::ModelInstance::submit	guess	calls	void (FD4::ModelInstance *, void *, void *render_parameters)
 0x207e780	DL::ConditionSignal::signal	sure	source
 0x207e8f0	DL::ConditionSignal::reset	guess	source
 0x207ee90	DL::LightMutex::lock	sure	source

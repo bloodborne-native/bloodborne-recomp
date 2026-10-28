@@ -46,7 +46,7 @@ The recompiled code is produced on the player's machine from their copy, and sta
 | R1 | Recompiler prototype: generated C for the recorded functions, checked by replay | Done |
 | R2 | Coverage: every function generated; the game runs recompiled, the translator as fallback | Done |
 | R3 | Speed: integer, flags and vector instructions in C; memory ordering relaxed where safe | Done: 99.1% of instructions in C; the library takes 14% less CPU time than the translator at the same frame rate |
-| R4 | Annotations: names, signatures and structs make the generated C readable; the engine's render functions first, for the native renderer's N6 | 98% `███████████████████░` (by its steps, below): 202 functions named and the engine's draw state, shaders, models, meshes, materials and shader programs described (`annotations/`); the draw paths counted in the game (mesh draw, deferred lighting, upload-ring draw); the synchronization primitives named and counted; 18 of the 20 busiest functions named with their signatures; left: two of those |
+| R4 | Annotations: names, signatures and structs make the generated C readable; the engine's render functions first, for the native renderer's N6 | Done `████████████████████` (by its steps, below): 204 functions named and the engine's draw state, shaders, models, meshes, materials and shader programs described (`annotations/`); the draw paths counted in the game (mesh draw, deferred lighting, upload-ring draw); the synchronization primitives named and counted; the 20 busiest functions named with their signatures |
 | R5 | The engine's graphics on each platform's own GPU API: [native renderer](https://github.com/bloodborne-native/bloodborne-runtime/blob/main/docs/NATIVE_RENDERER.md) (bloodborne-runtime) | N1 and N4 done; N5 (Metal backend): the default renderer on macOS, acceptance pending |
 
 ## Progress
@@ -61,8 +61,8 @@ The recompiled code is produced on the player's machine from their copy, and sta
 | CPU time recompiled, against the translator | `█████████████████░░░` 86% | 344% of one core against 402% (1st Floor Sickroom), 360% against 397% (Cathedral Ward, 2026-10-27) |
 | Functions checked call by call (recordings) | `░░░░░░░░░░░░░░░░░░░░` 0.4% | 933 of 241,821 |
 | Functions labelled by library (2026-10-24) | `█████████████░░░░░░░` 62.7% | 151,562 of 241,821 |
-| R4 (annotations), by its steps | `███████████████████░` 98% | R4.1 to R4.4 done, R4.5 18 of 20 |
-| Functions named (R4, 2026-10-28) | `░░░░░░░░░░░░░░░░░░░░` 0.05% | 202 of 241,821 (libGnm's command buffer methods; the engine's draw methods, state setters, mesh, model, material and lighting code; the synchronization primitives; the busiest functions) |
+| R4 (annotations), by its steps | `████████████████████` 100% | R4.1 to R4.5 done |
+| Functions named (R4, 2026-10-28) | `░░░░░░░░░░░░░░░░░░░░` 0.05% | 204 of 241,821 (libGnm's command buffer methods; the engine's draw methods, state setters, mesh, model, material and lighting code; the synchronization primitives; the busiest functions) |
 
 Every function is generated; the ones left to the translator are the 660 import stubs, the 130
 functions that call `setjmp`, and 53 that the game's patches (51) or the runtime's live switches
@@ -254,7 +254,7 @@ render functions of the engine first: the native renderer's N6 takes the engine'
 boundary instead of decoding the PS4's command buffers.
 
 **Progress.** Each bar has 20 blocks, one per 5% of the step's items; R4 as a whole is the mean
-of its steps (98%).
+of its steps (100%).
 
 | Step | Progress | Items |
 |---|---|---|
@@ -262,7 +262,7 @@ of its steps (98%).
 | R4.2 · the render boundary | 100% `████████████████████` | done: CoreGraphics2's draw and dispatch methods, the state blocks they apply, the resource binder's steps, the render-target passes, the counts in the game, the compute passes |
 | R4.3 · the objects above it | 100% `████████████████████` | done: the draw state, the shader stages and their resources, the shader object, models and meshes, materials and shader programs, the materials' textures and constants, deferred lighting, the upload-ring draw's callers |
 | R4.4 · synchronization primitives | 100% `████████████████████` | done: Dantelion2's synchronization classes named, the middleware's locks named, the atomic instructions inventoried, the locks counted in the game |
-| R4.5 · the hottest signatures | 90% `██████████████████░░` | the 20 busiest functions (the CPU profile in RECOMPILATION's "Where the CPU time goes") named with their signatures: 18 done; left: a Havok function (0x9b3a10) and one not labelled (0x1d6f9d0) |
+| R4.5 · the hottest signatures | 100% `████████████████████` | the 20 busiest functions (the CPU profile in "Where the CPU time goes") named with their signatures |
 
 `annotations/structs.h` describes the objects those functions use, as far as they are known (C, with
 the offsets checked by `_Static_assert`). `annotations/functions.tsv` holds one row per named function: its offset in the 1.09
@@ -282,8 +282,8 @@ call of it, `?` after a guess. The names change comments only: the full library'
 spaces removed, is the same with and without them. `build_library.py` generates the C again when
 the file changes.
 
-So far, 202 functions: libGnm's command buffer methods (83), the engine's render boundary and
-what is above it (73), the synchronization primitives (28) and the busiest functions (18).
+So far, 204 functions: libGnm's command buffer methods (83), the engine's render boundary and
+what is above it (73), the synchronization primitives (28) and the busiest functions (20).
 
 **The render boundary.** Every draw of CoreGraphics2 goes through seven methods of its graphics
 context: `draw`, `drawInstanced`, `drawIndexed`, `drawIndexedInstanced`, `drawIndirect`,
@@ -396,18 +396,20 @@ second, the read lock 13,800, condition signals 5,300, semaphore waits 1,800, FM
 Scaleform's 71, Havok's 35. These are what the generator's memory ordering has to respect when it
 relaxes everything else.
 
-**The busiest functions (R4.5).** Of the 20 busiest functions in the CPU profile (the main
-thread in the Hunter's Dream), 18 are named with their signatures: the job system's main loop
+**The busiest functions (R4.5).** The 20 busiest functions in the CPU profile (the main
+thread in the Hunter's Dream) are named with their signatures: the job system's main loop
 (it runs jobs and waits for the workers), Lua's interpreter (`luaV_execute`), the game's
 per-frame world update (it touches 27 of the game's managers), the skeleton's bone matrices
 (Havok's transforms made 3×4 matrices, then world matrices, with Havok's matrix functions), a
 model's bounds and its skinning buffer (a ring of matrix sets, which gives `drawMesh` this
 frame's and the last), the scene's traversal for a pass, the resource commit, the
 constant-buffer upload, a culling test, the event-flag lookup, Havok's cloth mesh deformation,
-the C library's block copy, and a priority choice in a typed list (a guess). Two are left: a
-large Havok function and one not labelled.
+the C library's block copy, Havok's animation sampling (it blends a character's animation
+layers into a pose), a model instance's submission to the scene, and a priority choice in a typed
+list; several class names are guesses (the confidence column says which).
 
-Next: the two left; then the generator's CPU work (the app's roadmap), with R4's names.
+R4's steps are done. Next, with R4's names: the native renderer's N6 (bloodborne-runtime's
+NATIVE_RENDERER.md) and the generator's CPU work (the app's roadmap).
 
 ## Record and replay
 
