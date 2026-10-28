@@ -98,6 +98,9 @@
 0x11fd280	Gnm::ConstantCommandBuffer::writeToCpRam	guess	pm4
 0x11fd320	Gnm::ConstantCommandBuffer::cpRamDump	guess	pm4
 0x2168a20	CG::GraphicsContext::updateConstantBuffer	guess	calls
+0x2168ca0	CG::GraphicsContext::setTopology	sure	calls	void (CG::GraphicsContext *, CG::DrawState *, uint32_t topology)
+0x2168cb0	CG::GraphicsContext::setIndexBuffer	sure	calls	void (CG::GraphicsContext *, CG::DrawState *, const CG::Buffer *, uint32_t format, uint32_t offset)
+0x2168cc0	CG::GraphicsContext::setVertexBuffers	sure	calls	void (CG::GraphicsContext *, CG::DrawState *, uint32_t first_slot, uint32_t count, const CG::Buffer *const *buffers, const uint32_t *strides, const uint32_t *offsets)
 0x2168e00	CG::GraphicsContext::setVertexShader	sure	calls	void (CG::GraphicsContext *, CG::DrawState *, const CG::Shader *)
 0x2168f30	CG::GraphicsContext::setHullShader	sure	calls	void (CG::GraphicsContext *, CG::DrawState *, const CG::Shader *)
 0x2169060	CG::GraphicsContext::setDomainShader	sure	calls	void (CG::GraphicsContext *, CG::DrawState *, const CG::Shader *)
@@ -135,4 +138,6 @@
 0x26d2230	CG::OutputMergerState::apply	sure	calls	void (CG::OutputMergerState *, CG::GraphicsContext *, const CG::DrawState *)
 0x26d3370	CG::RasterizerState::apply	sure	calls	void (CG::RasterizerState *, CG::GraphicsContext *, const CG::DrawState *)
 0x26db1b0	CG::UploadRing::allocate	guess	calls	int (CG::UploadRing *, void **memory, CG::GraphicsContext *, uint32_t size)
+0x26db300	CG::UploadRing::finish	guess	calls	void (CG::UploadRing *, const CG::Buffer **buffer, uint32_t *offset, CG::GraphicsContext *)
+0x28f8a30	CG::UploadRing::draw	guess	calls	void (CG::GraphicsContext *, CG::UploadRing *, uint32_t primitive, uint32_t index_count, uint32_t vertex_count, uint32_t stride, const int32_t *, const int32_t *)
 0x292f510	CG::ShaderProgram::bind	sure	calls	void (const CG::ShaderProgram *, void *draw_state_builder)
