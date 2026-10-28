@@ -46,7 +46,7 @@ The recompiled code is produced on the player's machine from their copy, and sta
 | R1 | Recompiler prototype: generated C for the recorded functions, checked by replay | Done |
 | R2 | Coverage: every function generated; the game runs recompiled, the translator as fallback | Done |
 | R3 | Speed: integer, flags and vector instructions in C; memory ordering relaxed where safe | Done: 99.1% of instructions in C; the library takes 14% less CPU time than the translator at the same frame rate |
-| R4 | Annotations: names, signatures and structs make the generated C readable; the engine's render functions first, for the native renderer's N6 | Started: the annotation file and the generator's use of it; libGnm's command buffer methods and the engine's draw methods named |
+| R4 | Annotations: names, signatures and structs make the generated C readable; the engine's render functions first, for the native renderer's N6 | Started: 130 functions named and the engine's draw state, shaders, models, meshes and shader programs described (`annotations/`); the draw paths counted in the game (mesh draw, deferred lighting, upload-ring draw); next: the materials' textures and constants, the compute passes |
 | R5 | The engine's graphics on each platform's own GPU API: [native renderer](https://github.com/bloodborne-native/bloodborne-runtime/blob/main/docs/NATIVE_RENDERER.md) (bloodborne-runtime) | N1 and N4 done; N5 (Metal backend): the default renderer on macOS, acceptance pending |
 
 ## Progress
@@ -61,7 +61,7 @@ The recompiled code is produced on the player's machine from their copy, and sta
 | CPU time recompiled, against the translator | `█████████████████░░░` 86% | 344% of one core against 402% (1st Floor Sickroom), 360% against 397% (Cathedral Ward, 2026-10-27) |
 | Functions checked call by call (recordings) | `░░░░░░░░░░░░░░░░░░░░` 0.4% | 933 of 241,821 |
 | Functions labelled by library (2026-10-24) | `█████████████░░░░░░░` 62.7% | 151,562 of 241,821 |
-| Functions named (R4, 2026-10-28) | `░░░░░░░░░░░░░░░░░░░░` 0.05% | 130 of 241,821 (libGnm's command buffer methods, the engine's draw boundary) |
+| Functions named (R4, 2026-10-28) | `░░░░░░░░░░░░░░░░░░░░` 0.05% | 130 of 241,821 (libGnm's command buffer methods; the engine's draw methods, state setters, mesh, model, material and lighting code) |
 
 Every function is generated; the ones left to the translator are the 660 import stubs, the 130
 functions that call `setjmp`, and 53 that the game's patches (51) or the runtime's live switches

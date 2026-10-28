@@ -25,7 +25,13 @@ The game's executable has 241,821 functions. Every one the library can hold is g
 instructions in plain C, and the game runs on them (240,978; functions changed by patches and
 hooks stay with the translator). R3 (speed) is done: the recompiled code takes less CPU time
 than the translator (344% of one core against 402% at the 1st Floor Sickroom lamp, 357% against
-392% in Cathedral Ward, 2026-10-25), at the same frame rate. See [docs/RECOMPILATION.md](docs/RECOMPILATION.md)
+392% in Cathedral Ward, 2026-10-25), at the same frame rate. Players build the library from the
+launcher, with the LLVM toolchain these releases hold (below).
+
+R4 (annotations) has started: [`annotations/`](annotations) holds the project's names for 130 of
+the game's functions and the layouts of the engine's draw state, shaders, models, meshes and shader
+programs, aimed at the engine's render code first for the native renderer. The generator writes the
+names into the generated C. See [docs/RECOMPILATION.md](docs/RECOMPILATION.md)
 and the [status page](https://github.com/bloodborne-native/bloodborne-recomp/wiki/Recompilation-status).
 All docs: [docs/README.md](docs/README.md).
 

@@ -4,6 +4,9 @@
 
 - [Recompilation](RECOMPILATION.md): the plan, the milestones, how the recompiler works, its tools,
   record and replay, what the game's executable contains, and the results so far.
+- [Annotations](RECOMPILATION.md#annotations): the project's names for the game's functions
+  ([`annotations/functions.tsv`](../annotations/functions.tsv)) and the layouts of the objects they
+  use ([`annotations/structs.h`](../annotations/structs.h)): what is known of the engine's render code.
 - [Native arm64](ARM64_NATIVE.md): bbcpu, the x86-64 → arm64 translator and interpreter the
   recompiled code stands on.
 - [Credits and licenses](CREDITS.md)
