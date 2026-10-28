@@ -79,7 +79,9 @@ typedef struct CgTexture {
 
 typedef struct CgConstantBuffer {
     uint8_t unknown_00[0x18];
-    uint8_t memory[0x14]; /* 0x18: what the context turns into the buffer's GPU address */
+    uint8_t memory[0x14]; /* 0x18: a handle the context's buffer manager turns into the buffer's GPU
+                             address (0x26ae840 looks it up in the manager's table; the binder then
+                             calls initAsConstantBuffer with it and `size`) */
     uint32_t size;        /* 0x2c: bytes, for initAsConstantBuffer */
 } CgConstantBuffer;
 
