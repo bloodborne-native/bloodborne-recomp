@@ -298,13 +298,17 @@ bloodborne-runtime's NATIVE_RENDERER.md.
 **The draw state** (`annotations/structs.h`, R4.3): one object carries everything a draw sets,
 at least 0x1978 bytes. Known so far: the topology, the index buffer, format and offset; the
 rasterizer state, 16 viewports and 16 scissors; the blend and depth-stencil states; the eight
-colour targets and the depth target; the blend colour, depth bounds and stencil reference. The
+colour targets and the depth target; the blend colour, depth bounds and stencil reference; six
+shader stages of 0x4f8 bytes from 0x590, in Direct3D 11's order (vertex, hull, domain, geometry,
+pixel, compute: the pixel stage's libGnm calls name stage 1, the geometry's 3, the hull's 5), each
+its shader and its resource tables. The
 state objects it points to hold libGnm's register values. When a colour or depth target changes,
 the output merger first resolves the old one's fast clear or decompresses it: most of the
 render-target passes come from there.
 
-Next: the shader resources step (the shader stages, their constant buffers, buffers, textures
-and samplers in the draw state), and the compute passes.
+Next: which of a stage's resource tables holds constant buffers, buffers, textures and samplers
+(the resource binder copies them into its own tables first), the shader object, and the compute
+passes.
 
 ## Record and replay
 

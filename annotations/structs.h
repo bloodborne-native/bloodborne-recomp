@@ -44,8 +44,20 @@ typedef struct CgScissor {
     int32_t left, top, right, bottom; /* negative values are clamped to 0 */
 } CgScissor;
 
+/* A shader stage of a draw state. The stages are in Direct3D 11's order (CgStage); the
+ * vertex shader runs on GCN's LS, ES or VS stage and the domain shader on its ES or VS stage,
+ * by whether tessellation and a geometry shader are on. */
+typedef enum CgStage { CG_VERTEX, CG_HULL, CG_DOMAIN, CG_GEOMETRY, CG_PIXEL, CG_COMPUTE } CgStage;
+typedef struct CgShaderStage {
+    const void *shader;      /* 0x000: NULL when the stage is off (setActiveShaderStages) */
+    uint8_t resources[0x4f0]; /* 0x008: the stage's resource tables (arrays from 0x008, 0x088,
+                                 0x288 and 0x488), copied into the resource binder's own tables;
+                                 which holds constant buffers, buffers, textures and samplers is
+                                 not worked out yet */
+} CgShaderStage;
+
 /* What every draw method of CG::GraphicsContext takes after the context: the whole state of a
- * draw. It continues past what is described here (at least to 0x1978). */
+ * draw, at least 0x2360 bytes. */
 typedef struct CgDrawState {
     uint8_t unknown_000[0x8];
     uint32_t topology;                   /* 0x008: the engine's own primitive type, converted for libGnm */
@@ -67,6 +79,8 @@ typedef struct CgDrawState {
     float depth_bounds[2];               /* 0x578: setDepthBoundsRange (minimum, maximum) */
     uint8_t unknown_580[0x4];
     uint8_t stencil_reference;           /* 0x584: setStencil's reference, front and back */
+    uint8_t unknown_585[0xb];
+    CgShaderStage stages[6];             /* 0x590: by CgStage */
 } CgDrawState;
 
 #define CG_AT(type, field, offset) _Static_assert(offsetof(type, field) == (offset), #type "." #field)
@@ -87,4 +101,7 @@ CG_AT(CgDrawState, depth_target, 0x520);
 CG_AT(CgDrawState, blend_color, 0x568);
 CG_AT(CgDrawState, depth_bounds, 0x578);
 CG_AT(CgDrawState, stencil_reference, 0x584);
+CG_AT(CgDrawState, stages, 0x590);
+_Static_assert(sizeof(CgShaderStage) == 0x4f8, "CgShaderStage");
+_Static_assert(offsetof(CgDrawState, stages[CG_PIXEL]) == 0x1970, "the pixel stage");
 #undef CG_AT
