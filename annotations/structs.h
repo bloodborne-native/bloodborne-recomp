@@ -141,9 +141,17 @@ typedef struct CgModelVertexBuffer {
     uint8_t unknown_7c[0x14];
 } CgModelVertexBuffer;
 
-/* A model's mesh: which of the model's face sets and vertex buffers it draws. */
+/* A model's mesh (0x48 bytes): its material, and which of the model's face sets and vertex
+ * buffers it draws. */
 typedef struct CgMesh {
-    uint8_t unknown_00[0x28];
+    uint16_t material;            /* 0x00: the material's index, looked up through the model
+                                     draw's material set */
+    uint8_t unknown_02[0x6];
+    int32_t technique;            /* 0x08: passed to the material's begin */
+    uint8_t unknown_0c[0x4];
+    uint32_t flags;               /* 0x10: must have the pass's bits */
+    uint16_t lod_mask;            /* 0x14: the levels of detail it draws at */
+    uint8_t unknown_16[0x12];
     uint16_t face_set_count;      /* 0x28 */
     uint16_t vertex_buffer_count; /* 0x2a: into CgDrawState.vertex_buffers from slot 0 */
     uint8_t unknown_2c[0x4];
@@ -152,6 +160,21 @@ typedef struct CgMesh {
     const void *input_layouts;    /* 0x40: an object whose virtual method (+0x10) gives the input
                                      layout for a pass */
 } CgMesh;
+
+/* A model (CG::ModelRenderer::drawModel), as far as its draw reads it. */
+typedef struct CgModel {
+    uint8_t unknown_000[0xa0];
+    int32_t mesh_count;           /* 0x0a0 */
+    uint8_t unknown_0a4[0x4];
+    const CgMesh *meshes;         /* 0x0a8 */
+    uint8_t unknown_0b0[0x4];
+    uint32_t lod_mask;            /* 0x0b4: the levels of detail it has (a missing one falls back
+                                     to the next lower) */
+    uint8_t unknown_0b8[0x80];
+    const CgFaceSet *face_sets;   /* 0x138 */
+    uint8_t unknown_140[0x30];
+    const CgModelVertexBuffer *vertex_buffers; /* 0x170 */
+} CgModel;
 
 #define CG_AT(type, field, offset) _Static_assert(offsetof(type, field) == (offset), #type "." #field)
 CG_AT(CgBuffer, address, 0x20);
@@ -164,6 +187,12 @@ _Static_assert(sizeof(CgFaceSet) == 0x20, "CgFaceSet");
 CG_AT(CgModelVertexBuffer, offset, 0x78);
 _Static_assert(sizeof(CgModelVertexBuffer) == 0x90, "CgModelVertexBuffer");
 CG_AT(CgMesh, input_layouts, 0x40);
+CG_AT(CgMesh, lod_mask, 0x14);
+_Static_assert(sizeof(CgMesh) == 0x48, "CgMesh");
+CG_AT(CgModel, meshes, 0x0a8);
+CG_AT(CgModel, lod_mask, 0x0b4);
+CG_AT(CgModel, face_sets, 0x138);
+CG_AT(CgModel, vertex_buffers, 0x170);
 CG_AT(CgDrawState, index_buffer, 0x010);
 CG_AT(CgDrawState, index_offset, 0x01c);
 CG_AT(CgDrawState, vertex_buffers, 0x020);
