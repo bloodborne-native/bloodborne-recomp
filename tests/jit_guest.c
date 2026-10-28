@@ -289,10 +289,28 @@ T uint64_t t_memops(uint64_t a, uint64_t b, uint64_t c) {
     return r;
 }
 
+/* Truncating conversions at the edges of the integer ranges (x86 gives the most negative value
+ * for NaN and out of range), to 32 and 64 bits, from double and float: a: an edge or c's bits. */
+T uint64_t t_convert(uint64_t a, uint64_t b, uint64_t c) {
+    static const double edges[] = {
+        2147483647.0, 2147483647.5, 2147483647.999, 2147483648.0, 2147483520.0, -2147483648.0,
+        -2147483648.5, -2147483649.0, 9223372036854774784.0, 9223372036854775808.0,
+        9223371487098961920.0, -9223372036854775808.0, -9223372036854777856.0, 0.5, -0.5, 1e300,
+        -1e300, __builtin_inf(), -__builtin_inf(), __builtin_nan("")};
+    union { uint64_t u; double d; } bits = {.u = c};
+    union { uint32_t u; float f; } fbits = {.u = (uint32_t)b};
+    const double d = a & 1 ? bits.d : edges[(a >> 1) % (sizeof(edges) / sizeof(*edges))];
+    const float f = a & 2 ? fbits.f : (float)d;
+    uint64_t r = (uint32_t)_mm_cvttsd_si32(_mm_set_sd(d));
+    r = r * 31 + (uint64_t)_mm_cvttsd_si64(_mm_set_sd(d));
+    r = r * 31 + (uint32_t)_mm_cvtt_ss2si(_mm_set_ss(f));
+    return r * 31 + (uint64_t)_mm_cvttss_si64(_mm_set_ss(f));
+}
+
 typedef uint64_t (*Test)(uint64_t, uint64_t, uint64_t);
 const struct { const char *name; Test fn; } tests[] = {
     {"arith", t_arith}, {"compare", t_compare}, {"misc", t_misc}, {"control", t_control},
-    {"vector", t_vector}, {"float", t_float}, {"string", t_string}, {"memops", t_memops}, {"mxcsr", t_mxcsr},
+    {"vector", t_vector}, {"float", t_float}, {"string", t_string}, {"memops", t_memops}, {"mxcsr", t_mxcsr}, {"convert", t_convert},
 };
 
 static uint64_t rng = 0x123456789abcdef1ull;

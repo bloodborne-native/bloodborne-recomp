@@ -1085,13 +1085,16 @@ static int vector(Tx *t, const BbInsn *in, int flags_live) {
         const int sf = dst->size == 8;
         if (!vload(t, in, &in->op[1], dbl ? 8 : 4, 0, 0)) return 0;
         a64_fcvtzs(a, sf, dbl, T0, 0);
-        /* x86 "integer indefinite" (the most negative value) for NaN and out of range. */
+        /* x86 "integer indefinite" (the most negative value) for NaN and out of range: below the
+         * range fcvtzs saturates to it; at or above 2^31 (2^63) and NaN, fcmp sets C. The
+         * saturated maximum itself is a valid result (a double in [2^31 - 1, 2^31)). */
+        static const uint64_t limit[2][2] = {{0x4f000000, 0x5f000000},
+                                             {UINT64_C(0x41e0000000000000), UINT64_C(0x43e0000000000000)}};
         if (sf) a64_movz(a, 1, T1, 0x8000, 48); else a64_movz(a, 0, T1, 0x8000, 16);
-        a64_fcmp(a, dbl, 0, 0);
-        a64_csel(a, sf, T0, T1, T0, CC_VS);
-        a64_sub_imm(a, sf, T2, T1, 1, 0);         /* the most positive value */
-        a64_subs(a, sf, XZR, T0, T2);
-        a64_csel(a, sf, T0, T1, T0, CC_EQ);
+        a64_mov_imm(a, T2, limit[dbl][sf]);
+        a64_fmov_from_gpr(a, dbl, 1, T2);
+        a64_fcmp(a, dbl, 0, 1);
+        a64_csel(a, sf, T0, T1, T0, CC_HS);
         write_op(t, in, dst, dst->size, T0);
         return 1;
     }
