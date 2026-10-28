@@ -61,7 +61,7 @@ The recompiled code is produced on the player's machine from their copy, and sta
 | CPU time recompiled, against the translator | `█████████████████░░░` 86% | 344% of one core against 402% (1st Floor Sickroom), 360% against 397% (Cathedral Ward, 2026-10-27) |
 | Functions checked call by call (recordings) | `░░░░░░░░░░░░░░░░░░░░` 0.4% | 933 of 241,821 |
 | Functions labelled by library (2026-10-24) | `█████████████░░░░░░░` 62.7% | 151,562 of 241,821 |
-| Functions named (R4, 2026-10-28) | `░░░░░░░░░░░░░░░░░░░░` 0.04% | 102 of 241,821 (libGnm's command buffer methods, the engine's draw boundary) |
+| Functions named (R4, 2026-10-28) | `░░░░░░░░░░░░░░░░░░░░` 0.04% | 103 of 241,821 (libGnm's command buffer methods, the engine's draw boundary) |
 
 Every function is generated; the ones left to the translator are the 660 import stubs, the 130
 functions that call `setjmp`, and 53 that the game's patches (51) or the runtime's live switches
@@ -252,7 +252,8 @@ R4 gives the game's functions names, signatures and the layouts of the objects t
 render functions of the engine first: the native renderer's N6 takes the engine's draws at that
 boundary instead of decoding the PS4's command buffers.
 
-`annotations/functions.tsv` holds one row per named function: its offset in the 1.09
+`annotations/structs.h` describes the objects those functions use, as far as they are known (C, with
+the offsets checked by `_Static_assert`). `annotations/functions.tsv` holds one row per named function: its offset in the 1.09
 executable, the project's name for it (`Namespace::Class::method`, `#variant` for a second copy
 of one method), `sure` or `guess`, the evidence, and the signature in the project's types (the
 arguments in register order). `Gnm::` is Sony's libGnm, linked into the game; `CG::` is
@@ -269,12 +270,12 @@ call of it, `?` after a guess. The names change comments only: the full library'
 spaces removed, is the same with and without them. `build_library.py` generates the C again when
 the file changes.
 
-So far, 102 functions: libGnm's command buffer methods (81) and the engine's render boundary
+So far, 103 functions: libGnm's command buffer methods (82) and the engine's render boundary
 (21).
 
 **The render boundary.** Every draw of CoreGraphics2 goes through seven methods of its graphics
 context: `draw`, `drawInstanced`, `drawIndexed`, `drawIndexedInstanced`, `drawIndirect`,
-`drawIndexedIndirect` and `dispatch`. Each takes a draw (or compute) description and:
+`drawIndexedIndirect` and `dispatch`. Each takes the draw's whole state (`CgDrawState`, below) and:
 
 1. applies three state blocks from it, each sending libGnm only what changed since the last
    draw: input assembly (topology, index buffer and format), output merger (blend for eight
@@ -294,7 +295,16 @@ context and resource binder: `CG::GraphicsContext::dispatch` itself did not run)
 Scaleform's renderer and one small wrapper outside CoreGraphics2. The breakdown is in
 bloodborne-runtime's NATIVE_RENDERER.md.
 
-Next: the shader resources step, the compute passes, and the description's layout (R4.3).
+**The draw state** (`annotations/structs.h`, R4.3): one object carries everything a draw sets,
+at least 0x1978 bytes. Known so far: the topology, the index buffer, format and offset; the
+rasterizer state, 16 viewports and 16 scissors; the blend and depth-stencil states; the eight
+colour targets and the depth target; the blend colour, depth bounds and stencil reference. The
+state objects it points to hold libGnm's register values. When a colour or depth target changes,
+the output merger first resolves the old one's fast clear or decompresses it: most of the
+render-target passes come from there.
+
+Next: the shader resources step (the shader stages, their constant buffers, buffers, textures
+and samplers in the draw state), and the compute passes.
 
 ## Record and replay
 

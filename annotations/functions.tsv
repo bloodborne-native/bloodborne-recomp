@@ -9,6 +9,7 @@
 # gpu/shim/bbport_gnm_table.inc), calls (the functions it calls and how its arguments reach them),
 # source (a source path in its messages names the class).
 # Signature: the arguments in register order, in the project's types (empty: not worked out yet).
+# Types named CG:: are described in annotations/structs.h (CG::DrawState: CgDrawState).
 0x1072ed0	Gnm::DrawCommandBuffer::setScratchSize	sure	pm4
 0x1072fd0	Gnm::DrawCommandBuffer::setRenderTargetMask	sure	pm4
 0x1073030	Gnm::DrawCommandBuffer::setAlphaToMaskControl	sure	pm4
@@ -26,7 +27,7 @@
 0x1073650	Gnm::DrawCommandBuffer::setHardwareScreenOffset	sure	pm4
 0x10736d0	Gnm::DrawCommandBuffer::setGuardBandClip	guess	pm4
 0x1073750	Gnm::DrawCommandBuffer::setGuardBandDiscard	guess	pm4
-0x1073840	Gnm::DrawCommandBuffer::setViewportScissor	guess	pm4
+0x1073840	Gnm::DrawCommandBuffer::setRenderTargetClearColor	guess	pm4
 0x10738b0	Gnm::DrawCommandBuffer::setRenderTarget	sure	pm4
 0x10739b0	Gnm::DrawCommandBuffer::setDepthRenderTarget	sure	pm4
 0x1073e60	Gnm::DrawCommandBuffer::dmaData	sure	pm4
@@ -57,6 +58,7 @@
 0x1076390	Gnm::DrawCommandBuffer::setPointerInUserData	sure	pm4
 0x1076560	Gnm::DrawCommandBuffer::setVertexQuantization	sure	pm4
 0x10765e0	Gnm::DrawCommandBuffer::setViewport	sure	pm4
+0x10766d0	Gnm::DrawCommandBuffer::setViewportScissor	sure	pm4	void (Gnm::DrawCommandBuffer *, uint32_t viewport, int32_t left, int32_t top, int32_t right, int32_t bottom, uint32_t window_offset_disable)
 0x1076790	Gnm::DrawCommandBuffer::setScreenScissor	sure	pm4
 0x1076980	Gnm::DrawCommandBuffer::setViewportTransformControl	sure	pm4
 0x10769e0	Gnm::DrawCommandBuffer::setDbRenderControl	sure	pm4
@@ -90,24 +92,24 @@
 0x11fd230	Gnm::ConstantCommandBuffer::waitOnDeCounterDiff	sure	pm4
 0x11fd280	Gnm::ConstantCommandBuffer::writeToCpRam	guess	pm4
 0x11fd320	Gnm::ConstantCommandBuffer::cpRamDump	guess	pm4
-0x21695c0	CG::GraphicsContext::dispatch	sure	calls	void (CG::GraphicsContext *, const CG::ComputeDescription *, uint32_t x, uint32_t y, uint32_t z)
-0x21696c0	CG::GraphicsContext::draw	sure	calls	void (CG::GraphicsContext *, const CG::DrawDescription *, uint32_t vertex_count, uint32_t base_vertex)
-0x2169780	CG::GraphicsContext::drawIndexed	sure	calls	void (CG::GraphicsContext *, const CG::DrawDescription *, uint32_t index_count, uint32_t first_index, uint32_t base_vertex)
-0x2169840	CG::GraphicsContext::drawInstanced	sure	calls	void (CG::GraphicsContext *, const CG::DrawDescription *, uint32_t vertex_count, uint32_t instances, uint32_t base_vertex)
-0x2169900	CG::GraphicsContext::drawIndexedInstanced	sure	calls	void (CG::GraphicsContext *, const CG::DrawDescription *, uint32_t index_count, uint32_t instances, uint32_t first_index, uint32_t base_vertex)
-0x21699d0	CG::GraphicsContext::drawIndirect	sure	calls	void (CG::GraphicsContext *, const CG::DrawDescription *, const CG::Buffer *arguments, uint32_t offset)
-0x2169ab0	CG::GraphicsContext::drawIndexedIndirect	sure	calls	void (CG::GraphicsContext *, const CG::DrawDescription *, const CG::Buffer *arguments, uint32_t offset)
+0x21695c0	CG::GraphicsContext::dispatch	sure	calls	void (CG::GraphicsContext *, const CG::ComputeState *, uint32_t x, uint32_t y, uint32_t z)
+0x21696c0	CG::GraphicsContext::draw	sure	calls	void (CG::GraphicsContext *, const CG::DrawState *, uint32_t vertex_count, uint32_t base_vertex)
+0x2169780	CG::GraphicsContext::drawIndexed	sure	calls	void (CG::GraphicsContext *, const CG::DrawState *, uint32_t index_count, uint32_t first_index, uint32_t base_vertex)
+0x2169840	CG::GraphicsContext::drawInstanced	sure	calls	void (CG::GraphicsContext *, const CG::DrawState *, uint32_t vertex_count, uint32_t instances, uint32_t base_vertex)
+0x2169900	CG::GraphicsContext::drawIndexedInstanced	sure	calls	void (CG::GraphicsContext *, const CG::DrawState *, uint32_t index_count, uint32_t instances, uint32_t first_index, uint32_t base_vertex)
+0x21699d0	CG::GraphicsContext::drawIndirect	sure	calls	void (CG::GraphicsContext *, const CG::DrawState *, const CG::Buffer *arguments, uint32_t offset)
+0x2169ab0	CG::GraphicsContext::drawIndexedIndirect	sure	calls	void (CG::GraphicsContext *, const CG::DrawState *, const CG::Buffer *arguments, uint32_t offset)
 0x26b55a0	CG::SurfaceOps::resolve	sure	calls
 0x26b5a70	CG::SurfaceOps::eliminateFastClear	sure	calls
 0x26b5f50	CG::SurfaceOps::clearDepthStencil	guess	calls
 0x26b6810	CG::SurfaceOps::decompressDepth	sure	calls
 0x26b9850	CG::ResourceSyncContext::synchronize	guess	source	void (CG::ResourceSyncContext *, Gnm::DrawCommandBuffer *)
-0x26bba30	CG::InputAssemblyState::apply	sure	calls	void (CG::InputAssemblyState *, CG::GraphicsContext *, const CG::DrawDescription *, bool indexed)
-0x26bc2e0	CG::ResourceBinder::beforeDraw	guess	calls	void (CG::ResourceBinder *, CG::GraphicsContext *, const CG::DrawDescription *)
-0x26bc320	CG::ResourceBinder::commitGraphics	guess	calls	void (CG::ResourceBinder *, CG::GraphicsContext *, const CG::DrawDescription *)
+0x26bba30	CG::InputAssemblyState::apply	sure	calls	void (CG::InputAssemblyState *, CG::GraphicsContext *, const CG::DrawState *, bool indexed)
+0x26bc2e0	CG::ResourceBinder::beforeDraw	guess	calls	void (CG::ResourceBinder *, CG::GraphicsContext *, const CG::DrawState *)
+0x26bc320	CG::ResourceBinder::commitGraphics	guess	calls	void (CG::ResourceBinder *, CG::GraphicsContext *, const CG::DrawState *)
 0x26cbd50	CG::ResourceBinder::afterDraw	guess	calls	void (CG::ResourceBinder *, CG::GraphicsContext *)
-0x26cbe50	CG::ResourceBinder::beforeDispatch	guess	calls	void (CG::ResourceBinder *, CG::GraphicsContext *, const CG::ComputeDescription *)
-0x26cbe90	CG::ResourceBinder::commitCompute	guess	calls	void (CG::ResourceBinder *, CG::GraphicsContext *, const CG::ComputeDescription *)
-0x26ccf20	CG::ResourceBinder::afterDispatch	guess	calls	void (CG::ResourceBinder *, CG::GraphicsContext *, const CG::ComputeDescription *)
-0x26d2230	CG::OutputMergerState::apply	sure	calls	void (CG::OutputMergerState *, CG::GraphicsContext *, const CG::DrawDescription *)
-0x26d3370	CG::RasterizerState::apply	sure	calls	void (CG::RasterizerState *, CG::GraphicsContext *, const CG::DrawDescription *)
+0x26cbe50	CG::ResourceBinder::beforeDispatch	guess	calls	void (CG::ResourceBinder *, CG::GraphicsContext *, const CG::ComputeState *)
+0x26cbe90	CG::ResourceBinder::commitCompute	guess	calls	void (CG::ResourceBinder *, CG::GraphicsContext *, const CG::ComputeState *)
+0x26ccf20	CG::ResourceBinder::afterDispatch	guess	calls	void (CG::ResourceBinder *, CG::GraphicsContext *, const CG::ComputeState *)
+0x26d2230	CG::OutputMergerState::apply	sure	calls	void (CG::OutputMergerState *, CG::GraphicsContext *, const CG::DrawState *)
+0x26d3370	CG::RasterizerState::apply	sure	calls	void (CG::RasterizerState *, CG::GraphicsContext *, const CG::DrawState *)
