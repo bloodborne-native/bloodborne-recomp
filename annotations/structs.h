@@ -6,13 +6,14 @@
 #include <stddef.h>
 #include <stdint.h>
 
-/* The index buffer a draw state names (read by CG::InputAssemblyState::apply). */
-typedef struct CgIndexBuffer {
+/* A GPU buffer a draw state names as its index buffer or a vertex buffer (read by
+ * CG::InputAssemblyState::apply). */
+typedef struct CgBuffer {
     uint8_t unknown_00[0x20];
     uint64_t address;  /* 0x20: the GPU address, unless `managed` */
     uint8_t unknown_28[0x18];
     uint8_t managed;   /* 0x40: the address comes from the context's buffer manager instead */
-} CgIndexBuffer;
+} CgBuffer;
 
 /* Blend (CG::OutputMergerState::apply); a draw state with none uses the engine's defaults. */
 typedef struct CgBlendState {
@@ -83,15 +84,22 @@ typedef struct CgShaderStage {
 } CgShaderStage;
 
 /* What every draw method of CG::GraphicsContext takes after the context: the whole state of a
- * draw, at least 0x2360 bytes. */
+ * draw, at least 0x2360 bytes, modelled on Direct3D 11 (its stages, slot counts and DXGI formats).
+ * The graphics context holds one of its own at +0xb730 (its immediate draws fill it). */
 typedef struct CgDrawState {
     uint8_t unknown_000[0x8];
-    uint32_t topology;                   /* 0x008: the engine's own primitive type, converted for libGnm */
+    uint32_t topology;                   /* 0x008: Direct3D 11's order without its gaps: 0 none, 1-5 point
+                                            list to triangle strip, 6-9 the adjacency lists, 10-41
+                                            patch lists of 1-32 control points */
     uint8_t unknown_00c[0x4];
-    const CgIndexBuffer *index_buffer;   /* 0x010 */
-    uint32_t index_format;               /* 0x018: 0x2a for 32-bit indices, else 16-bit */
+    const CgBuffer *index_buffer;        /* 0x010 */
+    uint32_t index_format;               /* 0x018: DXGI: 0x2a (R32_UINT) or 0x39 (R16_UINT) */
     uint32_t index_offset;               /* 0x01c: bytes, added to the index buffer's address */
-    uint8_t unknown_020[0x220];
+    const CgBuffer *vertex_buffers[32];  /* 0x020: 32 slots by the space they take and Direct3D 11's
+                                            count (slot 0 seen written) */
+    uint32_t vertex_strides[32];         /* 0x120: bytes */
+    uint32_t vertex_offsets[32];         /* 0x1a0: bytes */
+    uint8_t unknown_220[0x20];
     const CgRasterizerState *rasterizer; /* 0x240: NULL for the defaults */
     CgViewport viewports[16];            /* 0x248 */
     CgScissor scissors[16];              /* 0x3c8 */
@@ -110,13 +118,16 @@ typedef struct CgDrawState {
 } CgDrawState;
 
 #define CG_AT(type, field, offset) _Static_assert(offsetof(type, field) == (offset), #type "." #field)
-CG_AT(CgIndexBuffer, address, 0x20);
-CG_AT(CgIndexBuffer, managed, 0x40);
+CG_AT(CgBuffer, address, 0x20);
+CG_AT(CgBuffer, managed, 0x40);
 CG_AT(CgBlendState, alpha_to_mask, 0x24);
 CG_AT(CgRasterizerState, scan_mode, 0x14);
 CG_AT(CgDrawState, topology, 0x008);
 CG_AT(CgDrawState, index_buffer, 0x010);
 CG_AT(CgDrawState, index_offset, 0x01c);
+CG_AT(CgDrawState, vertex_buffers, 0x020);
+CG_AT(CgDrawState, vertex_strides, 0x120);
+CG_AT(CgDrawState, vertex_offsets, 0x1a0);
 CG_AT(CgDrawState, rasterizer, 0x240);
 CG_AT(CgDrawState, viewports, 0x248);
 CG_AT(CgDrawState, scissors, 0x3c8);

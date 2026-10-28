@@ -61,7 +61,7 @@ The recompiled code is produced on the player's machine from their copy, and sta
 | CPU time recompiled, against the translator | `█████████████████░░░` 86% | 344% of one core against 402% (1st Floor Sickroom), 360% against 397% (Cathedral Ward, 2026-10-27) |
 | Functions checked call by call (recordings) | `░░░░░░░░░░░░░░░░░░░░` 0.4% | 933 of 241,821 |
 | Functions labelled by library (2026-10-24) | `█████████████░░░░░░░` 62.7% | 151,562 of 241,821 |
-| Functions named (R4, 2026-10-28) | `░░░░░░░░░░░░░░░░░░░░` 0.04% | 104 of 241,821 (libGnm's command buffer methods, the engine's draw boundary) |
+| Functions named (R4, 2026-10-28) | `░░░░░░░░░░░░░░░░░░░░` 0.04% | 108 of 241,821 (libGnm's command buffer methods, the engine's draw boundary) |
 
 Every function is generated; the ones left to the translator are the 660 import stubs, the 130
 functions that call `setjmp`, and 53 that the game's patches (51) or the runtime's live switches
@@ -270,8 +270,8 @@ call of it, `?` after a guess. The names change comments only: the full library'
 spaces removed, is the same with and without them. `build_library.py` generates the C again when
 the file changes.
 
-So far, 104 functions: libGnm's command buffer methods (83) and the engine's render boundary
-(21).
+So far, 108 functions: libGnm's command buffer methods (83) and the engine's render boundary
+(25).
 
 **The render boundary.** Every draw of CoreGraphics2 goes through seven methods of its graphics
 context: `draw`, `drawInstanced`, `drawIndexed`, `drawIndexedInstanced`, `drawIndirect`,
@@ -296,7 +296,9 @@ Scaleform's renderer and one small wrapper outside CoreGraphics2. The breakdown 
 bloodborne-runtime's NATIVE_RENDERER.md.
 
 **The draw state** (`annotations/structs.h`, R4.3): one object carries everything a draw sets,
-at least 0x1978 bytes. Known so far: the topology, the index buffer, format and offset; the
+at least 0x2360 bytes, modelled on Direct3D 11: its stages and slot counts, DXGI index formats,
+and a topology in Direct3D 11's order without its gaps. Known so far: the topology, the index
+buffer, format and offset; 32 vertex buffers with their strides and offsets; the
 rasterizer state, 16 viewports and 16 scissors; the blend and depth-stencil states; the eight
 colour targets and the depth target; the blend colour, depth bounds and stencil reference; six
 shader stages of 0x4f8 bytes from 0x590, in Direct3D 11's order (vertex, hull, domain, geometry,
@@ -313,7 +315,12 @@ A stage's shader object holds the code's GPU address (+0x108) and the PS4 shader
 (+0x100, the code's size in its first word): the same code the runtime's shader recompiler reads
 from the command buffers, so N2's shaders ahead of time can key on it at the boundary.
 
-Next: the vertex buffers, and the compute passes.
+The graphics context holds a draw state of its own (+0xb730), which its immediate draws fill:
+vertices (and indices) copied into GPU memory from an upload ring, as Direct3D 9's
+`DrawPrimitiveUP` did.
+
+Next: who fills the draw states of the world's draws (the meshes and materials above the
+boundary), and the compute passes.
 
 ## Record and replay
 

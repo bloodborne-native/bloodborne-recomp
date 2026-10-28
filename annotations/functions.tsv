@@ -100,10 +100,13 @@
 0x2169900	CG::GraphicsContext::drawIndexedInstanced	sure	calls	void (CG::GraphicsContext *, const CG::DrawState *, uint32_t index_count, uint32_t instances, uint32_t first_index, uint32_t base_vertex)
 0x21699d0	CG::GraphicsContext::drawIndirect	sure	calls	void (CG::GraphicsContext *, const CG::DrawState *, const CG::Buffer *arguments, uint32_t offset)
 0x2169ab0	CG::GraphicsContext::drawIndexedIndirect	sure	calls	void (CG::GraphicsContext *, const CG::DrawState *, const CG::Buffer *arguments, uint32_t offset)
+0x2190be0	CG::ImmediateDraw::drawUserPrimitives	sure	calls	void (CG::ImmediateDraw *, uint32_t topology, uint32_t vertex_count, const void *vertices, uint32_t stride)
+0x2190d30	CG::ImmediateDraw::drawIndexedUserPrimitives	sure	calls	void (CG::ImmediateDraw *, uint32_t topology, uint32_t min_index, uint32_t max_index, uint32_t index_count, const void *indices, uint32_t index_format, const void *vertices, uint32_t stride)
 0x26b55a0	CG::SurfaceOps::resolve	sure	calls
 0x26b5a70	CG::SurfaceOps::eliminateFastClear	sure	calls
 0x26b5f50	CG::SurfaceOps::clearDepthStencil	guess	calls
 0x26b6810	CG::SurfaceOps::decompressDepth	sure	calls
+0x26b7b60	CG::toGnmPrimitiveType	sure	calls	uint32_t (uint32_t topology)
 0x26b9850	CG::ResourceSyncContext::synchronize	guess	source	void (CG::ResourceSyncContext *, Gnm::DrawCommandBuffer *)
 0x26bba30	CG::InputAssemblyState::apply	sure	calls	void (CG::InputAssemblyState *, CG::GraphicsContext *, const CG::DrawState *, bool indexed)
 0x26bc2e0	CG::ResourceBinder::beforeDraw	guess	calls	void (CG::ResourceBinder *, CG::GraphicsContext *, const CG::DrawState *)
@@ -114,3 +117,4 @@
 0x26ccf20	CG::ResourceBinder::afterDispatch	guess	calls	void (CG::ResourceBinder *, CG::GraphicsContext *, const CG::ComputeState *)
 0x26d2230	CG::OutputMergerState::apply	sure	calls	void (CG::OutputMergerState *, CG::GraphicsContext *, const CG::DrawState *)
 0x26d3370	CG::RasterizerState::apply	sure	calls	void (CG::RasterizerState *, CG::GraphicsContext *, const CG::DrawState *)
+0x26db1b0	CG::UploadRing::allocate	guess	calls	int (CG::UploadRing *, void **memory, CG::GraphicsContext *, uint32_t size)
