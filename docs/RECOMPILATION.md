@@ -287,8 +287,14 @@ Render-target operations draw full-screen passes of their own: MSAA resolve, fas
 elimination, depth decompression and depth-stencil clears. Outside CoreGraphics2, Scaleform and
 a library reached through a vtable (labelled Havok) call libGnm's draws themselves.
 
-Next: the callers of the seven methods, the shader resources step, how much of a frame goes
-through the boundary (counted in the game), and the description's layout (R4.3).
+Counted in the game (bloodborne-runtime's `BB_DRAW_CENSUS=1`, 2026-10-28, a level at about 1,880
+libGnm draws a frame): 85% of the draws go through the seven methods, 2% through the render-target
+passes, 7% are CoreGraphics2's compute passes (nearly every compute dispatch, on the same
+context and resource binder: `CG::GraphicsContext::dispatch` itself did not run), and 6% are
+Scaleform's renderer and one small wrapper outside CoreGraphics2. The breakdown is in
+bloodborne-runtime's NATIVE_RENDERER.md.
+
+Next: the shader resources step, the compute passes, and the description's layout (R4.3).
 
 ## Record and replay
 
