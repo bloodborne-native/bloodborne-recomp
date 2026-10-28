@@ -103,6 +103,7 @@
 0x2169ab0	CG::GraphicsContext::drawIndexedIndirect	sure	calls	void (CG::GraphicsContext *, const CG::DrawState *, const CG::Buffer *arguments, uint32_t offset)
 0x2190be0	CG::ImmediateDraw::drawUserPrimitives	sure	calls	void (CG::ImmediateDraw *, uint32_t topology, uint32_t vertex_count, const void *vertices, uint32_t stride)
 0x2190d30	CG::ImmediateDraw::drawIndexedUserPrimitives	sure	calls	void (CG::ImmediateDraw *, uint32_t topology, uint32_t min_index, uint32_t max_index, uint32_t index_count, const void *indices, uint32_t index_format, const void *vertices, uint32_t stride)
+0x21d0640	CG::MeshRenderer::drawMesh	sure	calls	void (const void *model, void *pass, const CG::Mesh *mesh, const void *, const void *, uint32_t instances)
 0x2382eb0	FD4::TextRenderer::drawString	guess	calls
 0x26b55a0	CG::SurfaceOps::resolve	sure	calls
 0x26b5a70	CG::SurfaceOps::eliminateFastClear	sure	calls

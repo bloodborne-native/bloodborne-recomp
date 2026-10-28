@@ -61,7 +61,7 @@ The recompiled code is produced on the player's machine from their copy, and sta
 | CPU time recompiled, against the translator | `█████████████████░░░` 86% | 344% of one core against 402% (1st Floor Sickroom), 360% against 397% (Cathedral Ward, 2026-10-27) |
 | Functions checked call by call (recordings) | `░░░░░░░░░░░░░░░░░░░░` 0.4% | 933 of 241,821 |
 | Functions labelled by library (2026-10-24) | `█████████████░░░░░░░` 62.7% | 151,562 of 241,821 |
-| Functions named (R4, 2026-10-28) | `░░░░░░░░░░░░░░░░░░░░` 0.05% | 109 of 241,821 (libGnm's command buffer methods, the engine's draw boundary) |
+| Functions named (R4, 2026-10-28) | `░░░░░░░░░░░░░░░░░░░░` 0.05% | 110 of 241,821 (libGnm's command buffer methods, the engine's draw boundary) |
 
 Every function is generated; the ones left to the translator are the 660 import stubs, the 130
 functions that call `setjmp`, and 53 that the game's patches (51) or the runtime's live switches
@@ -270,8 +270,8 @@ call of it, `?` after a guess. The names change comments only: the full library'
 spaces removed, is the same with and without them. `build_library.py` generates the C again when
 the file changes.
 
-So far, 109 functions: libGnm's command buffer methods (83) and the engine's render boundary
-and what is above it (26).
+So far, 110 functions: libGnm's command buffer methods (83) and the engine's render boundary
+and what is above it (27).
 
 **The render boundary.** Every draw of CoreGraphics2 goes through seven methods of its graphics
 context: `draw`, `drawInstanced`, `drawIndexed`, `drawIndexedInstanced`, `drawIndirect`,
@@ -320,8 +320,17 @@ The graphics context holds a draw state of its own (+0xb730), which its immediat
 vertices (and indices) copied into GPU memory from an upload ring, as Direct3D 9's
 `DrawPrimitiveUP` did.
 
-Next: who fills the draw states of the world's draws (the meshes and materials above the
-boundary), and the compute passes.
+**Meshes.** Counted in the game (`BB_DRAW_CENSUS=1` tallies who calls the seven methods; of the
+calls at the 16 busiest call sites), 65% come from one function, `CG::MeshRenderer::drawMesh`: for each face set of a mesh (an
+index range with its topology, index format and culling mode) it fills the draw state with the
+mesh's vertex buffers (stride, offset, base vertex), the input layout for the pass, the
+rasterizer state for the culling mode, depth-stencil state and stencil reference, then draws it
+indexed, or instanced for more than one instance. With tessellation on, the topology becomes
+patches of 3 control points. Before drawing it hands the pass object the skeleton's matrices of
+this frame and the last. `structs.h` has the face set, the model's vertex buffer and the mesh.
+
+Next: the materials (the shaders and textures a pass sets before `drawMesh`), the next callers
+(0x22bc720 18%, 0x28f8a30 7.5%, 0x22bdb00 5.9%), and the compute passes.
 
 ## Record and replay
 

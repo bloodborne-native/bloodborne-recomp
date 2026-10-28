@@ -87,7 +87,8 @@ typedef struct CgShaderStage {
  * draw (0x1e70 bytes), modelled on Direct3D 11 (its stages, slot counts and DXGI formats).
  * The graphics context holds one of its own at +0xb730 (its immediate draws fill it). */
 typedef struct CgDrawState {
-    uint8_t unknown_000[0x8];
+    const void *input_layout;            /* 0x000: the vertex layout (meshes ask their own provider
+                                            for the pass's) */
     uint32_t topology;                   /* 0x008: Direct3D 11's order without its gaps: 0 none, 1-5 point
                                             list to triangle strip, 6-9 the adjacency lists, 10-41
                                             patch lists of 1-32 control points */
@@ -117,12 +118,52 @@ typedef struct CgDrawState {
     CgShaderStage stages[5];             /* 0x598: by CgStage */
 } CgDrawState;
 
+/* A model's index range drawn with one state (read by CG::MeshRenderer::drawMesh). */
+typedef struct CgFaceSet {
+    uint32_t flags;          /* 0x00: bits 24-27 select the pass the face set draws in; the sign
+                                bit is tested against the pass's flags */
+    uint32_t topology;       /* 0x04: as CgDrawState.topology */
+    uint32_t index_format;   /* 0x08: as CgDrawState.index_format */
+    uint32_t cull_mode;      /* 0x0c: picks the rasterizer state from the engine's table */
+    uint32_t index_count;    /* 0x10 */
+    uint32_t first_index;    /* 0x14: added to the index buffer's own first index */
+    const void *index_buffer; /* 0x18: its CgBuffer at +0x10, its first index at +0x08 */
+} CgFaceSet;
+
+/* A model's vertex buffer (0x90 bytes). */
+typedef struct CgModelVertexBuffer {
+    uint8_t unknown_00[0x68];
+    uint32_t stride;         /* 0x68: bytes */
+    uint32_t base_vertex;    /* 0x6c: one for all of a mesh's buffers is passed to the draw;
+                                otherwise it is folded into each buffer's offset */
+    const CgBuffer *buffer;  /* 0x70 */
+    uint32_t offset;         /* 0x78: bytes */
+    uint8_t unknown_7c[0x14];
+} CgModelVertexBuffer;
+
+/* A model's mesh: which of the model's face sets and vertex buffers it draws. */
+typedef struct CgMesh {
+    uint8_t unknown_00[0x28];
+    uint16_t face_set_count;      /* 0x28 */
+    uint16_t vertex_buffer_count; /* 0x2a: into CgDrawState.vertex_buffers from slot 0 */
+    uint8_t unknown_2c[0x4];
+    const int32_t *face_sets;     /* 0x30: indices into the model's face sets (0x20 bytes each) */
+    const int32_t *vertex_buffers; /* 0x38: indices into the model's vertex buffers (0x90 bytes each) */
+    const void *input_layouts;    /* 0x40: an object whose virtual method (+0x10) gives the input
+                                     layout for a pass */
+} CgMesh;
+
 #define CG_AT(type, field, offset) _Static_assert(offsetof(type, field) == (offset), #type "." #field)
 CG_AT(CgBuffer, address, 0x20);
 CG_AT(CgBuffer, managed, 0x40);
 CG_AT(CgBlendState, alpha_to_mask, 0x24);
 CG_AT(CgRasterizerState, scan_mode, 0x14);
 CG_AT(CgDrawState, topology, 0x008);
+CG_AT(CgFaceSet, index_buffer, 0x18);
+_Static_assert(sizeof(CgFaceSet) == 0x20, "CgFaceSet");
+CG_AT(CgModelVertexBuffer, offset, 0x78);
+_Static_assert(sizeof(CgModelVertexBuffer) == 0x90, "CgModelVertexBuffer");
+CG_AT(CgMesh, input_layouts, 0x40);
 CG_AT(CgDrawState, index_buffer, 0x010);
 CG_AT(CgDrawState, index_offset, 0x01c);
 CG_AT(CgDrawState, vertex_buffers, 0x020);
