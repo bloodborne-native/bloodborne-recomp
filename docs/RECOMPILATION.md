@@ -46,7 +46,7 @@ The recompiled code is produced on the player's machine from their copy, and sta
 | R1 | Recompiler prototype: generated C for the recorded functions, checked by replay | Done |
 | R2 | Coverage: every function generated; the game runs recompiled, the translator as fallback | Done |
 | R3 | Speed: integer, flags and vector instructions in C; memory ordering relaxed where safe | Done: 99.1% of instructions in C; the library takes 14% less CPU time than the translator at the same frame rate |
-| R4 | Annotations: names, signatures and structs make the generated C readable; the engine's render functions first, for the native renderer's N6 | 60% `████████████░░░░░░░░` (by its steps, below): 156 functions named and the engine's draw state, shaders, models, meshes, materials and shader programs described (`annotations/`); the draw paths counted in the game (mesh draw, deferred lighting, upload-ring draw); next: R4.4 (synchronization primitives) and R4.5 (the hottest signatures) |
+| R4 | Annotations: names, signatures and structs make the generated C readable; the engine's render functions first, for the native renderer's N6 | 80% `████████████████░░░░` (by its steps, below): 184 functions named and the engine's draw state, shaders, models, meshes, materials and shader programs described (`annotations/`); the draw paths counted in the game (mesh draw, deferred lighting, upload-ring draw); the synchronization primitives named and counted; next: R4.5 (the hottest signatures) |
 | R5 | The engine's graphics on each platform's own GPU API: [native renderer](https://github.com/bloodborne-native/bloodborne-runtime/blob/main/docs/NATIVE_RENDERER.md) (bloodborne-runtime) | N1 and N4 done; N5 (Metal backend): the default renderer on macOS, acceptance pending |
 
 ## Progress
@@ -61,8 +61,8 @@ The recompiled code is produced on the player's machine from their copy, and sta
 | CPU time recompiled, against the translator | `█████████████████░░░` 86% | 344% of one core against 402% (1st Floor Sickroom), 360% against 397% (Cathedral Ward, 2026-10-27) |
 | Functions checked call by call (recordings) | `░░░░░░░░░░░░░░░░░░░░` 0.4% | 933 of 241,821 |
 | Functions labelled by library (2026-10-24) | `█████████████░░░░░░░` 62.7% | 151,562 of 241,821 |
-| R4 (annotations), by its steps | `████████████░░░░░░░░` 60% | R4.1, R4.2 and R4.3 done, R4.4 and R4.5 not started |
-| Functions named (R4, 2026-10-28) | `░░░░░░░░░░░░░░░░░░░░` 0.05% | 156 of 241,821 (libGnm's command buffer methods; the engine's draw methods, state setters, mesh, model, material and lighting code) |
+| R4 (annotations), by its steps | `████████████████░░░░` 80% | R4.1 to R4.4 done, R4.5 not started |
+| Functions named (R4, 2026-10-28) | `░░░░░░░░░░░░░░░░░░░░` 0.05% | 184 of 241,821 (libGnm's command buffer methods; the engine's draw methods, state setters, mesh, model, material and lighting code; the synchronization primitives) |
 
 Every function is generated; the ones left to the translator are the 660 import stubs, the 130
 functions that call `setjmp`, and 53 that the game's patches (51) or the runtime's live switches
@@ -254,14 +254,14 @@ render functions of the engine first: the native renderer's N6 takes the engine'
 boundary instead of decoding the PS4's command buffers.
 
 **Progress.** Each bar has 20 blocks, one per 5% of the step's items; R4 as a whole is the mean
-of its steps (60%).
+of its steps (80%).
 
 | Step | Progress | Items |
 |---|---|---|
 | R4.1 · the annotation file | 100% `████████████████████` | the file (`annotations/functions.tsv`); the generator writes its names into the C; the app's kit carries it |
 | R4.2 · the render boundary | 100% `████████████████████` | done: CoreGraphics2's draw and dispatch methods, the state blocks they apply, the resource binder's steps, the render-target passes, the counts in the game, the compute passes |
 | R4.3 · the objects above it | 100% `████████████████████` | done: the draw state, the shader stages and their resources, the shader object, models and meshes, materials and shader programs, the materials' textures and constants, deferred lighting, the upload-ring draw's callers |
-| R4.4 · synchronization primitives | 0% `░░░░░░░░░░░░░░░░░░░░` | the engine's locks and atomics named (for the generator's memory ordering) |
+| R4.4 · synchronization primitives | 100% `████████████████████` | done: Dantelion2's synchronization classes named, the middleware's locks named, the atomic instructions inventoried, the locks counted in the game |
 | R4.5 · the hottest signatures | 0% `░░░░░░░░░░░░░░░░░░░░` | signatures for the busiest functions |
 
 `annotations/structs.h` describes the objects those functions use, as far as they are known (C, with
@@ -282,8 +282,8 @@ call of it, `?` after a guess. The names change comments only: the full library'
 spaces removed, is the same with and without them. `build_library.py` generates the C again when
 the file changes.
 
-So far, 156 functions: libGnm's command buffer methods (83) and the engine's render boundary
-and what is above it (73).
+So far, 184 functions: libGnm's command buffer methods (83), the engine's render boundary and
+what is above it (73), and the synchronization primitives (28).
 
 **The render boundary.** Every draw of CoreGraphics2 goes through seven methods of its graphics
 context: `draw`, `drawInstanced`, `drawIndexed`, `drawIndexedInstanced`, `drawIndirect`,
@@ -385,7 +385,18 @@ with a compute shader of the engine's and the resource binder's compute steps: b
 or a batch split into 64-dword jobs), buffer fills with a 16-byte pattern, texture clears and
 texture region copies (1D, 2D and 3D shaders).
 
-Next: synchronization primitives (R4.4) and the hottest signatures (R4.5).
+**Synchronization (R4.4).** Dantelion2's synchronization classes are named from their own source
+files: `DLLightMutex`, `PthreadMutex`, `DLReadWriteLock`, `DLSemaphore` and `DLConditionSignal`
+(lock, unlock, wait, signal, create and destroy), and so are the middleware's locks (Havok's
+critical section, FMOD's, Scaleform's mutex). The executable has 12,734 atomic instructions
+(`lock`-prefixed, or `xchg` with memory) in 4,594 functions: the game's code 5,441 in 1,224,
+Havok 4,286 in 1,921, Scaleform 993, FD4 697, Dantelion2 590, FMOD 12. Counted in the game
+(`BB_DRAW_CENSUS=1`, a level, about 35 FPS), `DL::LightMutex::lock` is taken 158,700 times a
+second, the read lock 13,800, condition signals 5,300, semaphore waits 1,800, FMOD's lock 1,400,
+Scaleform's 71, Havok's 35. These are what the generator's memory ordering has to respect when it
+relaxes everything else.
+
+Next: the hottest functions' signatures (R4.5).
 
 ## Record and replay
 

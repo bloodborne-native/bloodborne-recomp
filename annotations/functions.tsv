@@ -5,6 +5,8 @@
 # libGnm (linked into the game); CG:: is Dantelion2's CoreGraphics2, whose own classes use a CG
 # prefix; FD4:: is FromSoftware's engine above it (the libraries of tools/recomp/label.py). FX:: is the visual effects
 # (the project's guess for a family of renderers that write their vertices each frame).
+# DL:: is Dantelion2's core library (its DL-prefixed classes); FMOD::, Scaleform:: and hk:: (Havok) are
+# the middleware the game links.
 # Class names are the project's unless the evidence is "source".
 # Confidence: sure (what the function does is established) or guess.
 # Evidence: pm4 (a libGnm function, from the packets it writes; bloodborne-runtime's
@@ -12,6 +14,12 @@
 # source (a source path in its messages names the class).
 # Signature: the arguments in register order, in the project's types (empty: not worked out yet).
 # Types named CG:: are described in annotations/structs.h (CG::DrawState: CgDrawState).
+0x658d0	Scaleform::Mutex::lock	sure	calls
+0x65930	Scaleform::Mutex::unlock	sure	calls
+0x422270	hk::CriticalSection::enter	sure	calls
+0x422340	hk::CriticalSection::leave	sure	source
+0xd1acd0	FMOD::CriticalSection::enter	sure	calls
+0xd1acf0	FMOD::CriticalSection::leave	sure	calls
 0xe4b060	FD4::ConstantBuffer::setVectors	sure	calls	void (FD4::ConstantBuffer *, uint32_t first_register, uint32_t count, const float (*)[4])
 0xe553b0	FD4::MaterialTextures::bind	guess	calls	bool (FD4::MaterialTextures *, void *pass)
 0xe571d0	FD4::Material::begin	guess	calls	void (FD4::Material *, int32_t technique, void *pass)
@@ -101,6 +109,21 @@
 0x11fd230	Gnm::ConstantCommandBuffer::waitOnDeCounterDiff	sure	pm4
 0x11fd280	Gnm::ConstantCommandBuffer::writeToCpRam	guess	pm4
 0x11fd320	Gnm::ConstantCommandBuffer::cpRamDump	guess	pm4
+0x207e780	DL::ConditionSignal::signal	sure	source
+0x207e8f0	DL::ConditionSignal::reset	guess	source
+0x207ee90	DL::LightMutex::lock	sure	source
+0x207f070	DL::LightMutex::unlock	sure	source
+0x207f1f0	DL::ReadWriteLock::destroy	sure	source
+0x207f250	DL::ReadWriteLock::destroy#2	guess	source
+0x207f2b0	DL::ReadWriteLock::init	sure	source
+0x207f3d0	DL::ReadWriteLock::writeLock	sure	source
+0x207f4a0	DL::ReadWriteLock::tryWriteLock	sure	source
+0x207f540	DL::ReadWriteLock::unlock#3	guess	source
+0x207f5c0	DL::ReadWriteLock::unlock#2	guess	source
+0x207f640	DL::ReadWriteLock::readLock	sure	source
+0x207f710	DL::ReadWriteLock::unlock	sure	source
+0x2084110	DL::PthreadMutex::lock	sure	source
+0x2084290	DL::PthreadMutex::unlock	sure	source
 0x2168a20	CG::GraphicsContext::updateConstantBuffer	guess	calls
 0x2168ca0	CG::GraphicsContext::setTopology	sure	calls	void (CG::GraphicsContext *, CG::DrawState *, uint32_t topology)
 0x2168cb0	CG::GraphicsContext::setIndexBuffer	sure	calls	void (CG::GraphicsContext *, CG::DrawState *, const CG::Buffer *, uint32_t format, uint32_t offset)
@@ -132,6 +155,13 @@
 0x22bdb00	FD4::LightRenderer::drawLightBatches#3	guess	calls
 0x22be4f0	FD4::LightRenderer::drawLightBatches#4	guess	calls
 0x2382eb0	FD4::TextRenderer::drawString	guess	calls
+0x263abe0	DL::Semaphore::destroy#2	guess	source
+0x263ac50	DL::Semaphore::destroy	sure	source
+0x263acc0	DL::Semaphore::create	sure	source
+0x263ae00	DL::Semaphore::wait	sure	source
+0x263af90	DL::Semaphore::tryWait	sure	source
+0x263b050	DL::Semaphore::signal#2	guess	source
+0x263b0d0	DL::Semaphore::signal	sure	source
 0x26b2670	CG::SurfaceOps::copyBuffer	sure	calls
 0x26b2810	CG::SurfaceOps::copyBuffers	sure	calls
 0x26b2f40	CG::SurfaceOps::copyTexture	sure	calls
