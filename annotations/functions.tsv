@@ -3,7 +3,8 @@
 # Sorted by offset, one row per function; no tabs and no "*/".
 # Name: Namespace::Class::method, #variant for a second copy of one method. Gnm:: is Sony's
 # libGnm (linked into the game); CG:: is Dantelion2's CoreGraphics2, whose own classes use a CG
-# prefix; FD4:: is FromSoftware's engine above it (the libraries of tools/recomp/label.py).
+# prefix; FD4:: is FromSoftware's engine above it (the libraries of tools/recomp/label.py). FX:: is the visual effects
+# (the project's guess for a family of renderers that write their vertices each frame).
 # Class names are the project's unless the evidence is "source".
 # Confidence: sure (what the function does is established) or guess.
 # Evidence: pm4 (a libGnm function, from the packets it writes; bloodborne-runtime's
@@ -148,5 +149,14 @@
 0x26d3370	CG::RasterizerState::apply	sure	calls	void (CG::RasterizerState *, CG::GraphicsContext *, const CG::DrawState *)
 0x26db1b0	CG::UploadRing::allocate	guess	calls	int (CG::UploadRing *, void **memory, CG::GraphicsContext *, uint32_t size)
 0x26db300	CG::UploadRing::finish	guess	calls	void (CG::UploadRing *, const CG::Buffer **buffer, uint32_t *offset, CG::GraphicsContext *)
+0x28ec760	FX::PrimitiveRenderer::draw#1	guess	calls
+0x28efc10	FX::PrimitiveRenderer::draw#2	guess	calls
+0x28f05f0	FX::PrimitiveRenderer::draw#3	guess	calls
+0x28f14b0	FX::PrimitiveRenderer::draw#4	guess	calls
+0x28f1dc0	FX::PrimitiveRenderer::draw#5	guess	calls
+0x28f40a0	FX::PrimitiveRenderer::draw#6	guess	calls
+0x28f51c0	FX::PrimitiveRenderer::draw#7	guess	calls
+0x28f83e0	FX::PrimitiveRenderer::draw#8	guess	calls
+0x28f89a0	CG::UploadRing::map	guess	calls
 0x28f8a30	CG::UploadRing::draw	guess	calls	void (CG::GraphicsContext *, CG::UploadRing *, uint32_t primitive, uint32_t index_count, uint32_t vertex_count, uint32_t stride, const int32_t *, const int32_t *)
 0x292f510	CG::ShaderProgram::bind	sure	calls	void (const CG::ShaderProgram *, void *draw_state_builder)
