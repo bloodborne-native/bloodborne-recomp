@@ -75,54 +75,27 @@ C changed are compiled again.
 
 ## Where it stands and what is next
 
-- R2 done: all 241,031 functions generated (99.1% of instructions in C), 240,978 run in the game.
-  Same frame rate and **less CPU time than the translator** since vector registers moved to
-  locals, `rc_call` lost its TLS reads and calls copy only the registers that need it (`ps -o
-  cputime=` over 30 s, 2026-10-25: 344% of one core against 402% at the 1st Floor Sickroom lamp,
-  about 1,283 draws a frame; 357% against 392% at the runtime's test save in Cathedral Ward, one
-  run each). R3 is done (2026-10-25): 99.1% of instructions in C, and the library about 14% under
-  the translator's CPU time at the same frame rate. What took it there: vector registers in locals
-  (the FMOD mixer), `rc_call` as a leaf (4 points at the Sickroom), and copying only the registers
-  that need it around calls (29 points; the generator's register sync: markers filled in from two
-  analyses of the generated text). Tried after that without a measurable gain (local branches,
-  Sickroom, 3 runs each against the translator): a cache at each indirect call site
-  (`r3-call-cache`: 7.8 of 11.4 million calls a second off `rc_call`, the same CPU time, code
-  +5.6%; `rc_call` costs its indirect jump, not the lookup); vector accesses as two 8-byte
-  `ldapr`/`stlr` instead of a barrier (`r3-vec-order`: 348% against 400%, code +4.6%);
-  `ldapur`/`stlur` with their offsets (`-mcpu=apple-m2` and later, not the M1: 341% against 397%,
-  code −3%). A library with no x86 ordering at all (`r3-order-ceiling`, unsafe; relaxed atomics,
-  since plain C accesses hung before the first frame) took 311% against 407%: about 33 points, the
-  ceiling of relaxing ordering. Neither the vector barriers nor the `add`s explain it: it is the
-  ordering of the ordinary accesses itself. What is left, optional: plain accesses to a function's
-  own frame when it never computes an address in its stack (no `lea` from `rsp`/`rbp`, `rsp`
-  copied nowhere but `rbp`), so no other thread can reach that frame; it needs the generator's
-  analysis, a safety case and a long play session (the maintainer's conditions), and the frame
-  rate is bound by rendering. The library runs about 0.5 FPS under the translator at the Sickroom
-  in every round (38.0 against 38.6), unexplained so far. To measure: the Sickroom, alternating
-  with the translator (copies of the Sickroom and Dream saves are in the runtime's
-  `out/r3-saves/`; `SAVE_FROM=DIR` goes in the environment: `tools/test_run.sh` does not read it
-  from its `ENV=VALUE` arguments, and without it copies the player's current save); `BB_PROBE=`
-  runs another build of `bb-probe` (keep the name) for A/B runs without rebuilding. `sample` gets
-  about 2 samples a thread from a library with its debug map: profile a copy made with `strip -S`
-  and `codesign -s - -f`.
-- Data from earlier sessions, in `out/recomp/` of the user's clone (game-derived, never commit):
-  `records_r3/` (50 recorded calls of each of the 60 busiest functions at the Sickroom lamp;
-  2,944 of 3,018 match, the rest also fail with the original), `librecomp_main_a8b96c3.dylib`
-  (the library before vector locals, for A/B runs), `records40/` (40 recorded calls of each of the 933 busiest functions: 911 match, the rest also
-  fail with the original), `hot.txt` (those 933), `ran.txt` (the 49,095 a 3-minute route ran),
-  `all.txt`, `jitmap.txt`. Regenerate `functions.tsv` and the rest with the commands above.
-- R5 (the native renderer) is planned and worked on in bloodborne-runtime
-  (`docs/NATIVE_RENDERER.md`). Its part here: calls of hooked functions (bbcpu guards, natives)
-  from recompiled code must go through the runtime, not directly to the recompiled callee.
-- The library is built from the launcher (done 2026-10-28): `build_library.py` with a downloaded
-  LLVM toolchain and no macOS SDK (`toolchain.sh`; RECOMPILATION.md, "Building the library
-  without Xcode"; not `-ffreestanding`: 32% more code, slower frames).
-- Now (maintainer, 2026-10-28: started before 0.9.0 final; the app's `docs/ROADMAP.md`): R4,
-  aimed at the engine's render boundary (for N6), then its synchronization primitives and the
-  hottest signatures. Names go in `annotations/functions.tsv` (RECOMPILATION.md, "Annotations");
-  REA's output informs them but never goes in the file. Alongside, in the generator: flags only
-  where read, a function's own frame as host locals, ordering kept only for the engine's
-  synchronization.
+The milestones and progress are in `docs/RECOMPILATION.md` (Milestones, Progress, Annotations);
+the order of work is the app's `docs/ROADMAP.md`. In short (2026-10-28): R0–R4 are done (every
+function recompiled, 14% less CPU time than the translator, the library built from the launcher,
+the engine's render code, synchronization and busiest functions named in `annotations/`). Next:
+the native renderer's N6 (bloodborne-runtime, using R4's names), then the generator's CPU work:
+flags only where read, a function's own frame as host locals when its address never escapes,
+ordering kept only around the engine's synchronization (the maintainer's conditions for the last:
+the generator's analysis, a safety case and a long play session).
+
+- **Measuring:** CPU time (`ps -o cputime=` over 30 s in the level), alternating with the
+  translator; `SAVE_FROM=DIR` in the environment (not as a `test_run.sh` argument) for a fixed save;
+  `BB_PROBE=` runs another build of `bb-probe` (keep the name). `sample` gets about 2 samples a
+  thread from a library with its debug map: profile a copy made with `strip -S` and
+  `codesign -s - -f`.
+- **Data from earlier sessions** in `out/recomp/` of the user's clone (game-derived, never
+  commit): `hot.txt` (the 933 busiest functions, busiest first), `records40/` and `records_r3/`
+  (recorded calls), `ran.txt`, `all.txt`, `jitmap.txt`, `ghidra/` (the analysed Ghidra project),
+  `rea/`. Regenerate `functions.tsv` and the rest with the commands above.
+- **R5** (the native renderer) is worked on in bloodborne-runtime (`docs/NATIVE_RENDERER.md`).
+  Its part here: calls of hooked functions (bbcpu guards, natives) from recompiled code must go
+  through the runtime, not directly to the recompiled callee.
 
 ## Working rules (all four repositories)
 

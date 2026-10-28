@@ -20,19 +20,18 @@ functions against the original. Nothing here depends on an operating system: pro
 
 ## Status
 
-The game's executable has 241,821 functions. Every one the library can hold is generated
-(241,031: the 660 import stubs and 130 `setjmp` callers stay with the translator), 99.1% of their
-instructions in plain C, and the game runs on them (240,978; functions changed by patches and
-hooks stay with the translator). R3 (speed) is done: the recompiled code takes less CPU time
-than the translator (344% of one core against 402% at the 1st Floor Sickroom lamp, 357% against
-392% in Cathedral Ward, 2026-10-25), at the same frame rate. Players build the library from the
-launcher, with the LLVM toolchain these releases hold (below).
+| Milestone | Progress | |
+|---|---|---|
+| R0–R2 · every function recompiled | `████████████████████` 100% | 240,978 of the game's 241,821 functions run recompiled; 99.1% of their instructions in plain C |
+| R3 · speed | `████████████████████` 100% | 14% less CPU time than the translator at the same frame rate |
+| R4 · annotations | `████████████████████` 100% | 204 functions named; the engine's draw state, models, materials and shaders described ([`annotations/`](annotations)) |
 
-R4 (annotations) is done (`████████████████████`, [its steps](docs/RECOMPILATION.md#annotations)): [`annotations/`](annotations) holds the project's names for 204 of
-the game's functions and the layouts of the engine's draw state, shaders, models, meshes, materials and shader
-programs, its synchronization primitives and its busiest functions, aimed at the engine's render code first for the native renderer. The generator writes the
-names into the generated C. See [docs/RECOMPILATION.md](docs/RECOMPILATION.md)
-and the [status page](https://github.com/bloodborne-native/bloodborne-recomp/wiki/Recompilation-status).
+The launcher builds the library on the player's device with the LLVM toolchain these releases
+hold (below). **Next:** the native renderer's N6 in bloodborne-runtime, which uses R4's names;
+then the generator's CPU work here (flags only where read, a function's own frame as host locals,
+memory ordering kept only around the engine's synchronization). Details:
+[docs/RECOMPILATION.md](docs/RECOMPILATION.md) and the
+[status page](https://github.com/bloodborne-native/bloodborne-recomp/wiki/Recompilation-status).
 All docs: [docs/README.md](docs/README.md).
 
 ## Build and use

@@ -47,11 +47,19 @@ The recompiled code is produced on the player's machine from their copy, and sta
 | R2 | Coverage: every function generated; the game runs recompiled, the translator as fallback | Done |
 | R3 | Speed: integer, flags and vector instructions in C; memory ordering relaxed where safe | Done: 99.1% of instructions in C; the library takes 14% less CPU time than the translator at the same frame rate |
 | R4 | Annotations: names, signatures and structs make the generated C readable; the engine's render functions first, for the native renderer's N6 | Done `████████████████████` (by its steps, below): 204 functions named and the engine's draw state, shaders, models, meshes, materials and shader programs described (`annotations/`); the draw paths counted in the game (mesh draw, deferred lighting, upload-ring draw); the synchronization primitives named and counted; the 20 busiest functions named with their signatures |
-| R5 | The engine's graphics on each platform's own GPU API: [native renderer](https://github.com/bloodborne-native/bloodborne-runtime/blob/main/docs/NATIVE_RENDERER.md) (bloodborne-runtime) | N1 and N4 done; N5 (Metal backend): the default renderer on macOS, acceptance pending |
+| R5 | The engine's graphics on each platform's own GPU API: [native renderer](https://github.com/bloodborne-native/bloodborne-runtime/blob/main/docs/NATIVE_RENDERER.md) (bloodborne-runtime) | N0, N1 and N4 done; N5 (the Metal backend) the default on macOS, its acceptance pending; N6 (the engine's render boundary, from R4) next |
+
+**Now and next.** The recompiler's milestones are done; the game runs on the recompiled library,
+which the launcher builds on the player's device. Next, in the app's
+[roadmap](https://github.com/bloodborne-native/bloodborne-mac/blob/main/docs/ROADMAP.md) order:
+the native renderer's N6, which uses R4's names (bloodborne-runtime), then the generator's CPU
+work here: flags only where they are read, a function's own stack frame as host locals when its
+address never escapes, and memory ordering kept only around the engine's synchronization (its
+measured ceiling is in "Where the CPU time goes").
 
 ## Progress
 
-*2026-10-27.* The game's executable has 241,821 functions, about 11.3 million instructions.
+*Updated 2026-10-28.* The game's executable has 241,821 functions, about 11.3 million instructions.
 
 | | Progress | |
 |---|---|---|
@@ -123,47 +131,15 @@ Two checks: the **recordings** (whole functions, real calls) and **per-instructi
 (`tools/recomp/fuzz.sh`: every distinct instruction encoding in the game, at most 30 per mnemonic,
 run from random states through the interpreter and through its generated C).
 
-R1 results (2026-10-10): the 24 recorded functions (2,508 instructions, 99% in C) match every
-recorded call exactly as the originals do; in the game they run at the translator's speed (61.4 FPS
-against 61.9, up to 1.7 million calls a second). Fuzzing: 3,443 instruction forms, 200 trials each,
-no differences (a planted mistake in one flag fails 40).
-
-R2 so far (2026-10-10): the 933 busiest functions (222,285 instructions, 99.4% in C) run in the
-game on every thread at the translator's speed (62.1 FPS against 61.9). Fuzzing: 4,892 instruction
-forms, 200 trials each, no differences. Recordings, 40 calls per function: 911 of 933 functions
-match every call; the other 22 also fail when the original runs (they read the time stamp counter
-or memory other threads change). What the checks found along the way:
-
-- The interpreter's `lock cmpxchg` reported the value of a separate load after a failed exchange:
-  when another thread had changed the value back, a failed exchange looked like a successful one,
-  and two threads took the same lock. In the game this was a heap panic during save load
-  (`DLRegularHeap.cpp(710)`); recompiled code, faster on some threads, made it frequent.
-- The recorder missed `vmaskmovdqu`'s write (its address is implicit, in rdi).
-- Speed: a shared counter of recompiled calls (every thread adding to it) and the runtime between
-  recompiled functions cost 11 FPS; the instructions left to the interpreter, 7 more.
-
-Coverage (2026-10-10): the unwind tables list 162,959 functions; leaf functions often have none.
-The scanner now also follows direct calls, jumps, code addresses taken with `lea` and the code
-pointers relocations put into data (vtables): 241,821 functions, and every block the game ran on a
-3-minute route through the Hunter's Dream (walking, fighting, menus) is inside one. All 49,095
-functions that route ran (3.06 million instructions, 99.8% in C) build in 3.5 minutes into a 98 MB
-library; 49,071 of them run recompiled in the game (the rest changed by its patches) at the
-translator's speed, 59.1 FPS, about 12 million recompiled calls a second. On the way:
-
-- Recompiled import stubs put the runtime's return address on the stack, which `setjmp` saved; a
-  later `longjmp` (the game's PNG reader) came back into a frame that was gone. The stubs and the
-  40 functions that call `setjmp` stay with the translator.
-- Every call the runtime ran in the translator returned to the same address: after a `longjmp` the
-  innermost one stopped where an outer one should have.
-
-R2 done (2026-10-10): every function generated, 241,031 (the 660 import stubs and the 130 that
-call `setjmp` stay with the translator), 10.48 million instructions, 98.8% in C; the whole game
-builds in 11.5 minutes into a 404 MB library. 240,995 functions run recompiled in the game (36 the
-game's patches changed stay with the translator) at 55.2 FPS against ~60 with the translator
-alone. Calls of imports the runtime provides go from recompiled code straight to them (2.4 million
-a second); the runtime now provides `strcmp`, `ldiv`, `powf` and `modff` too, which were the
-busiest calls left in the PS4 libc's own code. 1.45 million calls a second still enter the
-translator: R3's starting point, with the hot code spread through the large library.
+What the checks have found: the interpreter's `lock cmpxchg` reported a separate load's value
+after a failed exchange, so two threads could take the same lock (a heap panic during save load,
+made frequent by faster recompiled threads); the recorder missed `vmaskmovdqu`'s implicit write;
+recompiled import stubs left the runtime's return address where `setjmp` saved it, so a later
+`longjmp` returned into a frame that was gone (why stubs and `setjmp` callers stay with the
+translator); and every call the runtime ran in the translator once returned to the same address,
+so after a `longjmp` the innermost stopped where an outer one should have. Recordings of the 933
+busiest functions match on every call for 911; the other 22 also fail when the original runs (they
+read the time stamp counter or memory other threads change).
 
 ## Tools
 
@@ -272,7 +248,9 @@ arguments in register order). `Gnm::` is Sony's libGnm, linked into the game; `C
 Dantelion2's CoreGraphics2, whose classes use a `CG` prefix. Evidence: `pm4` (a libGnm function,
 named from the packets it writes, as `gpu/shim/bbport_gnm_table.inc` in bloodborne-runtime does),
 `calls` (the functions it calls and how its arguments reach them), `source` (a source path in its
-messages names the class). Class names are the project's unless the evidence is `source`. The
+messages names the class), `message` (an error text, a profiler label or a singleton's name in it
+names the function). `DL::` is Dantelion2's core library, `FD4::` FromSoftware's engine, `FX::`
+the visual effects (a guess); `hk::`, `FMOD::`, `Scaleform::` and `Lua::` the middleware. Class names are the project's unless the evidence is `source`. The
 names are the project's work, not the game's: no decompiled code goes into the file or its
 evidence.
 
@@ -309,7 +287,7 @@ bloodborne-runtime's NATIVE_RENDERER.md.
 
 **The draw state** (`annotations/structs.h`, R4.3): one object carries everything a draw sets,
 0x1e70 bytes, modelled on Direct3D 11: its stages and slot counts, DXGI index formats,
-and a topology in Direct3D 11's order without its gaps. Known so far: the topology, the index
+and a topology in Direct3D 11's order without its gaps. Known: the topology, the index
 buffer, format and offset; 32 vertex buffers with their strides and offsets; the
 rasterizer state, 16 viewports and 16 scissors; the blend and depth-stencil states; the eight
 colour targets and the depth target; the blend colour, depth bounds and stencil reference; five
@@ -431,9 +409,8 @@ calls (locks, job queues) cannot be replayed alone. The game's code must only to
 for a record to be replayable: the variables the game imports (the stack canary) live in guest
 memory for that reason.
 
-First results (2026-10-10): 8 functions, 50 calls each, recorded during the Hunter's Dream
-cutscene with no visible slowdown. The 7 ordinary functions replay exactly on all 350 calls. The
-job loop (`0x21b8710`) matches on 31 of 50; 18 of the others had other threads' writes.
+Recording costs no visible slowdown; the job loop (`0x21b8710`) is the usual exception to exact
+replays, since other threads write what it reads.
 
 
 ## What the image contains
@@ -468,120 +445,38 @@ boundaries between game, FD4 and Dantelion2 stay approximate. The functions left
 
 ## Where the CPU time goes
 
-Profiles in the Hunter's Dream (2026-10-10): the game's main thread is about 95% busy in a
-cutscene and spread thin in play (933 functions ran in 20 s; the busiest 145 take half of the
-time; the job loop is the largest at 7.3%). No small set of functions dominates, so the CPU side
-gets faster by recompiling all of them, which R2 did; R3 made that code cheaper.
+The game's main thread is spread thin in play: in 20 s in the Hunter's Dream 933 functions ran,
+the busiest 145 took half the time, and the largest, the job loop, 7.3%. No small set of functions
+dominates, so the CPU side gets faster by recompiling all of them (R2) and making that code cheaper
+(R3). The frame rate on the Mac is bound by rendering, so changes are measured in CPU time
+(`ps -o cputime=` over 30 s in the level), in alternating runs.
 
-CPU time (2026-10-24, M3 Pro, standing in the Hunter's Dream at about 730 draws a frame,
-`ps -o cputime=` over 30 s): the translator alone takes 418–429% of one core, the full library
-411–426% (three runs, mean 420%), the same within the runs' spread. Two changes got it there. The
-lookup of recompiled functions became one flat table (529–539% before, 469–485% after): its 16,384
-chained buckets held about 15 functions each, and every indirect call walked them. Then the
-instructions the generated C still left to the interpreter got C of their own: a counter in the
-runtime's single-step path found 11.8 million of them a second in this scene, 98% of them about
-20 mnemonics (`vpshufb`, `tzcnt`, `idiv`, `mul`, `vmovlps`, `vextractf128`, `lzcnt`, `bextr`,
-`rdtsc`, `andn`, `rol`, the `vpunpck` family, `blsr`, `div`, `vcvtsd2ss`, `vptest`, `vroundss`),
-on the FMOD mixer, the render thread and an unnamed thread most. In C they leave about 36,000 a
-second (string moves and `mfence`). In a `sample`, the game's code costs the same recompiled as
-translated (about 3.1 cores); what is left in the runtime is `rc_call`, the path of indirect calls
-and calls into the translator (a second: 4.3 million calls reach recompiled functions through the
-runtime, 990,000 go into the translator, 1.75 million straight to host imports).
+**Now:** the library takes 14% less CPU time than the translator at the same frame rate: 344% of
+one core against 402% at the 1st Floor Sickroom lamp (about 1,283 draws a frame), 360% against
+397% in Cathedral Ward (M3 Pro).
 
-In a heavier scene the library still took more than the translator: at the 1st Floor Sickroom
-lamp (about 1,283 draws a frame, 39 FPS) 409% against 404% of one core. A `sample` there put the
-difference on the FMOD mixer thread, 90% of a core with the library against 45% translated, nearly
-all of it in two of FMOD's mixing functions (about 600 vector register operands each). The
-generated C kept vector registers in the CPU state, and the barrier after each vector load and
-before each vector store (x86 ordering, as the translator has) made clang store them there and load
-them again around every one: the translator keeps them in NEON registers. With the vector
-registers a function names in locals, those two functions have half the loads and stores (2,891 to
-1,450 and 3,001 to 1,744) and 34% and 21% fewer instructions, and the library is cheaper than the
-translator in both places (2026-10-24, three alternating runs each):
+**What got it there,** each measured at the Sickroom against the translator:
 
-| | 1st Floor Sickroom (1,283 draws) | Hunter's Dream (735 draws) |
-|---|---:|---:|
-| Translator alone | 399, 407, 406% (404%), 39.2 FPS | 439, 430, 431% (433%), 59.8 FPS |
-| Library before (main `a8b96c3`) | 402, 410, 415% (409%), 39.3 FPS | 430, 423, 431% (428%), 60.3 FPS |
-| Library, vector registers in locals | 379, 383, 382% (381%), 38.8 FPS | 402, 401, 402% (402%), 58.9 FPS |
+| Change | Why it mattered | Effect |
+|---|---|---|
+| One flat table for finding recompiled functions | 16,384 chained buckets held about 15 functions each, and every indirect call walked them | 529–539% to 469–485% (Hunter's Dream) |
+| C for the instructions left to the interpreter | 11.8 million a second, 98% of them about 20 mnemonics (`vpshufb`, `tzcnt`, `idiv`, ...); 36,000 a second are left | the library level with the translator |
+| Vector registers in locals | x86 ordering's barriers made clang store and reload vector registers around every access (FMOD's mixer: 90% of a core against 45% translated) | 409% to 381% |
+| `rc_call` without thread-local storage | the per-call filter and counter read TLS; now a leaf with the slow paths out of line | about 4 points |
+| Copying only the registers that need it around calls | 39 copies a call became 23; code 26% smaller | 373% to 344% |
 
-The frame rate is the same within about 1%; per frame, CPU time is 5% (Sickroom) and 6% (Dream)
-lower than the translator's. The library's code grew 8% (369 to 399 MB), from the copies around
-calls. Recorded calls of the 60 busiest functions in that scene replay the same as the original
-code (2,944 of 3,018; the 74 others fail with the original too: one function reads `rdtsc`, and
-the job loop sees other threads' writes).
+**Tried without a measurable gain,** left out: a cache at each indirect call site (it took 7.8 of
+11.4 million calls a second off `rc_call`; what `rc_call` costs is its indirect jump); vector
+accesses as two 8-byte `ldapr`/`stlr`; `ldapur`/`stlur` with their offsets (and the M1 lacks
+them); plain accesses for a thread's private stack slots (push, pop, return addresses).
 
-`rc_call` and `rc_tail`, the runtime's path for the calls the library does not make directly
-(the runtime counts about 11.5 million
-calls of recompiled functions a second at the Sickroom lamp, nearly all through them), took about 7% of a core in a `sample` there:
-on every call a thread-local read for the `BB_RECOMP_THREADS` filter, `BB_RECOMP_NODIRECT`'s flag,
-and the call counter in thread-local storage (`_tlv_get_addr`). Now the counter lives in `BbCpu`,
-the filter and `BB_RECOMP_NODIRECT` are checked only by the versions of `call` and `tail` the
-library gets when one of them is set, and the slow paths are out of line: `rc_call` is a leaf with
-no stack frame (the lookup, the push, the count, a jump to the function). The library did not
-change. Alternating runs in one session (2026-10-24):
+**The ceiling of memory ordering:** a library with none (unsafe, not published) took 311% against
+the translator's 407%, about 33 points under the ordered library. Those points are the ordering of
+ordinary accesses. Part of them is reachable safely with plain accesses to a function's own frame
+when it never computes an address in its stack, so no other thread can reach it; that needs an
+analysis in the generator, a safety case and a long play session (the generator's CPU work, next
+after N6).
 
-| | 1st Floor Sickroom (1,283 draws) | Hunter's Dream (735 draws, one run each) |
-|---|---:|---:|
-| Translator alone | 396, 398, 400% (398%), 39.5 FPS | 409%, 60.0 FPS |
-| Library, previous `rc_call` (`2a5284b`) | 378, 376, 377% (377%), 39.0 FPS | 406%, 60.8 FPS |
-| Library, `rc_call` without TLS | 372, 375, 372% (373%), 39.1 FPS | 387%, 60.0 FPS |
-
-At the Sickroom every run of the new `rc_call` (three more: 374, 373, 375%) is below every run of
-the previous one: about 4 points, 1% of the game's CPU time. The Dream runs only check that it did
-not get worse; single runs there vary more than that.
-
-Every call copied all 16 general-purpose registers and every vector register the function names
-to the CPU state and back (about 39 copies a call in the 60 busiest functions at the Sickroom,
-counting a vector register as one). The generator now writes markers there and fills them in once
-the function is written: a store only for the registers that may have been written since they
-were last loaded (forward over the gotos), a load only for those read before being overwritten
-(backward; a register stays only in the CPU state until a `mov`, `movzx`, `movsx`, `lea` or `pop`
-overwrites all of it). The same calls make about 23 copies (9.6 stores and 9.2 loads of
-general-purpose registers, 1.6 and 2.4 of vector ones), and the library's code is 26% smaller
-(399 to 293 MB of `__text`, less than before the vector registers moved to locals). Recorded calls
-of the 60 busiest functions replay as before (2,944 of 3,018). Alternating runs in one session
-(2026-10-25):
-
-| | 1st Floor Sickroom (1,283 draws) |
-|---|---:|
-| Translator alone | 412, 396, 397% (402%), 38.6 FPS |
-| Library, fewer register copies | 345, 342, 344% (344%), 38.4 FPS |
-
-The previous library took 373% there against the translator's 398% (the table above); now the
-library takes 14% less CPU time than the translator at the same frame rate.
-
-Three more changes after that saved no measurable CPU time (the Sickroom, three alternating runs
-each, 2026-10-25), and were left out:
-
-| | Translator | Library | Code |
-|---|---:|---:|---:|
-| A cache at each indirect call site (the entry of the function it called last) | 396% | 343% | +5.6% |
-| Vector accesses as two 8-byte `ldapr`/`stlr` instead of a barrier | 400% | 348% | +4.6% |
-| `ldapur`/`stlur`, the ordered accesses with their offset (`-mcpu=apple-m2`) | 397% | 341% | −3% |
-
-Also without a measurable gain (2026-10-27, Cathedral Ward, two alternating rounds against the
-ordered library): plain accesses for a thread's private stack slots (push, pop, `leave`, `ret`
-and the return addresses calls store; 570,290 loads and 818,811 stores in the library, which
-shrank from 55 to 35 MB): 345% and 352% against 350% and 346%, at 37.5–38.9 FPS. The 33 points
-of ordering are not in those slots. Plants flickered in one of its two runs (the open vegetation
-bug or this change: not told apart), another reason to leave it out.
-
-The cache took 7.8 of 11.4 million calls a second off `rc_call`: what `rc_call` costs is its
-indirect jump, not the lookup. The M1 target has no `ldapur`/`stlur`.
-
-The ceiling of relaxing memory ordering, measured with a library that has none (unsafe, not
-published): 311% against the translator's 407%, about 33 points under the library above. Its
-accesses are relaxed atomics: with plain C accesses the game hung before the first frame (clang
-kept a spin-wait's load in a register). Since neither the vector barriers nor the offsets of the
-ordered accesses account for those 33 points, they are the ordering of the ordinary accesses
-itself. What would reach part of them safely: plain accesses to a function's own frame when the
-function never computes an address in its stack (no `lea` from `rsp` or `rbp`, `rsp` copied
-nowhere but `rbp`), so that no other thread can reach the frame; the caller's frame stays ordered.
-That needs an analysis in the generator, a safety case and a long play session.
-
-R3 is closed with that: its goal was met. Three follow-ups stay open, none needed for play: plain
-accesses to a function's own frame (above); the calls that still go into the translator (about
-565,000 a second at the Sickroom; `BB_RECOMP_TARGETS=1` names them); and the library running about
-0.5 FPS under the translator at the Sickroom (38.0 against 38.6 in every round), not yet explained.
-
+**Open:** the calls that still go into the translator (about 565,000 a second at the Sickroom;
+`BB_RECOMP_TARGETS=1` names them), and the library running about 0.5 FPS under the translator at
+the Sickroom (38.0 against 38.6), not explained.
