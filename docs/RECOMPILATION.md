@@ -61,7 +61,7 @@ The recompiled code is produced on the player's machine from their copy, and sta
 | CPU time recompiled, against the translator | `█████████████████░░░` 86% | 344% of one core against 402% (1st Floor Sickroom), 360% against 397% (Cathedral Ward, 2026-10-27) |
 | Functions checked call by call (recordings) | `░░░░░░░░░░░░░░░░░░░░` 0.4% | 933 of 241,821 |
 | Functions labelled by library (2026-10-24) | `█████████████░░░░░░░` 62.7% | 151,562 of 241,821 |
-| Functions named (R4, 2026-10-28) | `░░░░░░░░░░░░░░░░░░░░` 0.05% | 111 of 241,821 (libGnm's command buffer methods, the engine's draw boundary) |
+| Functions named (R4, 2026-10-28) | `░░░░░░░░░░░░░░░░░░░░` 0.05% | 120 of 241,821 (libGnm's command buffer methods, the engine's draw boundary) |
 
 Every function is generated; the ones left to the translator are the 660 import stubs, the 130
 functions that call `setjmp`, and 53 that the game's patches (51) or the runtime's live switches
@@ -270,8 +270,8 @@ call of it, `?` after a guess. The names change comments only: the full library'
 spaces removed, is the same with and without them. `build_library.py` generates the C again when
 the file changes.
 
-So far, 111 functions: libGnm's command buffer methods (83) and the engine's render boundary
-and what is above it (28).
+So far, 120 functions: libGnm's command buffer methods (83) and the engine's render boundary
+and what is above it (37).
 
 **The render boundary.** Every draw of CoreGraphics2 goes through seven methods of its graphics
 context: `draw`, `drawInstanced`, `drawIndexed`, `drawIndexedInstanced`, `drawIndirect`,
@@ -336,7 +336,14 @@ mesh's technique (virtual methods of the material: this is where the shaders and
 set), then draws the mesh for each instance (each instance sets its own data first) or once,
 instanced.
 
-Next: the materials' `begin` (the shaders and textures it sets), the next callers
+In the game every mesh draw used one material class (`BB_DRAW_CENSUS=1` tallies the materials
+`drawMesh` gets). Its `begin` (`FD4::Material::begin`, the class's name a guess) applies the
+material: its effect (+0x80) picks a shader program for the technique and the pass type (so one
+material has its own shaders for each kind of pass), `CG::ShaderProgram::bind` sets the five
+stages' shaders through the context's setters, and the material's parameter block (+0x88) binds
+its constants and textures; it also sets the depth-stencil state.
+
+Next: the effect's program choice and the parameter block (which textures and constants), the next callers
 (0x22bc720 18%, 0x28f8a30 7.5%, 0x22bdb00 5.9%), and the compute passes.
 
 ## Record and replay

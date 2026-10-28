@@ -57,6 +57,16 @@ typedef struct CgShader {
     uint64_t code_address;      /* 0x108: the code's GPU address */
 } CgShader;
 
+/* A shader program: the shaders a material's effect picks for a technique and a pass type,
+ * each an object whose virtual method +0x18 gives its CgShader (CG::ShaderProgram::bind). */
+typedef struct CgShaderProgram {
+    const void *vertex;   /* 0x00 */
+    const void *pixel;    /* 0x08 */
+    const void *hull;     /* 0x10 */
+    const void *domain;   /* 0x18 */
+    const void *geometry; /* 0x20 */
+} CgShaderProgram;
+
 typedef struct CgSampler {
     uint32_t ssharp[4]; /* 0x00: the GCN sampler descriptor (S#) */
 } CgSampler;

@@ -11,6 +11,9 @@
 # source (a source path in its messages names the class).
 # Signature: the arguments in register order, in the project's types (empty: not worked out yet).
 # Types named CG:: are described in annotations/structs.h (CG::DrawState: CgDrawState).
+0xe571d0	FD4::Material::begin	guess	calls	void (FD4::Material *, int32_t technique, void *pass)
+0xe573d0	FD4::Material::apply	guess	calls	bool (FD4::Material *, void *, int32_t technique, void *pass)
+0xe57ad0	FD4::Material::end	guess	calls	void (FD4::Material *, void *pass)
 0x1070960	Gnm::Buffer::initAsConstantBuffer	sure	pm4	void (Gnm::Buffer *, uint64_t address, uint32_t size)
 0x1072ed0	Gnm::DrawCommandBuffer::setScratchSize	sure	pm4
 0x1072fd0	Gnm::DrawCommandBuffer::setRenderTargetMask	sure	pm4
@@ -94,6 +97,11 @@
 0x11fd230	Gnm::ConstantCommandBuffer::waitOnDeCounterDiff	sure	pm4
 0x11fd280	Gnm::ConstantCommandBuffer::writeToCpRam	guess	pm4
 0x11fd320	Gnm::ConstantCommandBuffer::cpRamDump	guess	pm4
+0x2168e00	CG::GraphicsContext::setVertexShader	sure	calls	void (CG::GraphicsContext *, CG::DrawState *, const CG::Shader *)
+0x2168f30	CG::GraphicsContext::setHullShader	sure	calls	void (CG::GraphicsContext *, CG::DrawState *, const CG::Shader *)
+0x2169060	CG::GraphicsContext::setDomainShader	sure	calls	void (CG::GraphicsContext *, CG::DrawState *, const CG::Shader *)
+0x2169190	CG::GraphicsContext::setGeometryShader	sure	calls	void (CG::GraphicsContext *, CG::DrawState *, const CG::Shader *)
+0x21693e0	CG::GraphicsContext::setPixelShader	sure	calls	void (CG::GraphicsContext *, CG::DrawState *, const CG::Shader *)
 0x21695c0	CG::GraphicsContext::dispatch	sure	calls	void (CG::GraphicsContext *, const CG::ComputeState *, uint32_t x, uint32_t y, uint32_t z)
 0x21696c0	CG::GraphicsContext::draw	sure	calls	void (CG::GraphicsContext *, const CG::DrawState *, uint32_t vertex_count, uint32_t base_vertex)
 0x2169780	CG::GraphicsContext::drawIndexed	sure	calls	void (CG::GraphicsContext *, const CG::DrawState *, uint32_t index_count, uint32_t first_index, uint32_t base_vertex)
@@ -122,3 +130,4 @@
 0x26d2230	CG::OutputMergerState::apply	sure	calls	void (CG::OutputMergerState *, CG::GraphicsContext *, const CG::DrawState *)
 0x26d3370	CG::RasterizerState::apply	sure	calls	void (CG::RasterizerState *, CG::GraphicsContext *, const CG::DrawState *)
 0x26db1b0	CG::UploadRing::allocate	guess	calls	int (CG::UploadRing *, void **memory, CG::GraphicsContext *, uint32_t size)
+0x292f510	CG::ShaderProgram::bind	sure	calls	void (const CG::ShaderProgram *, void *draw_state_builder)
