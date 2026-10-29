@@ -57,8 +57,7 @@ int bbcpu_is_tcb_load(const BbInsn *in) {
            s->base == 0xff && s->index == 0xff && ((s->segment == 1 && s->disp == 0) || s->segment == 2);
 }
 
-uint64_t bbcpu_recomp_hash(uint64_t start, uint64_t size) {
-    uint64_t h = 0xcbf29ce484222325ull;
+static uint64_t hash_more(uint64_t h, uint64_t start, uint64_t size) {
 #define MIX(byte) (h = (h ^ (uint8_t)(byte)) * 0x100000001b3ull)
     for (uint64_t at = start; at < start + size;) {
         BbBlock *block = bbcpu_block_uncached(at);
@@ -77,6 +76,70 @@ uint64_t bbcpu_recomp_hash(uint64_t start, uint64_t size) {
     }
 #undef MIX
     return h;
+}
+
+uint64_t bbcpu_recomp_hash(uint64_t start, uint64_t size) { return hash_more(0xcbf29ce484222325ull, start, size); }
+
+/* Functions whose entry the runtime hooked (bloodborne-runtime's guest code hooks): the entry
+ * jumps to a stub `int3; the replaced instructions; jmp [rip + 0] back`. Such a function stays
+ * recompiled when its code with the replaced instructions put back is the generated one: a
+ * wrapper of its own runs the trap handlers, as the int3 would, then the recompiled function (or
+ * returns at once when a handler sent the guest back to the caller). Without it a hooked function
+ * ran in the translator, as did everything it called that a translated caller reaches. */
+#define HOOKED_MAX 64
+typedef struct { uint64_t entry, trap; RcFn fn; } Hooked;
+static Hooked hooked[HOOKED_MAX];
+static int hooked_count;
+
+static void run_hooked(BbCpu *cpu, int i) {
+    const Hooked *h = &hooked[i];
+    BbGuestRegs regs;
+    memcpy(regs.r, cpu->r, sizeof(regs.r));
+    regs.rip = h->trap + 1;
+    if (!bbcpu_trap(cpu, &regs)) {
+        fprintf(stderr, "bbcpu: a hooked function's trap at %#llx not handled\n", (unsigned long long)h->trap);
+        abort();
+    }
+    memcpy(cpu->r, regs.r, sizeof(regs.r));
+    if (regs.rip != h->trap + 1) { /* the handler returned from the function (rsp past the return address) */
+        cpu->rip = regs.rip;
+        return;
+    }
+    cpu->rip = h->entry;
+    h->fn(cpu);
+}
+#define HOOKED(a, b) static void hooked_##a##b(BbCpu *c) { run_hooked(c, (a) * 8 + (b)); }
+#define HOOKED8(a) HOOKED(a, 0) HOOKED(a, 1) HOOKED(a, 2) HOOKED(a, 3) HOOKED(a, 4) HOOKED(a, 5) HOOKED(a, 6) HOOKED(a, 7)
+HOOKED8(0) HOOKED8(1) HOOKED8(2) HOOKED8(3) HOOKED8(4) HOOKED8(5) HOOKED8(6) HOOKED8(7)
+#define HOOKED_NAMES(a) hooked_##a##0, hooked_##a##1, hooked_##a##2, hooked_##a##3, hooked_##a##4, hooked_##a##5, hooked_##a##6, hooked_##a##7
+static const RcFn hooked_fns[HOOKED_MAX] = {HOOKED_NAMES(0), HOOKED_NAMES(1), HOOKED_NAMES(2), HOOKED_NAMES(3),
+                                            HOOKED_NAMES(4), HOOKED_NAMES(5), HOOKED_NAMES(6), HOOKED_NAMES(7)};
+
+/* The wrapper for a function at `entry` whose code differs from the generated one only by such a
+ * hook, or NULL. Every byte of the shape is checked. */
+static RcFn hooked_entry(uint64_t entry, uint64_t size, uint64_t hash, RcFn fn) {
+    const uint8_t *site = (const uint8_t *)(uintptr_t)entry;
+    if (hooked_count == HOOKED_MAX || size < 5 || site[0] != 0xe9) return NULL;
+    int32_t rel;
+    memcpy(&rel, site + 1, 4);
+    const uint64_t trap = entry + 5 + (uint64_t)(int64_t)rel;
+    if (!bbcpu_is_guest_code(trap)) return NULL;
+    const uint8_t *stub = (const uint8_t *)(uintptr_t)trap;
+    if (stub[0] != 0xcc) return NULL;
+    static const uint8_t jmp_rip[] = {0xff, 0x25, 0, 0, 0, 0};
+    for (uint64_t n = 5; n <= 32 && n <= size; ++n) { /* n: the replaced instructions' length */
+        if (memcmp(stub + 1 + n, jmp_rip, sizeof(jmp_rip)) != 0) continue;
+        uint64_t back;
+        memcpy(&back, stub + 1 + n + sizeof(jmp_rip), 8);
+        if (back != entry + n) continue;
+        for (uint64_t k = 5; k < n; ++k)
+            if (site[k] != 0x90) return NULL;
+        const uint64_t h = hash_more(hash_more(0xcbf29ce484222325ull, trap + 1, n), entry + n, size - n);
+        if (h != hash) return NULL;
+        hooked[hooked_count] = (Hooked){entry, trap, fn};
+        return hooked_fns[hooked_count++];
+    }
+    return NULL;
 }
 
 /* BB_RECOMP_THREADS / BB_RECOMP_NOT_THREADS=NAME,... (diagnostics): recompiled functions only on
@@ -471,17 +534,21 @@ void bbcpu_recomp_load(uint64_t image_base) {
             ++kept;
             continue;
         }
+        RcFn fn = functions[i].fn;
         if (bbcpu_recomp_hash(image_base + functions[i].offset, functions[i].size) != functions[i].hash) {
-            ++changed; /* patched since (game patches, hooks): the translator runs it */
-            continue;
+            fn = hooked_entry(image_base + functions[i].offset, functions[i].size, functions[i].hash, fn);
+            if (!fn) {
+                ++changed; /* patched since (game patches, hooks elsewhere): the translator runs it */
+                continue;
+            }
         }
-        add(image_base + functions[i].offset, functions[i].fn);
-        if (functions[i].direct && !no_direct()) *functions[i].direct = functions[i].fn;
+        add(image_base + functions[i].offset, fn);
+        if (functions[i].direct && !no_direct()) *functions[i].direct = fn;
         ++used;
     }
     recomp_used = used;
-    printf("Recompiled: %zu of %zu game functions replaced, %zu changed by patches, %zu rewritten "
-           "live (%s)\n", used, count, changed, kept, path);
+    printf("Recompiled: %zu of %zu game functions replaced (%d with a hook at the entry), %zu changed by "
+           "patches, %zu rewritten live (%s)\n", used, count, hooked_count, changed, kept, path);
     pthread_t thread;
     if (used && pthread_create(&thread, NULL, report, NULL) == 0) pthread_detach(thread);
 }

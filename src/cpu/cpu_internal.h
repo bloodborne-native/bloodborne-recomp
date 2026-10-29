@@ -111,6 +111,8 @@ typedef struct BbBlock {
 
 /* Stops guest execution of the current thread with a message (an unsupported instruction). */
 _Noreturn void bbcpu_fatal(BbCpu *cpu, const BbInsn *in, const char *what);
+/* An int3's trap handlers for `cpu` (regs: its registers, rip past the int3); 0: none took it. */
+int bbcpu_trap(BbCpu *cpu, BbGuestRegs *regs);
 /* Host function call bridge (hostcall_<arch>.S): integer args, then 16-byte vector args. */
 typedef struct {
     uint64_t gpr[8];      /* rdi rsi rdx rcx r8 r9, then the first two stack slots */

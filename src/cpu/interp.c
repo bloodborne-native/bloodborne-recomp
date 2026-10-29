@@ -194,6 +194,14 @@ void bbcpu_set_trap_handler(int (*handler)(BbGuestRegs *regs)) {
 /* The thread's state while its trap handler runs (bbcpu_trap_state). */
 _Static_assert(sizeof(BbVec) == 32, "bbcpu_trap_state: ymm registers of 32 bytes");
 static _Thread_local BbCpu *trap_cpu;
+int bbcpu_trap(BbCpu *cpu, BbGuestRegs *regs) {
+    BbCpu *const outer = trap_cpu;
+    trap_cpu = cpu;
+    int handled = 0;
+    for (int i = 0; i < trap_handler_count && !handled; ++i) handled = trap_handlers[i](regs);
+    trap_cpu = outer;
+    return handled;
+}
 int bbcpu_trap_state(BbTrapState *state) {
     if (!trap_cpu) return 0;
     state->flags = &trap_cpu->flags;
@@ -897,12 +905,7 @@ static uint64_t step(BbCpu *cpu, const BbInsn *in) {
         BbGuestRegs regs;
         memcpy(regs.r, cpu->r, sizeof(regs.r));
         regs.rip = next;
-        BbCpu *const outer = trap_cpu;
-        trap_cpu = cpu;
-        int handled = 0;
-        for (int i = 0; i < trap_handler_count && !handled; ++i) handled = trap_handlers[i](&regs);
-        trap_cpu = outer;
-        if (!handled) bbcpu_fatal(cpu, in, "unhandled int3");
+        if (!bbcpu_trap(cpu, &regs)) bbcpu_fatal(cpu, in, "unhandled int3");
         memcpy(cpu->r, regs.r, sizeof(regs.r));
         return regs.rip;
     }
