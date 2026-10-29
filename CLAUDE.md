@@ -51,7 +51,9 @@ C changed are compiled again.
   only, look there first. `BB_CB_PROBE=1` names the threads.
 - Bisect with `BB_RECOMP_ONLY=@FILE` (keep only these) or `BB_RECOMP_OFF=@FILE`; also
   `BB_RECOMP_THREADS` / `BB_RECOMP_NOT_THREADS` (by thread name) and `BB_RECOMP_NODIRECT=1`.
-  `BB_RECOMP_TARGETS=1` prints the busiest calls into the translator every 10 s.
+  `BB_RECOMP_TARGETS=1` prints the busiest calls into the translator every 10 s, and the host
+  functions the import stubs reach most (`image+offset`, the name when exported; `atos -o` for a
+  static one).
 - Lessons so far: import stubs and `setjmp` callers stay with the translator; every runtime call
   into the translator has its own return address; jump tables are decoded from their `cmp`/`ja`
   bound, followed back through the branch into the table's block and through copies and masks of

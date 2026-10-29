@@ -127,24 +127,43 @@ static void count_batched(uint64_t *total, uint32_t *pending) {
     }
 }
 static _Thread_local uint32_t pending_runs, pending_host_calls;
-/* BB_RECOMP_TARGETS=1: the targets of calls into the translator, counted (sampled 1 in 64). */
+/* BB_RECOMP_TARGETS=1: the targets of calls into the translator, and the host functions the
+ * import stubs reach, counted (sampled 1 in 64). */
 enum { TARGET_SLOTS = 4096 };
-static struct { uint64_t rip, count; } targets[TARGET_SLOTS];
+typedef struct { uint64_t rip, count; } Target;
+static Target targets[TARGET_SLOTS], host_targets[TARGET_SLOTS];
 static int count_targets(void) {
     static int value = -1;
     if (value < 0) value = getenv("BB_RECOMP_TARGETS") && getenv("BB_RECOMP_TARGETS")[0] == '1';
     return value;
 }
+static void note_target_in(Target *table, uint64_t rip) {
+    for (uint32_t i = 0, h = (uint32_t)((rip * 0x9e3779b97f4a7c15ull) >> 52); i < 16; ++i) {
+        uint64_t *slot = &table[(h + i) % TARGET_SLOTS].rip, expected = 0;
+        if (__atomic_load_n(slot, __ATOMIC_RELAXED) == rip ||
+            __atomic_compare_exchange_n(slot, &expected, rip, 0, __ATOMIC_RELAXED, __ATOMIC_RELAXED)) {
+            __atomic_add_fetch(&table[(h + i) % TARGET_SLOTS].count, 1, __ATOMIC_RELAXED);
+            return;
+        }
+    }
+}
 static void note_target(uint64_t rip) {
     static _Thread_local uint32_t tick;
     if ((++tick & 63) || !count_targets()) return;
-    for (uint32_t i = 0, h = (uint32_t)((rip * 0x9e3779b97f4a7c15ull) >> 52); i < 16; ++i) {
-        uint64_t *slot = &targets[(h + i) % TARGET_SLOTS].rip, expected = 0;
-        if (__atomic_load_n(slot, __ATOMIC_RELAXED) == rip ||
-            __atomic_compare_exchange_n(slot, &expected, rip, 0, __ATOMIC_RELAXED, __ATOMIC_RELAXED)) {
-            __atomic_add_fetch(&targets[(h + i) % TARGET_SLOTS].count, 1, __ATOMIC_RELAXED);
-            return;
-        }
+    note_target_in(targets, rip);
+}
+static void note_host_target(uint64_t host) {
+    static _Thread_local uint32_t tick;
+    if ((++tick & 63) || !count_targets()) return;
+    note_target_in(host_targets, host);
+}
+/* The ten busiest entries of a table, counts taken (each sample stands for 64). */
+static void take_best(Target *table, uint64_t best[10][2]) {
+    memset(best, 0, 10 * 2 * sizeof(uint64_t));
+    for (int i = 0; i < TARGET_SLOTS; ++i) {
+        const uint64_t c = __atomic_exchange_n(&table[i].count, 0, __ATOMIC_RELAXED);
+        for (int k = 0; k < 10; ++k)
+            if (c > best[k][1]) { memmove(best[k + 1], best[k], (size_t)(9 - k) * sizeof(best[0])); best[k][0] = table[i].rip; best[k][1] = c; break; }
     }
 }
 
@@ -207,6 +226,7 @@ static int call_import(BbCpu *cpu, uint64_t target) {
     const uint64_t host = bb_load(target + 6 + (uint64_t)(int64_t)disp, 8);
     if (!host || bbcpu_is_guest_code(host)) return 0;
     count_batched(&host_calls, &pending_host_calls);
+    note_host_target(host);
     cpu->rip = host;
     bbcpu_call_host_at_rip(cpu); /* pops the return address into rip */
     return 1;
@@ -305,12 +325,8 @@ static void *report(void *unused) {
         last = now;
         last_runs = runs;
         if (count_targets()) {
-            uint64_t best[10][2] = {{0}};
-            for (int i = 0; i < TARGET_SLOTS; ++i) {
-                const uint64_t c = __atomic_exchange_n(&targets[i].count, 0, __ATOMIC_RELAXED);
-                for (int k = 0; k < 10; ++k)
-                    if (c > best[k][1]) { memmove(best[k + 1], best[k], (size_t)(9 - k) * sizeof(best[0])); best[k][0] = targets[i].rip; best[k][1] = c; break; }
-            }
+            uint64_t best[10][2];
+            take_best(targets, best);
             {
                 uint64_t top[15][2] = {{0}};
                 for (int m = 0; m < STEP_MNEMONICS; ++m) {
@@ -326,6 +342,23 @@ static void *report(void *unused) {
             printf("Recompiled: calls into the translator by target (x64 samples):");
             for (int k = 0; k < 10 && best[k][1]; ++k)
                 printf(" %#llx:%llu", (unsigned long long)(best[k][0] - recomp_image_base), (unsigned long long)best[k][1] * 64);
+            printf("\n");
+            /* The host functions behind the import stubs: image+offset (atos resolves a static
+             * function; dladdr names only exported ones, given when exact). */
+            take_best(host_targets, best);
+            printf("Recompiled: host imports by function (x64 samples):");
+            for (int k = 0; k < 10 && best[k][1]; ++k) {
+                Dl_info info;
+                if (dladdr((void *)(uintptr_t)best[k][0], &info) && info.dli_fname) {
+                    const char *file = strrchr(info.dli_fname, '/');
+                    printf(" %s+%#llx", file ? file + 1 : info.dli_fname,
+                           (unsigned long long)(best[k][0] - (uintptr_t)info.dli_fbase));
+                    if (info.dli_sname && (uintptr_t)info.dli_saddr == best[k][0]) printf("(%s)", info.dli_sname);
+                } else {
+                    printf(" %#llx", (unsigned long long)best[k][0]);
+                }
+                printf(":%llu", (unsigned long long)best[k][1] * 64);
+            }
             printf("\n");
         }
     }

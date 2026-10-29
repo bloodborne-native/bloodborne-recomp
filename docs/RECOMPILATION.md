@@ -484,5 +484,8 @@ leaves the scalar accesses to shared memory, where no analysis in the generator 
 another thread reads.
 
 **Open:** the calls that still go into the translator (about 565,000 a second at the Sickroom;
-`BB_RECOMP_TARGETS=1` names them), and the library running about 0.5 FPS under the translator at
+`BB_RECOMP_TARGETS=1` names them, and the host functions behind the import stubs: in Cathedral
+Ward about 2.5 million calls a second, 85% of them to functions taking only integers: `memcpy`
+560,000, `ldiv` 520,000, `memset` 215,000, the mutex lock and unlock 190,000 each, `thread_self`
+157,000; then `powf`, `sinf`/`cosf` and `modff` with floats), and the library running about 0.5 FPS under the translator at
 the Sickroom (38.0 against 38.6), not explained.
