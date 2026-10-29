@@ -476,7 +476,10 @@ them); plain accesses for a thread's private stack slots (push, pop, return addr
 accesses, scalar and vector, to a function's whole frame when no address in it leaves the function
 (13% of the library's accesses; 344% against 345% in three alternating pairs in Cathedral Ward).
 Without any barrier on vector accesses (unsafe, measured only) the library took about 2% less CPU
-time per frame: vector barriers are not where ordering costs either.
+time per frame: vector barriers are not where ordering costs either. Host functions taking only integers
+(85% of the 2.6 million host calls a second: memcpy, ldiv, memset, the mutexes) called directly
+instead of through the general bridge and its 528-byte argument block: 349% against 348% in
+three alternating pairs.
 
 **The ceiling of memory ordering:** a library with none (unsafe, not published) took 311% against
 the translator's 407%, about 33 points under the ordered library. Those points are the ordering of

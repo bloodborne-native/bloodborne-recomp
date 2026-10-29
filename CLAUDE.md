@@ -88,7 +88,8 @@ the engine's render code, synchronization and busiest functions named in `annota
 the CPU work: the runtime's share of the main thread (`rc_call`, host calls, code left to the
 translator), then ordering kept only around the engine's synchronization (the maintainer's
 conditions: the generator's analysis, a safety case and a long play session). Measured without a
-gain (stashed): plain accesses to private frames; clang already drops unread flags.
+gain (stashed): plain accesses to private frames; host functions taking only integers called
+directly instead of through the bridge; clang already drops unread flags.
 
 - **Measuring:** CPU time (`ps -o cputime=` over 30 s in the level), alternating with the
   translator; `SAVE_FROM=DIR` in the environment (not as a `test_run.sh` argument) for a fixed save;
