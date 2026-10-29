@@ -27,9 +27,11 @@ functions against the original. Nothing here depends on an operating system: pro
 | R4 · annotations | `████████████████████` 100% | 204 functions named; the engine's draw state, models, materials and shaders described ([`annotations/`](annotations)) |
 
 The launcher builds the library on the player's device with the LLVM toolchain these releases
-hold (below). **Next:** the native renderer's N6 in bloodborne-runtime, which uses R4's names;
-then the generator's CPU work here (flags only where read, a function's own frame as host locals,
-memory ordering kept only around the engine's synchronization). Details:
+hold (below). **Next:** the CPU work's last part, memory ordering kept only around the engine's
+synchronization, with the maintainer's conditions; the rest is measured (calls left to the
+translator 69,600 a second to 9,400; flags, private frames, vector barriers and the host-call path
+gain little or nothing). The library also no longer keeps the whole game decoded after checking it
+(the game's peak footprint 7.8 GB to 5.7 GB on the Mac). Details:
 [docs/RECOMPILATION.md](docs/RECOMPILATION.md) and the
 [status page](https://github.com/bloodborne-native/bloodborne-recomp/wiki/Recompilation-status).
 All docs: [docs/README.md](docs/README.md).
