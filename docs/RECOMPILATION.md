@@ -484,7 +484,9 @@ ordinary accesses. Neither the frame (no gain) nor the vector barriers (about 2%
 leaves the scalar accesses to shared memory, where no analysis in the generator can tell which ones
 another thread reads.
 
-**Open:** the calls that still go into the translator (about 565,000 a second at the Sickroom;
+**Open:** the calls that still go into the translator (9,400 a second in Cathedral Ward, from 69,600 before
+the jump-table rules and the host C library calls: nearly all the game's operator new and delete,
+which run its own heap;
 `BB_RECOMP_TARGETS=1` names them, and the host functions behind the import stubs: in Cathedral
 Ward about 2.5 million calls a second, 85% of them to functions taking only integers: `memcpy`
 560,000, `ldiv` 520,000, `memset` 215,000, the mutex lock and unlock 190,000 each, `thread_self`
