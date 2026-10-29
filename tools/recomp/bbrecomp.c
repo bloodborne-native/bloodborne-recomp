@@ -1472,6 +1472,73 @@ static uint64_t *table_targets;
 static int computed_jump;
 static size_t table_target_count, table_target_capacity;
 
+/* The decoded instruction before `off` on a path to it: the one ending there that falls through,
+ * else the single decoded branch that jumps there (`taken`: by its jump). NULL: none or several. */
+static const Insn *path_before(const Insn *list, size_t n, uint64_t off, int *taken) {
+    const Insn *found = NULL;
+    for (size_t i = 0; i < n; ++i)
+        if (list[i].off + list[i].in.length == off && falls_through(list[i].off, &list[i].in) &&
+            list[i].in.mnemonic != M(JMP)) {
+            *taken = 0;
+            return &list[i];
+        }
+    for (size_t i = 0; i < n; ++i) {
+        const BbInsn *x = &list[i].in;
+        const int cc = cc_of(x->mnemonic);
+        if (((cc >= 0 && cc < 16) || x->mnemonic == M(JMP)) && x->op[0].type == OP_IMM &&
+            list[i].off + (uint64_t)x->op[0].disp == off) {
+            if (found) return NULL;
+            found = &list[i];
+        }
+    }
+    *taken = 1;
+    return found;
+}
+
+/* A jump table's size from the code before its load when the bound check is not next to it: back
+ * along the path (through the branch into the table's block), the index followed as `reg & mask`
+ * through copies and masks, to `cmp X, N` with ja falling through (or jbe taken) where X is the
+ * index or `mov X, reg; and X, mask` of it. 0: not found. */
+static uint64_t table_bound(const Insn *list, size_t n, int index) {
+    int reg = index, taken = 0;
+    uint64_t mask = ~UINT64_C(0);
+    uint64_t at = list[n - 3].off;
+    for (int steps = 0; steps < 24; ++steps) {
+        const Insn *p = path_before(list, n, at, &taken);
+        if (!p) return 0;
+        const BbInsn *x = &p->in;
+        const int m = x->mnemonic;
+        if (m == M(JNBE) || m == M(JBE)) {
+            if ((m == M(JNBE)) == taken) return 0; /* the path where the index is above the bound */
+            const Insn *c = path_before(list, n, p->off, &taken);
+            if (!c || taken || c->in.mnemonic != M(CMP) || c->in.op[0].type != OP_REG || c->in.op[1].type != OP_IMM)
+                return 0;
+            const uint64_t entries = (uint64_t)c->in.op[1].disp + 1;
+            const int r = c->in.op[0].reg;
+            if (r == reg && mask == ~UINT64_C(0)) return entries;
+            /* mov X, reg; and X, mask; cmp X, N: X is the index too */
+            const Insn *a = path_before(list, n, c->off, &taken);
+            const Insn *v = a && !taken ? path_before(list, n, a->off, &taken) : NULL;
+            if (!v || taken || a->in.mnemonic != M(AND) || !gpr(&a->in.op[0]) || a->in.op[0].reg != r ||
+                a->in.op[1].type != OP_IMM || (uint64_t)a->in.op[1].disp != mask || v->in.mnemonic != M(MOV) ||
+                !gpr(&v->in.op[0]) || v->in.op[0].reg != r || !gpr(&v->in.op[1]) || v->in.op[1].reg != reg)
+                return 0;
+            return entries <= mask + 1 ? entries : mask + 1;
+        }
+        if (taken || m == M(CALL) || m == M(RET)) return 0;
+        /* What the step back passes: writes of the index's register are copies or masks. */
+        if (x->count && gpr(&x->op[0]) && x->op[0].reg == reg) {
+            if (m == M(AND) && x->op[1].type == OP_IMM && x->op[1].disp > 0 && x->op[1].disp < 4096 &&
+                !((x->op[1].disp + 1) & x->op[1].disp))
+                mask &= (uint64_t)x->op[1].disp;
+            else if (m == M(MOV) && gpr(&x->op[1]) && x->op[0].size >= 4) reg = x->op[1].reg;
+            else return 0;
+        }
+        at = p->off;
+    }
+    return 0;
+}
+
 /* A compiler's jump table ending at list[n - 1] (jmp reg): lea T, [rip + table]; movsxd C,
  * dword [T + 4 * I]; add C, T; jmp C, its size from cmp I, N; ja (N + 1 entries; or jbe to the
  * table, the default case falling through). Its targets
@@ -1528,6 +1595,7 @@ static int jump_table(Function fn, const Insn *list, size_t n, uint64_t *work, s
         if (!ok) entries = 0;
         break;
     }
+    if (table && !entries) entries = table_bound(list, n, index);
     if (!table || !entries || entries > 4096) return 0;
     for (uint64_t e = 0; e < entries; ++e) {
         int32_t rel;

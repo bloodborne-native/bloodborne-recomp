@@ -466,6 +466,7 @@ one core against 402% at the 1st Floor Sickroom lamp (about 1,283 draws a frame)
 | Vector registers in locals | x86 ordering's barriers made clang store and reload vector registers around every access (FMOD's mixer: 90% of a core against 45% translated) | 409% to 381% |
 | `rc_call` without thread-local storage | the per-call filter and counter read TLS; now a leaf with the slow paths out of line | about 4 points |
 | Copying only the registers that need it around calls | 39 copies a call became 23; code 26% smaller | 373% to 344% |
+| Jump tables bounded across blocks (307 more, 3,663 in all); six more C library calls on the host (`strncmp`, `strchr`, `strstr`, `exp2f`, `wcschr`, `wcscmp`) | 69,600 calls a second into the translator became 40,300 (Cathedral Ward) | 342% to 339% |
 
 **Tried without a measurable gain,** left out: a cache at each indirect call site (it took 7.8 of
 11.4 million calls a second off `rc_call`; what `rc_call` costs is its indirect jump); vector
