@@ -202,7 +202,7 @@ static BbCpu *current_cpu(void) {
 uint64_t bbcpu_guest_rip(void) { return tls_cpu ? tls_cpu->rip : 0; }
 
 uint64_t bbcpu_import_return(void) {
-    return tls_cpu && tls_cpu->r[RSP] ? bb_load(tls_cpu->r[RSP], 8) : 0;
+    return tls_cpu && tls_cpu->r[RSP] ? bbcpu_guest_return(bb_load(tls_cpu->r[RSP], 8)) : 0;
 }
 
 static uint64_t run_call(BbCpu *cpu, uintptr_t fn, int count, const uint64_t *args, uint64_t rsp) {

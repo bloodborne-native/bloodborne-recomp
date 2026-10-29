@@ -113,7 +113,9 @@ int bbcpu_recomp_thread_named(void) {
  * return_hook goes back to that frame on the host too (the C frames between are left: recompiled
  * code holds nothing). One address for all of them returned into the innermost frame instead. */
 #define FRAME_BASE UINT64_C(0x0000700100000000)
-typedef struct { jmp_buf jump; } Frame; /* _setjmp: no signal mask */
+/* `back`: the guest return address the frame's own one replaced on the guest stack, for code that
+ * reads the caller from there (bbcpu_guest_return). */
+typedef struct { jmp_buf jump; uint64_t back; } Frame; /* _setjmp: no signal mask */
 static _Thread_local Frame *frames;
 static _Thread_local uint32_t frame_depth, frame_capacity;
 
@@ -168,6 +170,11 @@ static void take_best(Target *table, uint64_t best[10][2]) {
     }
 }
 
+uint64_t bbcpu_guest_return(uint64_t value) {
+    if (value < FRAME_BASE || value >= FRAME_BASE + (uint64_t)frame_depth * 16 || (value & 15)) return value;
+    return frames[(value - FRAME_BASE) / 16].back;
+}
+
 static void return_hook(BbCpu *cpu) {
     const uint64_t rip = cpu->rip;
     if (rip < FRAME_BASE || rip >= FRAME_BASE + (uint64_t)frame_depth * 16 || (rip & 15)) return;
@@ -188,6 +195,7 @@ static void run_translated(BbCpu *cpu, uint64_t slot) {
     note_target(cpu->rip);
     if (depth + 1 > __atomic_load_n(&deepest_frame, __ATOMIC_RELAXED)) __atomic_store_n(&deepest_frame, depth + 1, __ATOMIC_RELAXED);
     const uint64_t stop = FRAME_BASE + (uint64_t)depth * 16;
+    frames[depth].back = bb_load(slot, 8);
     bb_store(slot, 8, stop);
     if (_setjmp(frames[depth].jump) == 0) bbcpu_run(cpu, stop);
     frame_depth = depth;
