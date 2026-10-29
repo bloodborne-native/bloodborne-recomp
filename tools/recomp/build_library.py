@@ -109,14 +109,17 @@ def prepare(kit, game, build, key):
         (build / sub).mkdir(parents=True)
     py = [sys.executable]
     tools = HERE
-    emit('step', step='extract')
+    # Each task as it starts (the launcher shows it), with what it found once known.
+    emit('step', step='extract', task='executable')
     run(py + [tools / 'ps4elf.py', game / 'eboot.bin', build / 'eboot.elf'], 'Reading the executable')
+    emit('step', step='extract', task='pointers')
     run(py + [tools / 'pointers.py', game / 'eboot.bin', build / 'scan' / 'pointers.txt'], 'Finding code pointers')
-    emit('step', step='scan')
+    emit('step', step='scan', task='functions')
     run([kit.bin / 'scan', build / 'eboot.elf', build / 'scan', build / 'scan' / 'pointers.txt'], 'Finding functions')
-    run(py + [tools / 'imports.py', game / 'eboot.bin', build / 'scan'], 'Naming imports')
     functions = build / 'scan' / 'functions.tsv'
     offsets = [line.split('\t', 1)[0] for line in functions.read_text().splitlines()[1:] if line.strip()]
+    emit('step', step='scan', task='imports', functions=len(offsets))
+    run(py + [tools / 'imports.py', game / 'eboot.bin', build / 'scan'], 'Naming imports')
     (build / 'scan' / 'all.txt').write_text('\n'.join(offsets) + '\n')
     emit('step', step='generate', functions=len(offsets))
     run([kit.bin / 'bbrecomp', build / 'eboot.elf', functions, build / 'gen' / 'recomp.c', '@' + str(build / 'scan' / 'all.txt')],
