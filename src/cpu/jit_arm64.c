@@ -23,6 +23,17 @@
 #include <stdlib.h>
 #include <sys/mman.h>
 #include <sys/ucontext.h>
+#if defined(__APPLE__)
+#include <TargetConditionals.h>
+#endif
+#if defined(__APPLE__) && TARGET_OS_IPHONE
+/* iOS (proof of concept): apps cannot make code at run time, so the translator stays off and
+ * guest code the recompiled library does not cover is interpreted. */
+#define BB_NO_JIT 1
+#define pthread_jit_write_protect_np(enabled) ((void)(enabled))
+#else
+#define BB_NO_JIT 0
+#endif
 
 #define M(name) ZYDIS_MNEMONIC_##name
 
@@ -231,7 +242,7 @@ static int jit_init(void) {
     pthread_mutex_lock(&jit_lock);
     if (!state) {
         const char *env = getenv("BB_JIT");
-        void *p = (env && env[0] == '0') ? MAP_FAILED
+        void *p = (BB_NO_JIT || (env && env[0] == '0')) ? MAP_FAILED
                 : mmap(NULL, CODE_SIZE, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_PRIVATE | MAP_ANON | MAP_JIT, -1, 0);
         if (p == MAP_FAILED) {
             state = -1;

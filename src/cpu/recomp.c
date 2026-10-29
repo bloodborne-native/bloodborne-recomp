@@ -61,8 +61,8 @@ uint64_t bbcpu_recomp_hash(uint64_t start, uint64_t size) {
     uint64_t h = 0xcbf29ce484222325ull;
 #define MIX(byte) (h = (h ^ (uint8_t)(byte)) * 0x100000001b3ull)
     for (uint64_t at = start; at < start + size;) {
-        const BbBlock *block = bbcpu_block(at);
-        if (!block->count) break;
+        BbBlock *block = bbcpu_block_uncached(at);
+        if (!block->count) { free(block); break; }
         for (uint32_t i = 0; i < block->count && at < start + size; ++i) {
             const BbInsn *in = &block->insn[i];
             if (bbcpu_is_tcb_load(in)) {
@@ -73,6 +73,7 @@ uint64_t bbcpu_recomp_hash(uint64_t start, uint64_t size) {
             }
             at += in->length;
         }
+        free(block);
     }
 #undef MIX
     return h;

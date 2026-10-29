@@ -135,6 +135,7 @@ extern void (*bbcpu_return_hook)(BbCpu *cpu);
 uint64_t bbcpu_step(BbCpu *cpu, const BbInsn *in);
 /* A host function reached at cpu->rip with its return address on the guest stack (interp.c). */
 void bbcpu_call_host_at_rip(BbCpu *cpu);
+BbBlock *bbcpu_block_uncached(uint64_t rip); /* decode.c: the caller frees it */
 /* JIT (jit_arm64.c, arm64 hosts): runs like bbcpu_run; 0 when unavailable (BB_JIT=0). */
 int bbcpu_jit_run(BbCpu *cpu, uint64_t stop);
 /* The guest TSC as virtual counter * num / den (arm64; interp.c). */
