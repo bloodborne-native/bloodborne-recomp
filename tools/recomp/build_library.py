@@ -145,8 +145,12 @@ def compile_all(kit, clang, resource, build, jobs):
         partial.rename(target[source])
         return source, None
 
+    # Counted as each file finishes: pool.map gives results in submission order, so one large file
+    # held the count back while the files after it were done (the launcher showed 9 of 383 with 43
+    # compiled).
     with concurrent.futures.ThreadPoolExecutor(max_workers=jobs) as pool:
-        for source, error in pool.map(one, todo):
+        for future in concurrent.futures.as_completed([pool.submit(one, s) for s in todo]):
+            source, error = future.result()
             if error:
                 fail(f'Compiling {source.name} failed: ' + ' | '.join(error))
             done += 1
