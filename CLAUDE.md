@@ -57,7 +57,10 @@ C changed are compiled again.
 - Lessons so far: import stubs and `setjmp` callers stay with the translator; every runtime call
   into the translator has its own return address; jump tables are decoded from their `cmp`/`ja`
   bound, followed back through the branch into the table's block and through copies and masks of
-  the index (`table_bound`); a table left undecoded only sends its jumps to the translator. `BB_REPLAY_WATCH=ADDRESS` traces one byte in a replay.
+  the index (`table_bound`), with the case's common code allowed between the `add` and the `jmp`,
+  the table register copied, or its `lea` hoisted out of the loop; a table left undecoded only
+  sends its jumps to the translator, but the code only it reaches is never decoded (the stats
+  line counts the tables and the indirect jumps left). `BB_REPLAY_WATCH=ADDRESS` traces one byte in a replay.
 - REA (an MCP server with Ghidra, on the user's machine) answers "who calls this", "decompile
   this" and "what references this address" about the game's code; its output is game code and
   never goes into a repository. Open `out/recomp/eboot_ghidra.elf` (inspect.sh writes it: Ghidra's

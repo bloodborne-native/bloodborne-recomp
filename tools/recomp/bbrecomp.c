@@ -1471,6 +1471,8 @@ static uint64_t *table_targets;
  * targets inside the function dispatch there instead of going back to the translator. */
 static int computed_jump;
 static size_t table_target_count, table_target_capacity;
+/* Over the run: jump tables decoded, and indirect jumps left to the translator (the stats line). */
+static uint64_t tables_decoded, jumps_left;
 
 /* The decoded instruction before `off` on a path to it: the one ending there that falls through,
  * else the single decoded branch that jumps there (`taken`: by its jump). NULL: none or several. */
@@ -1499,10 +1501,10 @@ static const Insn *path_before(const Insn *list, size_t n, uint64_t off, int *ta
  * along the path (through the branch into the table's block), the index followed as `reg & mask`
  * through copies and masks, to `cmp X, N` with ja falling through (or jbe taken) where X is the
  * index or `mov X, reg; and X, mask` of it. 0: not found. */
-static uint64_t table_bound(const Insn *list, size_t n, int index) {
+static uint64_t table_bound(const Insn *list, size_t n, int index, uint64_t load_at) {
     int reg = index, taken = 0;
     uint64_t mask = ~UINT64_C(0);
-    uint64_t at = list[n - 3].off;
+    uint64_t at = load_at;
     for (int steps = 0; steps < 24; ++steps) {
         const Insn *p = path_before(list, n, at, &taken);
         if (!p) return 0;
@@ -1539,15 +1541,36 @@ static uint64_t table_bound(const Insn *list, size_t n, int index) {
     return 0;
 }
 
+/* Whether `x`, placed between a jump table's add and its jmp, leaves general register `c` alone:
+ * the instructions clang moves there (the case's common code: moves, lea, xor, vector moves) and
+ * nothing with an implicit register write (push, pop, mul, div, call, string instructions). */
+static int leaves_alone(const BbInsn *x, int c) {
+    const int m = x->mnemonic;
+    if (x->count && x->op[0].type == OP_REG && x->op[0].kind == RK_VEC) return 1;
+    if (!(m == M(MOV) || m == M(LEA) || m == M(XOR) || m == M(AND) || m == M(OR) || m == M(SUB) || m == M(ADD) ||
+          m == M(MOVZX) || m == M(MOVSX) || m == M(MOVSXD) || m == M(SHL) || m == M(SHR) || m == M(SAR) ||
+          m == M(NEG) || m == M(NOT) || m == M(INC) || m == M(DEC) || m == M(TEST) || m == M(CMP)))
+        return 0;
+    return !(x->count && gpr(&x->op[0]) && x->op[0].reg == c);
+}
+
 /* A compiler's jump table ending at list[n - 1] (jmp reg): lea T, [rip + table]; movsxd C,
  * dword [T + 4 * I]; add C, T; jmp C, its size from cmp I, N; ja (N + 1 entries; or jbe to the
- * table, the default case falling through). Its targets
+ * table, the default case falling through). Between the add and the jmp, instructions that leave C
+ * alone; T may be a copy (mov T, X) of the register the lea wrote. Its targets
  * are pushed to `work` and kept in table_targets; 0 if it is not one. */
 static int jump_table(Function fn, const Insn *list, size_t n, uint64_t *work, size_t *pending, const uint8_t *seen) {
     if (n < 4) return 0;
-    const BbInsn *jmp = &list[n - 1].in, *add = &list[n - 2].in, *load = &list[n - 3].in;
+    const BbInsn *jmp = &list[n - 1].in;
     if (jmp->op[0].type != OP_REG || jmp->op[0].kind != RK_GPR || jmp->op[0].size != 8) return 0;
     const int c = jmp->op[0].reg;
+    size_t a = n - 1;
+    while (a-- > 1 && a + 16 > n) {
+        const BbInsn *x = &list[a].in;
+        if (x->mnemonic == M(ADD) && gpr(&x->op[0]) && x->op[0].reg == c) break;
+        if (!leaves_alone(x, c)) return 0;
+    }
+    const BbInsn *add = &list[a].in, *load = &list[a - 1].in;
     if (add->mnemonic != M(ADD) || add->op[0].type != OP_REG || add->op[0].reg != c || add->op[1].type != OP_REG ||
         add->op[0].size != 8) return 0;
     const int t = add->op[1].reg;
@@ -1555,11 +1578,15 @@ static int jump_table(Function fn, const Insn *list, size_t n, uint64_t *work, s
         load->op[1].base != t || load->op[1].scale != 4 || load->op[1].index == 0xff || load->op[1].disp != 0) return 0;
     const int index = load->op[1].index;
     uint64_t table = 0, entries = 0;
-    for (size_t k = n - 3; k-- > 0 && k + 32 > n;) { /* the nearest; the default case can sit between */
+    int tr = t; /* the register the table's address was in: T, or what T was copied from */
+    for (size_t k = a - 1; k-- > 0 && k + 32 > n;) { /* the nearest; the default case can sit between */
         const Insn *x = &list[k];
-        if (!table && x->in.mnemonic == M(LEA) && x->in.op[0].type == OP_REG && x->in.op[0].reg == t &&
+        if (!table && x->in.mnemonic == M(LEA) && x->in.op[0].type == OP_REG && x->in.op[0].reg == tr &&
             x->in.op[1].base == 0xfe && x->in.op[1].index == 0xff)
             table = x->off + x->in.length + (uint64_t)x->in.op[1].disp;
+        else if (!table && x->in.mnemonic == M(MOV) && gpr(&x->in.op[0]) && x->in.op[0].reg == tr &&
+                 x->in.op[0].size == 8 && gpr(&x->in.op[1]) && x->in.op[1].size == 8)
+            tr = x->in.op[1].reg;
         if (!entries && x->in.mnemonic == M(CMP) && x->in.op[0].type == OP_REG && x->in.op[0].reg == index &&
             x->in.op[1].type == OP_IMM && k + 1 < n &&
             (list[k + 1].in.mnemonic == M(JNBE) || list[k + 1].in.mnemonic == M(JBE)))
@@ -1567,7 +1594,7 @@ static int jump_table(Function fn, const Insn *list, size_t n, uint64_t *work, s
     }
     /* Also: cmp R, N, then flag-free moves (the index copied from R: mov I, R), then ja
      * (clang interleaves the stores of the case's common code). */
-    for (size_t k = n - 3; !entries && k-- > 0 && k + 32 > n;) {
+    for (size_t k = a - 1; !entries && k-- > 0 && k + 32 > n;) {
         if (list[k].in.mnemonic != M(JNBE) && list[k].in.mnemonic != M(JBE)) continue;
         int from = -1; /* the register the bound applies to */
         for (size_t j = k; j-- > 0 && j + 8 > k;) {
@@ -1581,7 +1608,7 @@ static int jump_table(Function fn, const Insn *list, size_t n, uint64_t *work, s
         if (!entries) break;
         /* The index is R, or a copy of R made after the cmp (before the table load). */
         int ok = from == index;
-        for (size_t j = k + 1; !ok && j < n - 3; ++j) {
+        for (size_t j = k + 1; !ok && j < a - 1; ++j) {
             const BbInsn *x = &list[j].in;
             if (x->mnemonic == M(MOV) && x->op[0].type == OP_REG && x->op[0].reg == index && x->op[1].type == OP_REG &&
                 x->op[1].reg == from) ok = 1;
@@ -1595,7 +1622,18 @@ static int jump_table(Function fn, const Insn *list, size_t n, uint64_t *work, s
         if (!ok) entries = 0;
         break;
     }
-    if (table && !entries) entries = table_bound(list, n, index);
+    if (!table) { /* the lea hoisted out of a loop: the nearest one before the load, in address order */
+        uint64_t best_off = 0;
+        for (size_t k = 0; k + 1 < a; ++k) {
+            const Insn *x = &list[k];
+            if (x->in.mnemonic == M(LEA) && x->in.op[0].type == OP_REG && x->in.op[0].reg == tr &&
+                x->in.op[1].base == 0xfe && x->in.op[1].index == 0xff && x->off < list[a - 1].off && x->off >= best_off) {
+                best_off = x->off;
+                table = x->off + x->in.length + (uint64_t)x->in.op[1].disp;
+            }
+        }
+    }
+    if (table && !entries) entries = table_bound(list, n, index, list[a - 1].off);
     if (!table || !entries || entries > 4096) return 0;
     for (uint64_t e = 0; e < entries; ++e) {
         int32_t rel;
@@ -1643,9 +1681,10 @@ static Insn *decode(Function fn, size_t *count) {
                     const uint64_t t = off + (uint64_t)in->op[0].disp;
                     if (t >= fn.offset && t < fn.offset + fn.size && !seen[t - fn.offset]) work[pending++] = t;
                 }
-                if (m == M(JMP) && in->op[0].type == OP_REG &&
-                    !(pending + 4096 < work_capacity && jump_table(fn, list, n, work, &pending, seen)))
-                    computed_jump = 1;
+                if (m == M(JMP) && in->op[0].type == OP_REG) {
+                    if (pending + 4096 < work_capacity && jump_table(fn, list, n, work, &pending, seen)) ++tables_decoded;
+                    else computed_jump = 1, ++jumps_left;
+                }
                 /* No fall-through after these. */
                 if (!falls_through(off, in)) ended = 2;
                 off += in->length;
@@ -2224,7 +2263,7 @@ int main(int argc, char **argv) {
     emit("};\n\n__attribute__((visibility(\"default\"))) const RcFunction *bb_recomp_init(const RcApi *api, size_t *count) {\n");
     emit("    rc = api;\n    *count = sizeof(table) / sizeof(table[0]);\n    return table;\n}\n");
     fclose(out);
-    printf("%zu functions, %" PRIu64 " instructions: %" PRIu64 " in C (%.0f%%), the rest in the interpreter; %d files\n",
-           function_count, stats[2], stats[0], stats[2] ? 100.0 * (double)stats[0] / (double)stats[2] : 0.0, files);
+    printf("%zu functions, %" PRIu64 " instructions: %" PRIu64 " in C (%.0f%%), the rest in the interpreter; %d files; %" PRIu64 " jump tables decoded, %" PRIu64 " indirect jumps left\n",
+           function_count, stats[2], stats[0], stats[2] ? 100.0 * (double)stats[0] / (double)stats[2] : 0.0, files, tables_decoded, jumps_left);
     return 0;
 }

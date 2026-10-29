@@ -467,6 +467,7 @@ one core against 402% at the 1st Floor Sickroom lamp (about 1,283 draws a frame)
 | `rc_call` without thread-local storage | the per-call filter and counter read TLS; now a leaf with the slow paths out of line | about 4 points |
 | Copying only the registers that need it around calls | 39 copies a call became 23; code 26% smaller | 373% to 344% |
 | Jump tables bounded across blocks (307 more, 3,663 in all); six more C library calls on the host (`strncmp`, `strchr`, `strstr`, `exp2f`, `wcschr`, `wcscmp`) | 69,600 calls a second into the translator became 40,300 (Cathedral Ward) | 342% to 339% |
+| Jump tables with code between the `add` and the `jmp`, a copied table register, or the `lea` hoisted out of a loop (99 more, 3,762 in all; 155,000 instructions the generator had never reached, 1.4% of the code, now in C) | 40,300 calls a second into the translator became 30,300; the generator counts its tables and the indirect jumps left (9,231, tail calls through registers among them) | measured with the next change |
 
 **Tried without a measurable gain,** left out: a cache at each indirect call site (it took 7.8 of
 11.4 million calls a second off `rc_call`; what `rc_call` costs is its indirect jump); vector
