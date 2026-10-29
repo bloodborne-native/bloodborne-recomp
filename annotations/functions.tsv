@@ -198,8 +198,8 @@
 0x26bc2e0	CG::ResourceBinder::beforeDraw	guess	calls	void (CG::ResourceBinder *, CG::GraphicsContext *, const CG::DrawState *)
 0x26bc320	CG::ResourceBinder::commitGraphics	guess	calls	void (CG::ResourceBinder *, CG::GraphicsContext *, const CG::DrawState *)
 0x26cbd50	CG::ResourceBinder::afterDraw	guess	calls	void (CG::ResourceBinder *, CG::GraphicsContext *)
-0x26cbe50	CG::ResourceBinder::beforeDispatch	guess	calls	void (CG::ResourceBinder *, CG::GraphicsContext *, const CG::ComputeState *)
-0x26cbe90	CG::ResourceBinder::commitCompute	guess	calls	void (CG::ResourceBinder *, CG::GraphicsContext *, const CG::ComputeState *)
+0x26cbe50	CG::ResourceBinder::beforeDispatch	sure	calls	void (CG::ResourceBinder *, CG::GraphicsContext *, const CG::ComputeState *)
+0x26cbe90	CG::ResourceBinder::commitCompute	sure	calls	void (CG::ResourceBinder *, CG::GraphicsContext *, const CG::ComputeState *)
 0x26ccf20	CG::ResourceBinder::afterDispatch	guess	calls	void (CG::ResourceBinder *, CG::GraphicsContext *, const CG::ComputeState *)
 0x26cd400	CG::ResourceBinder::setComputeShader	guess	calls
 0x26cd5d0	CG::ResourceBinder::commitComputePass	guess	calls

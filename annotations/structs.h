@@ -135,6 +135,18 @@ typedef struct CgDrawState {
     CgShaderStage stages[5];             /* 0x598: by CgStage */
 } CgDrawState;
 
+/* What CG::ResourceBinder::commitCompute binds for a dispatch (CG::GraphicsContext::dispatch and the
+ * surface operations' beforeDispatch pass it): the compute shader's stage, laid out as a draw
+ * stage, where a CgDrawState would end (commitCompute reads nothing before it), and the writable
+ * resources after it. */
+typedef struct CgComputeState {
+    uint8_t unknown_000[0x1e70];
+    CgShaderStage stage;                 /* 0x1e70: the compute shader's samplers, textures,
+                                            constant buffers and shader */
+    const void *writable[8];             /* 0x2368: writable textures and buffers; each holds its T#
+                                            (or a V# in the first 16 bytes) at +0x10 */
+} CgComputeState;
+
 /* A texture of a material (0x38 bytes; FD4::MaterialTextures::bind walks the material's list at
  * +0xb0): bound to the pixel stage's slot, and to the domain stage's too for some kinds (the
  * flag below), with its UV transform gathered into a constant buffer for the same stages. */
@@ -255,4 +267,7 @@ CG_AT(CgConstantBuffer, size, 0x2c);
 _Static_assert(offsetof(CgDrawState, stages[CG_PIXEL].shader) == 0x1e68, "the pixel shader");
 _Static_assert(offsetof(CgDrawState, stages[CG_GEOMETRY].shader) == 0x1970, "the geometry shader");
 _Static_assert(sizeof(CgDrawState) == 0x1e70, "CgDrawState");
+CG_AT(CgComputeState, stage, 0x1e70);
+CG_AT(CgComputeState, writable, 0x2368);
+_Static_assert(offsetof(CgComputeState, stage.shader) == 0x2360, "the compute shader");
 #undef CG_AT
