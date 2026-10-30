@@ -54,7 +54,7 @@ which the launcher builds on the player's device. Next, in the app's
 [roadmap](https://github.com/bloodborne-native/bloodborne-mac/blob/main/docs/ROADMAP.md) order:
 the CPU work here. Its first plan is measured ("Where the CPU time goes"): clang already drops the
 flags nothing reads, and plain accesses to private frames gain nothing. Next: the runtime's share
-of the game's main thread (about 11% of its busy time in Cathedral Ward: `rc_call` 5%, host calls
+of the game's main thread (about 11% of its busy time in Iosefka's Clinic: `rc_call` 5%, host calls
 3.5%, code left to the translator 2.5%); then, with the maintainer's conditions (the generator's
 analysis, a safety case and a long play session), memory ordering kept only around the engine's
 synchronization.
@@ -68,7 +68,7 @@ synchronization.
 | Functions recompiled, running in the game | `████████████████████` 99.7% | 240,978 of 241,821 |
 | Instructions recompiled | `███████████████████░` 96.4% | 10,861,735 of 11,268,132 |
 | Instructions in plain C (of those recompiled) | `████████████████████` 99.1% | 10,761,111 of 10,861,735 |
-| CPU time recompiled, against the translator | `█████████████████░░░` 86% | 344% of one core against 402% (1st Floor Sickroom), 360% against 397% (Cathedral Ward, 2026-10-27) |
+| CPU time recompiled, against the translator | `█████████████████░░░` 86% | 344% of one core against 402% (1st Floor Sickroom), 360% against 397% (Iosefka's Clinic, 2026-10-27) |
 | Functions checked call by call (recordings) | `░░░░░░░░░░░░░░░░░░░░` 0.4% | 933 of 241,821 |
 | Functions labelled by library (2026-10-24) | `█████████████░░░░░░░` 62.7% | 151,562 of 241,821 |
 | R4 (annotations), by its steps | `████████████████████` 100% | R4.1 to R4.5 done |
@@ -459,7 +459,7 @@ dominates, so the CPU side gets faster by recompiling all of them (R2) and makin
 
 **Now:** the library takes 14% less CPU time than the translator at the same frame rate: 344% of
 one core against 402% at the 1st Floor Sickroom lamp (about 1,283 draws a frame), 360% against
-397% in Cathedral Ward (M3 Pro).
+397% in Iosefka's Clinic (M3 Pro).
 
 **What got it there,** each measured at the Sickroom against the translator:
 
@@ -470,7 +470,7 @@ one core against 402% at the 1st Floor Sickroom lamp (about 1,283 draws a frame)
 | Vector registers in locals | x86 ordering's barriers made clang store and reload vector registers around every access (FMOD's mixer: 90% of a core against 45% translated) | 409% to 381% |
 | `rc_call` without thread-local storage | the per-call filter and counter read TLS; now a leaf with the slow paths out of line | about 4 points |
 | Copying only the registers that need it around calls | 39 copies a call became 23; code 26% smaller | 373% to 344% |
-| Jump tables bounded across blocks (307 more, 3,663 in all); six more C library calls on the host (`strncmp`, `strchr`, `strstr`, `exp2f`, `wcschr`, `wcscmp`) | 69,600 calls a second into the translator became 40,300 (Cathedral Ward) | 342% to 339% |
+| Jump tables bounded across blocks (307 more, 3,663 in all); six more C library calls on the host (`strncmp`, `strchr`, `strstr`, `exp2f`, `wcschr`, `wcscmp`) | 69,600 calls a second into the translator became 40,300 (Iosefka's Clinic) | 342% to 339% |
 | Jump tables with code between the `add` and the `jmp`, a copied table register, or the `lea` hoisted out of a loop (99 more, 3,762 in all; 155,000 instructions the generator had never reached, 1.4% of the code, now in C) | 40,300 calls a second into the translator became 30,300; the generator counts its tables and the indirect jumps left (9,231, tail calls through registers among them) | measured with the next change |
 
 **Tried without a measurable gain,** left out: a cache at each indirect call site (it took 7.8 of
@@ -478,7 +478,7 @@ one core against 402% at the 1st Floor Sickroom lamp (about 1,283 draws a frame)
 accesses as two 8-byte `ldapr`/`stlr`; `ldapur`/`stlur` with their offsets (and the M1 lacks
 them); plain accesses for a thread's private stack slots (push, pop, return addresses); plain
 accesses, scalar and vector, to a function's whole frame when no address in it leaves the function
-(13% of the library's accesses; 344% against 345% in three alternating pairs in Cathedral Ward).
+(13% of the library's accesses; 344% against 345% in three alternating pairs in Iosefka's Clinic).
 Without any barrier on vector accesses (unsafe, measured only) the library took about 2% less CPU
 time per frame: vector barriers are not where ordering costs either. Host functions taking only integers
 (85% of the 2.6 million host calls a second: memcpy, ldiv, memset, the mutexes) called directly
@@ -491,7 +491,7 @@ ordinary accesses. Neither the frame (no gain) nor the vector barriers (about 2%
 leaves the scalar accesses to shared memory, where no analysis in the generator can tell which ones
 another thread reads.
 
-**Open:** the calls that still go into the translator (9,400 a second in Cathedral Ward, from 69,600 before
+**Open:** the calls that still go into the translator (9,400 a second in Iosefka's Clinic, from 69,600 before
 the jump-table rules and the host C library calls: nearly all the game's operator new and delete,
 which run its own heap;
 `BB_RECOMP_TARGETS=1` names them, and the host functions behind the import stubs: in Cathedral
