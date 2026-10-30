@@ -4,12 +4,16 @@ in one run that a launcher can follow and resume (docs/RECOMPILATION.md, "Buildi
 
   build_library.py --game GAME_DIR --work WORK_DIR --toolchain LLVM_DIR [--jobs N] [--keep]
   build_library.py --version     the recompiler version this kit builds with (a library records it)
+  build_library.py --api         the library interface version (BB_RECOMP_API_VERSION): a library of
+                                 another recompiler version but this interface still loads
 
 GAME_DIR holds eboot.bin (1.09). LLVM_DIR is an LLVM release (bin/clang, bin/ld64.lld,
 lib/clang/<major>/include): no Xcode and no macOS SDK are used. WORK_DIR receives
-librecomp.dylib and library.json (what it was built from); the generated C and the objects stay in
-WORK_DIR/build until the library is linked (--keep keeps them), so an interrupted run compiles
-only the files left. The generated C is the game's code: it never leaves the player's machine.
+librecomp.dylib and library.json (what it was built from). The objects stay in WORK_DIR/build/obj,
+each with the fingerprint of the C it came from (comments left out, so the annotations' names do
+not count): the next build, after an interrupted run or with another recompiler, compiles only the
+files whose C changed. The generated C is deleted once the library is linked (--keep keeps it). It
+is the game's code, as are the objects: neither leaves the player's machine.
 
 Progress: one JSON object a line on stdout ({"event": "step", "step": ...}, {"event": "compile",
 "done": n, "total": m}, {"event": "done", ...}, or {"event": "error", "message": ...} and exit 1).
@@ -24,6 +28,7 @@ import hashlib
 import json
 import os
 import pathlib
+import re
 import shutil
 import subprocess
 import sys
@@ -72,6 +77,13 @@ class Kit:
                 fail(f'{self.bin / tool} is missing (./build.sh builds it).')
         if not self.annotations.exists():
             fail(f'{self.annotations} is missing.')
+        self.api = None
+        for root in self.include:
+            header = root / 'recomp' / 'rc.h'
+            if header.exists():
+                found = re.search(r'#define\s+BB_RECOMP_API_VERSION\s+(\d+)', header.read_text())
+                self.api = int(found.group(1)) if found else None
+                break
 
 
 def sha256(path):
@@ -104,9 +116,10 @@ def prepare(kit, game, build, key):
     stamp = build / 'prepared.json'
     if stamp.exists() and json.loads(stamp.read_text()) == key and any(build.glob('gen/recomp*.c')):
         return
-    for sub in ('scan', 'gen', 'obj'):
+    for sub in ('scan', 'gen'):  # obj stays: its fingerprints say which objects are still right
         shutil.rmtree(build / sub, ignore_errors=True)
         (build / sub).mkdir(parents=True)
+    (build / 'obj').mkdir(exist_ok=True)
     py = [sys.executable]
     tools = HERE
     # Each task as it starts (the launcher shows it), with what it found once known.
@@ -127,7 +140,18 @@ def prepare(kit, game, build, key):
     stamp.write_text(json.dumps(key))
 
 
-def compile_all(kit, clang, resource, build, jobs):
+COMMENT = re.compile(r'/\*.*?\*/', re.S)
+
+
+def fingerprint(source, salt):
+    """The C a file compiles, without its comments (annotation names, offsets), with the compiler
+    and its flags: equal fingerprints give the same object."""
+    digest = hashlib.sha256(salt.encode())
+    digest.update(COMMENT.sub('', source.read_text(errors='replace')).encode())
+    return digest.hexdigest()
+
+
+def compile_all(kit, clang, resource, build, jobs, compiler):
     sources = sorted(build.glob('gen/recomp*.c'))
     obj = build / 'obj'
     for leftover in obj.glob('*.tmp'):  # from an interrupted compile
@@ -135,10 +159,22 @@ def compile_all(kit, clang, resource, build, jobs):
     for leftover in obj.glob('*.o-*'):
         leftover.unlink()
     target = {source: obj / (source.name + '.o') for source in sources}
-    todo = [s for s in sources if not (target[s].exists() and target[s].stat().st_mtime >= s.stat().st_mtime)]
-    done = len(sources) - len(todo)
-    emit('compile', done=done, total=len(sources))
+    wanted = {path.name for path in target.values()}
+    for stale in obj.glob('*.o'):  # files the generator no longer writes
+        if stale.name not in wanted:
+            stale.unlink()
+            stale.with_suffix('.fp').unlink(missing_ok=True)
     flags = CFLAGS + ['-isystem', resource, '-isystem', kit.sdkless] + [f'-I{p}' for p in kit.include]
+    salt = compiler + '\n' + ' '.join(map(str, CFLAGS))
+    prints = {source: fingerprint(source, salt) for source in sources}
+
+    def current(source):
+        stamp = target[source].with_suffix('.fp')
+        return target[source].exists() and stamp.exists() and stamp.read_text() == prints[source]
+
+    todo = [s for s in sources if not current(s)]
+    done = len(sources) - len(todo)
+    emit('compile', done=done, total=len(sources), reused=done)
 
     def one(source):
         partial = target[source].with_suffix('.o-partial')
@@ -146,6 +182,7 @@ def compile_all(kit, clang, resource, build, jobs):
         if result.returncode:
             return source, result.stderr.strip().splitlines()[-3:]
         partial.rename(target[source])
+        target[source].with_suffix('.fp').write_text(prints[source])
         return source, None
 
     # Counted as each file finishes: pool.map gives results in submission order, so one large file
@@ -173,6 +210,7 @@ def link(clang, objects, out):
 def main():
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument('--version', action='store_true')
+    parser.add_argument('--api', action='store_true')
     parser.add_argument('--game', type=pathlib.Path)
     parser.add_argument('--work', type=pathlib.Path)
     parser.add_argument('--toolchain', type=pathlib.Path)
@@ -183,6 +221,9 @@ def main():
     kit = Kit()
     if args.version:
         print(kit.version)
+        return
+    if args.api:
+        print(kit.api if kit.api is not None else 'unknown')
         return
     if not (args.game and args.work and args.toolchain):
         parser.error('--game, --work and --toolchain are required')
@@ -195,16 +236,19 @@ def main():
     key = {'format': FORMAT, 'recomp': kit.version, 'eboot_sha256': sha256(args.game / 'eboot.bin'),
            'annotations_sha256': sha256(kit.annotations)}
     prepare(kit, args.game, build, key)
-    objects = compile_all(kit, clang, resource, build, args.jobs)
+    version = run([clang, '--version'], 'Reading the compiler version').stdout.splitlines()[0]
+    objects = compile_all(kit, clang, resource, build, args.jobs, version)
     library = args.work / 'librecomp.dylib'
     link(clang, objects, library)
-    version = run([clang, '--version'], 'Reading the compiler version').stdout.splitlines()[0]
-    manifest = {**key, 'functions': len((build / 'scan' / 'all.txt').read_text().split()),
+    manifest = {**key, 'api': kit.api, 'functions': len((build / 'scan' / 'all.txt').read_text().split()),
                 'compiler': version, 'built': datetime.datetime.now(datetime.timezone.utc).isoformat(timespec='seconds'),
                 'seconds': round(time.monotonic() - started), 'size': library.stat().st_size}
     (args.work / 'library.json').write_text(json.dumps(manifest, indent=1) + '\n')
-    if not args.keep:
-        shutil.rmtree(build, ignore_errors=True)
+    if not args.keep:  # the objects and their fingerprints stay for the next build
+        for sub in ('gen', 'scan'):
+            shutil.rmtree(build / sub, ignore_errors=True)
+        for leftover in ('eboot.elf', 'prepared.json'):
+            (build / leftover).unlink(missing_ok=True)
     emit('done', library=str(library), **manifest)
 
 

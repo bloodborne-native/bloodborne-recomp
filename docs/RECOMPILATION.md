@@ -224,10 +224,19 @@ python3 tools/recomp/build_library.py --game "$GAME" --work WORK --toolchain LLV
   functions replaced and no faults; median frame 26.7 ms against 26.3 ms with the library built by
   Xcode's clang, on the same save.
 - **Progress and resuming:** one JSON object a line on stdout (steps, files compiled, done or
-  error). An interrupted build keeps what it compiled; the next run compiles only the rest, unless
-  the executable or this repository's version changed. `library.json` beside the library records
-  both (and the compiler, the time and the size); the launcher uses the library only while they
-  match.
+  error). `library.json` beside the library records the executable's SHA-256, this repository's
+  version, the library interface (`api`: `BB_RECOMP_API_VERSION`), the compiler, the time and the
+  size.
+- **Updates compile only what changed:** the objects stay in `WORK/build/obj` (about 400 MB, on top
+  of the 314 MB library), each with the fingerprint of the C it came from (its comments left out,
+  so the annotations' names do not count, with the compiler and the flags). The next build, after
+  an interrupted run or with another version of the recompiler, generates the C again and compiles
+  only the files whose fingerprint changed; with nothing changed it took 23 s against 823 s for
+  the whole library (M3 Pro). The generated C is still deleted once the library links.
+- **Which library the launcher uses:** one built from this executable, by this version or by an
+  earlier one with the same library interface. Such a library keeps loading and the launcher offers
+  an update; one for another interface is built again. Libraries recorded before the `api` field
+  are matched by the kit's `COMPATIBLE` list (every commit since `rc.h` last changed).
 
 ## Annotations
 
