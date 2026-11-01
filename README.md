@@ -2,8 +2,10 @@
 
 [![Discord](https://img.shields.io/badge/Discord-join%20the%20server-5865F2?logo=discord&logoColor=white)](https://discord.gg/QS6vHz45xA)
 
-Bloodborne was written for the PS4. This project rebuilds the game's code for other machines, so
-that it runs as native code instead of being translated while you play.
+A **static recompiler** for Bloodborne (PS4, CUSA03173 1.09): it reads the game's x86-64 executable
+and writes its functions out as C, which a compiler turns into a native arm64 library the game
+loads. In plain words, it rebuilds the PS4 game's code for other machines, so that it runs as native
+code instead of being translated while you play.
 
 **This is the tool, not the game.** It reads your own copy of the game (CUSA03173, update 1.09) on
 your own device. No game code is in this repository, and none is ever published.
@@ -25,15 +27,20 @@ platform it runs on, as if it had been made for it.
 
 ## How it works
 
-Recompiling does the translation once, ahead of time:
+The usual way to run foreign code is **dynamic**: a JIT translator converts it while the game runs.
+A **static** recompiler converts it once, ahead of time, before the game starts:
 
 1. The recompiler reads your copy of the game's executable and finds its functions.
 2. It writes each function out as C.
 3. A compiler turns that C into a native library on your device.
 4. The game loads the library and runs it in place of the translated code.
 
-Anything that cannot be recompiled yet still runs in the translator, so the game stays playable at
-every step. Calls recorded during play can be replayed against the generated code, and every
+The generated code is not a port to new source code: it is the game's own logic, instruction by
+instruction. Guest memory is host memory and x86-64 and arm64 share the LP64 layout rules, so it
+works directly on the game's live objects. It stands on bbcpu, this repository's CPU layer.
+
+Anything that cannot be recompiled yet still runs in bbcpu's translator, so the game stays playable
+at every step. Calls recorded during play can be replayed against the generated code, and every
 instruction form the generator handles is checked against the interpreter.
 
 The same approach is behind N64Recomp and *Unleashed Recompiled*.
