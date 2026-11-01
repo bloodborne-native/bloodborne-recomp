@@ -45,15 +45,20 @@ instruction form the generator handles is checked against the interpreter.
 
 The same approach is behind N64Recomp and *Unleashed Recompiled*.
 
-## Why it matters: the iPhone
+## What it makes possible
 
-iOS shows the difference best. Normal iOS apps cannot generate and run code on the fly (JIT), and
-that is what translating a game while it plays depends on. Apps also have a much tighter memory
-budget than on a Mac.
+The point is a game that is truly native, so it can run anywhere. Once the game's code is C, a
+compiler can build it for any platform, with no translator in between. On the way there:
 
-With recompiled code, everything is compiled before the game starts, and the game's code does not
-have to be kept decoded in memory. That is what makes the
-[iPhone proof of concept](https://github.com/bloodborne-native/bloodborne-ios) possible at all.
+- **Less overhead.** The processor does the game's work instead of translating it, and memory is
+  not spent keeping the game's code decoded.
+- **Code that can be understood.** Generated functions can be named and described, which is how the
+  engine's rendering was mapped for the native renderer.
+- **Platforms a translator cannot reach.** The
+  [iPhone proof of concept](https://github.com/bloodborne-native/bloodborne-ios) is one example.
+  Normal iOS apps cannot generate and run code on the fly (JIT), which translating a game while it
+  plays depends on, and they have a much tighter memory budget than on a Mac. Recompiled code is
+  already compiled when the game starts, so the game runs there at all.
 
 ## What has been done
 
