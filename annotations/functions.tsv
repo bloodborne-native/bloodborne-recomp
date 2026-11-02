@@ -42,6 +42,7 @@
 0xa5d030	Lua::lua_yield	guess	message	
 0xa6c3c0	Lua::getinfo	guess	message	
 0xa724e0	Lua::getfunc	guess	message	
+0xce5990	EzMenuDlgObj::findChild	guess	calls	
 0xcea890	EzMenuDlgObj::getString	guess	calls	
 0xcecaf0	EzMenuDialog::findByName	guess	calls	
 0xcedd90	EzMenuDlgObj::getBool	guess	calls	
@@ -81,6 +82,7 @@
 0xf5d720	DoubleBuffer::swap	guess	calls	
 0xf6f340	FD4::IdTable::find	guess	calls	
 0xf84700	FD4ResCap::FD4ResCap	sure	calls	
+0xf882e0	Template::destroyOwnedList	guess	calls	
 0xf8e690	FD4BaseKeyAssign::bind	guess	calls	
 0xf9b740	FD4::DebugMenu::addItem	guess	calls	
 0xf9cd80	FD4DebugMenuItem::addChildItem	guess	calls	
@@ -197,6 +199,7 @@
 0x12334b0	NvmLocator::locate	guess	calls	
 0x125bad0	SprjAiFunc::IsApparentDeath	sure	binding	
 0x12acfa0	Sprj::ParamList::selectActive	guess	calls	void *(void *)
+0x12e6cf0	DL::WString::constructFormat	guess	calls	
 0x1335870	SprjLuaEventProxy::DisableHpGauge	sure	binding	
 0x13386d0	SprjLuaEventProxy::SetEventFlagValue	sure	binding	
 0x1399bf0	Sprj::EventFlagManager::getFlag	sure	message	bool (void *, uint32_t flag)
@@ -292,6 +295,7 @@
 0x1d34880	FD4::Skeleton::getBoneMatrices	guess	calls	uint32_t (const FD4::Skeleton *, float (*matrices)[12], uint32_t count, uint32_t first)
 0x1d37400	FD4::ModelInstance::updateBoundsAndSkinning	guess	calls	void (FD4::ModelInstance *, void *)
 0x1d3ae20	FD4::Skeleton::getWorldBoneMatrices	guess	calls	int (const FD4::Skeleton *, float (*matrices)[12], uint32_t count, uint32_t first)
+0x1d3c000	SprjFD4Location::detachFromParent	guess	calls	
 0x1d3c500	SprjFD4Location::updateTree	guess	calls	
 0x1d44d80	ModelViewer::setDefaultEnvMaps	guess	calls	
 0x1d59ba0	FlverModel::drawInstance	guess	calls	
@@ -657,10 +661,12 @@
 0x28f83e0	FX::PrimitiveRenderer::draw#8	guess	calls
 0x28f89a0	CG::UploadRing::map	guess	calls
 0x28f8a30	CG::UploadRing::draw	guess	calls	void (CG::GraphicsContext *, CG::UploadRing *, uint32_t primitive, uint32_t index_count, uint32_t vertex_count, uint32_t stride, const int32_t *, const int32_t *)
+0x292a590	FD4DebugMenu::addRangeItem	guess	calls	
 0x292f510	CG::ShaderProgram::bind	sure	calls	void (const CG::ShaderProgram *, void *draw_state_builder)
 0x2967040	DL::WString::fromWide	sure	calls	
 0x29824b0	Json::Value::clear	guess	calls	
 0x298e220	DL::WString::appendFormat	guess	calls	
+0x2adc8e0	std::map::operatorIndex_2adc8e0	guess	calls	
 0x2ba1b80	DL::PoolHeap::allocate	guess	calls	
 0x2ba7870	DL::SharedWString::copy	sure	calls	
 0x2ba7940	DL::SharedWString::release	sure	calls	
