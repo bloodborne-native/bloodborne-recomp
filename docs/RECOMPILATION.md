@@ -173,7 +173,7 @@ All write to `out/recomp/`.
 | `tools/recomp/label.py` | The library of each function (`modules.tsv`), from source paths and messages, spread to neighbours, vtables, callers and callees (`--check`: their agreement) |
 | `tools/recomp/profile.py` | CPU time per function and library from a macOS `sample` (`profile.tsv`) |
 | `tools/recomp/inspect.sh` | Ghidra's view of chosen functions (`c/<offset>.c`, `.s`), for analysis and annotations |
-| `BB_RECORD` (`src/cpu/record.c`) | Calls of chosen functions recorded in the game (`records/<offset>.rec`) |
+| `BB_RECORD` (bbcpu's `src/cpu/record.c`) | Calls of chosen functions recorded in the game (`records/<offset>.rec`) |
 | `tools/recomp/replay.sh` | Recorded calls replayed and checked (`--recomp LIB`: the generated code) |
 | `tools/recomp/recomp.sh` | Generated C for chosen functions, compiled (`librecomp.dylib`; `BB_RECOMP_LIB`) |
 | `tools/recomp/build_library.py` | The whole library from a player's game in one resumable run, with only an LLVM toolchain (below); what the launcher runs |
@@ -563,7 +563,7 @@ NATIVE_RENDERER.md) and the generator's CPU work (the app's roadmap).
 ## Record and replay
 
 With `BB_RECORD`, the translator leaves the chosen functions' first instruction to the
-interpreter, which runs each recorded call in a tracer (`src/cpu/record.c`): one instruction at a
+interpreter, which runs each recorded call in a tracer (bbcpu's `src/cpu/record.c`): one instruction at a
 time, reading the memory each one accesses before and after it runs. The record holds the
 registers at entry, the memory the function read (the first time in each epoch), the memory it
 wrote, and the calls it made with their registers. Calls run at full speed; after each one the

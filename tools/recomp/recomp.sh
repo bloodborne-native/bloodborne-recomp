@@ -11,9 +11,9 @@ G=out/recomp/gen
 mkdir -p "$G"
 offsets=("$@")
 if [[ ${1:-} == --file ]]; then offsets=("@$2"); fi
-clang "${arch[@]}" -O1 -g -std=gnu11 -Wall -I$D/include tools/recomp/bbrecomp.c src/cpu/cpu.c \
-    src/cpu/decode.c src/cpu/interp.c src/cpu/interp_vec.c src/cpu/interp_x87.c src/cpu/jit_arm64.c \
-    src/cpu/record.c src/cpu/native.c src/cpu/recomp.c src/cpu/hostcall.S $D/lib/libZydis.a \
+clang "${arch[@]}" -O1 -g -std=gnu11 -Wall -I$D/include -I$BBCPU/src tools/recomp/bbrecomp.c $BBCPU/src/cpu/cpu.c \
+    $BBCPU/src/cpu/decode.c $BBCPU/src/cpu/interp.c $BBCPU/src/cpu/interp_vec.c $BBCPU/src/cpu/interp_x87.c $BBCPU/src/cpu/jit_arm64.c \
+    $BBCPU/src/cpu/record.c $BBCPU/src/cpu/native.c $BBCPU/src/cpu/recomp.c $BBCPU/src/cpu/hostcall.S $D/lib/libZydis.a \
     $D/lib/libZycore.a -o out/recomp/bbrecomp
 # Generated into $G/new; only files whose C changed are compiled again (OPT: clang's -O level).
 rm -rf out/recomp/gen/new; mkdir -p "$G/new"
@@ -30,7 +30,7 @@ echo "${#changed[@]} files to compile"
 # Floating point as on x86: no fused multiply-add.
 printf '%s\n' "${changed[@]}" | grep . | xargs -P "$jobs" -I{} clang "${arch[@]}" -O${OPT:-2} -g -std=gnu11 \
     -Wall -Wno-unused-label -Wno-unused-variable -ffp-contract=off -fno-strict-aliasing -fvisibility=hidden \
-    -I$D/include -Isrc -c {} -o {}.o || true
+    -I$D/include -I$BBCPU/src -c {} -o {}.o || true
 for f in "${changed[@]}"; do [[ -e $f.o && $f.o -nt $f ]] || { echo "failed: $f"; exit 1; }; done
 clang "${arch[@]}" "${shared[@]}" "$G"/recomp*.o -o out/recomp/librecomp.$lib
 echo "out/recomp/librecomp.$lib"

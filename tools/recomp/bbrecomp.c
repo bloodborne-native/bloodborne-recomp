@@ -8,7 +8,7 @@
  * translate run in the interpreter (rc->step) with the state spilled around them; a branch to an
  * unknown place goes back to the translator (rc->bail) or, out of the function, is a tail call
  * (rc->tail). */
-#include "../../src/cpu/trace.h"
+#include "cpu/trace.h"
 #include <inttypes.h>
 #include <stdarg.h>
 #include <stdio.h>

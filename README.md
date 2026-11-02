@@ -42,7 +42,7 @@ A **static** recompiler converts it once, ahead of time, before the game starts:
 
 The generated code is not a port to new source code: it is the game's own logic, instruction by
 instruction. Guest memory is host memory and x86-64 and arm64 share the LP64 layout rules, so it
-works directly on the game's live objects. It stands on bbcpu, this repository's CPU layer.
+works directly on the game's live objects. It stands on [bbcpu](https://github.com/bloodborne-native/bbcpu), the CPU layer.
 
 Anything that cannot be recompiled yet still runs in bbcpu's translator, so the game stays playable
 at every step. Calls recorded during play can be replayed against the generated code, and every
@@ -111,17 +111,14 @@ All docs: [docs/README.md](docs/README.md).
 ## What is in this repository
 
 - **The recompiler:** reads the game's executable and generates the C.
-- **bbcpu:** the CPU layer the recompiled code stands on: an x86-64 decoder, an interpreter, an
-  x86-64 → arm64 translator, and the record and replay tracer that checks recompiled functions
-  against the original. Nothing here depends on an operating system: programs link
-  `out/libbbcpu.a` and give it `runtime_low_map` (memory for guest stacks).
 - **Annotations:** the project's names for the game's functions and the layouts of its objects.
 
 ### The project's repositories
 
 | Repository | |
 |---|---|
-| **bloodborne-recomp** (this one) | The recompiler and bbcpu: portable |
+| **bloodborne-recomp** (this one) | The recompiler: portable |
+| [bbcpu](https://github.com/bloodborne-native/bbcpu) | The CPU layer the recompiled code stands on |
 | [bloodborne-runtime](https://github.com/bloodborne-native/bloodborne-runtime) | Loads the game: the PS4 libraries, the renderer; loads the recompiled library |
 | [bloodborne-launcher](https://github.com/bloodborne-native/bloodborne-launcher) | The independent launcher, packaged in the macOS app |
 | [bloodborne-mac](https://github.com/bloodborne-native/bloodborne-mac) | Packages the macOS app, built on runtime and recomp |

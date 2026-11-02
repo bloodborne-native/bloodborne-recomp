@@ -18,7 +18,7 @@ is the game's code, as are the objects: neither leaves the player's machine.
 Progress: one JSON object a line on stdout ({"event": "step", "step": ...}, {"event": "compile",
 "done": n, "total": m}, {"event": "done", ...}, or {"event": "error", "message": ...} and exit 1).
 
-Runs from a checkout (out/recomp/scan and bbrecomp from ./build.sh, src/ and deps/include) or from
+Runs from a checkout (out/recomp/scan and bbrecomp from ./build.sh, bbcpu's src/ beside it and deps/include) or from
 an app's kit (KIT/bin, KIT/include, KIT/sdkless, KIT/annotations, KIT/tools with this script,
 KIT/VERSION)."""
 import argparse
@@ -68,7 +68,7 @@ class Kit:
             self.version = (kit / 'VERSION').read_text().strip()
         else:
             repo = HERE.parent.parent
-            self.bin, self.include, self.sdkless = repo / 'out' / 'recomp', [repo / 'src', repo / 'deps' / 'include'], HERE / 'sdkless'
+            self.bin, self.include, self.sdkless = repo / 'out' / 'recomp', [repo.parent / 'bbcpu' / 'src', repo / 'deps' / 'include'], HERE / 'sdkless'
             self.annotations = repo / 'annotations' / 'functions.tsv'
             try:
                 self.version = subprocess.check_output(['git', '-C', str(repo), 'rev-parse', 'HEAD'], text=True).strip()

@@ -14,9 +14,9 @@
  * With --recomp LIB the recompiled version runs (tools/recomp/recomp.sh): the same, compared as
  * strictly as the original (it uses the guest's stack and registers as the original does).
  * Build: tools/recomp/replay.sh. */
-#include "../../src/cpu/trace.h"
+#include "cpu/trace.h"
 #include "../../src/native/bbnative.h"
-#include "../../src/recomp/rc.h"
+#include "recomp/rc.h"
 #include <dlfcn.h>
 #include <inttypes.h>
 #include <stdarg.h>

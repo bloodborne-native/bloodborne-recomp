@@ -7,7 +7,7 @@ turned into code for the machine it is on, or at least separated from the PS4 it
 
 ## What we did
 
-- **bbcpu**, a CPU layer of our own: an x86-64 decoder, an interpreter and an x86-64 to arm64
+- **[bbcpu](https://github.com/bloodborne-native/bbcpu)**, a CPU layer of our own: an x86-64 decoder, an interpreter and an x86-64 to arm64
   translator. It is what runs the game by default.
 - **A static recompiler** that writes the game's functions out as C, which a compiler turns into a
   native library. It runs on the player's device, from their own copy of the game. Nothing it

@@ -1,18 +1,15 @@
 # bloodborne-recomp
 
-A static recompiler for Bloodborne (PS4, CUSA03173 1.09) and bbcpu, the CPU layer it stands on.
+A static recompiler for Bloodborne (PS4, CUSA03173 1.09). It stands on
+[bbcpu](https://github.com/bloodborne-native/bbcpu), the CPU layer, a sibling checkout (`../bbcpu`, `BBCPU`).
 It reads the player's own `eboot.bin` and writes the game's functions as C, compiled into a native
 library the game loads (`BB_RECOMP_LIB`, in bloodborne-runtime). Plan, milestones and results:
 `docs/RECOMPILATION.md` and the wiki's Recompilation-status page.
 
 ## Layout
 
-- `src/cpu/`: bbcpu. Decoder (Zydis), interpreter (`interp*.c`), arm64 translator
-  (`jit_arm64.c`), record/replay tracer (`record.c`), natives (`native.c`), the recompiled-code
-  runtime (`recomp.c`: loading, `rc_call`/`rc_tail`/`rc_bail`, frames with their own return
-  addresses, the import fast path). Hosts link `out/libbbcpu.a` and provide `runtime_low_map`.
-- `src/recomp/rc.h`: what generated code includes (API version `BB_RECOMP_API_VERSION`; bump it
-  when RcApi or RcFunction change).
+- `tools/recomp/bbcpu_api`: the bbcpu interface this recompiler is written for (`BB_RECOMP_API_VERSION` in
+  bbcpu's `src/recomp/rc.h`); the scripts and the runtime's build refuse any other. Update it with that change.
 - `tools/recomp/`: `scan.c` (function table: unwind tables + calls, jumps, lea, relocation
   pointers), `bbrecomp.c` (the generator), `recomp.sh`, `replay.c`/`replay.sh`, `fuzz.sh`,
   `ps4elf.py`, `pointers.py`, `imports.py`, `profile.py`, `label.py`, `inspect.sh` (Ghidra).
@@ -20,13 +17,12 @@ library the game loads (`BB_RECOMP_LIB`, in bloodborne-runtime). Plan, milestone
 - `tools/recomp/names.py out/recomp`: what the executable says about its functions, in the ignored
   `out/recomp/names.tsv`, `classes.tsv` and `units.tsv` (game-derived: never committed). Sample a rule by
   reading code and hold it out against known classes before keeping it.
-- `tests/`: fuzzers and CPU tests. `out/` and `deps/` are not tracked.
+- `tests/`: the recompiler's fuzzer. `out/` and `deps/` are not tracked.
 
 ## Build and check
 
 ```sh
-./build.sh                                    # Zydis into deps/, out/libbbcpu.a, scan, bbrecomp
-tools/cpu/test_jit.sh                         # CPU tests (CI runs them with the arm64 encodings)
+./build.sh                                    # bbcpu, Zydis into deps/, scan, bbrecomp
 GAME=~/Downloads/PS4/Bloodborne/CUSA03173     # the user's dump
 python3 tools/recomp/ps4elf.py "$GAME/eboot.bin" out/eboot.elf
 python3 tools/recomp/pointers.py "$GAME/eboot.bin" out/recomp/pointers.txt
@@ -78,7 +74,7 @@ C changed are compiled again.
   call is often enough for small functions (`llvm-objdump` over `out/eboot.elf`).
 - Fault diagnostics: `BB_JIT_FAULT_MAP=1` reports the exact translated guest instruction;
   `BB_JIT_WATCH` records selected field accesses without function-entry callbacks. Usage is in
-  `docs/ARM64_NATIVE.md`. Their game-derived output stays outside Git and the wiki.
+  bbcpu's `docs/ARCHITECTURE.md`. Their game-derived output stays outside Git and the wiki.
 - Speed: the frame rate is bound by rendering; compare CPU time (`ps -o cputime=` over 30 s in
   the level) between alternating runs with and without the library.
 
@@ -107,11 +103,12 @@ directly instead of through the bridge; clang already drops unread flags.
   Its part here: calls of hooked functions (bbcpu guards, natives) from recompiled code must go
   through the runtime, not directly to the recompiled callee.
 
-## Working rules (all four repositories)
+## Working rules (all five repositories)
 
-- **The project is four repositories**, nested as submodules:
+- **The project is five repositories**, nested as submodules:
   [bloodborne-mac](https://github.com/bloodborne-native/bloodborne-mac) (the app) ⊃ `runtime/` =
-  [bloodborne-runtime](https://github.com/bloodborne-native/bloodborne-runtime) ⊃ `recomp/` =
+  [bloodborne-runtime](https://github.com/bloodborne-native/bloodborne-runtime) ⊃ `bbcpu/` =
+  [bbcpu](https://github.com/bloodborne-native/bbcpu) and `recomp/` =
   [bloodborne-recomp](https://github.com/bloodborne-native/bloodborne-recomp); the app also has
   `launcher/` = [bloodborne-launcher](https://github.com/bloodborne-native/bloodborne-launcher).
   Commit in the repository that owns the file, push it, then bump the submodule pointer in the

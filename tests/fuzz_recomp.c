@@ -14,10 +14,10 @@
 #include <string.h>
 #include <sys/mman.h>
 
-#include "../src/cpu/bbcpu.h"
-#include "../src/cpu/cpu_internal.h"
-#include "../src/cpu/trace.h"
-#include "../src/recomp/rc.h"
+#include "cpu/bbcpu.h"
+#include "cpu/cpu_internal.h"
+#include "cpu/trace.h"
+#include "recomp/rc.h"
 #include <dlfcn.h>
 
 uint64_t bb_image_base; /* platform.c in the game: fault reports */
