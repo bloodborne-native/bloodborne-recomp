@@ -51,6 +51,8 @@
 0xe57ad0	FD4::Material::end	guess	calls	void (FD4::Material *, void *pass)
 0xec9000	CG::CullVolume::testBox	guess	calls	bool (const CG::CullVolume *, const float (*box)[8])
 0xedca60	FD4::Material::applyInstanceParameters	guess	calls
+0xfe68f0	FD4::ResRepository::find	sure	calls	
+0xfe6a70	FD4::ResRepository::insert	guess	calls	
 0x1070960	Gnm::Buffer::initAsConstantBuffer	sure	pm4	void (Gnm::Buffer *, uint64_t address, uint32_t size)
 0x1072ed0	Gnm::DrawCommandBuffer::setScratchSize	sure	pm4
 0x1072fd0	Gnm::DrawCommandBuffer::setRenderTargetMask	sure	pm4
@@ -145,7 +147,9 @@
 0x1d82910	CSGXTextureCreateFragment::run	guess	calls	
 0x1d82b50	TexRepository::loadDummySystemTextures	guess	message	
 0x1d83340	TexRepository::registerSystemTextures	sure	message	
-0x1d83a30	TexRepository::registerTexture	guess	calls	
+0x1d83a30	TexRepository::getOrCreateTexture	sure	calls	
+0x1d8bef0	TexResCap::acquireHandle	guess	calls	
+0x1d8c0b0	TexResCap::acquireHandleWithLowRes	guess	calls	
 0x2067ac0	zlib::inflate#2	sure	message	
 0x207e780	DL::ConditionSignal::signal	sure	source
 0x207e8f0	DL::ConditionSignal::reset	guess	source
