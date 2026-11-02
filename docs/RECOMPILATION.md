@@ -463,7 +463,7 @@ context and resource binder: `CG::GraphicsContext::dispatch` itself did not run)
 Scaleform's renderer and one small wrapper outside CoreGraphics2. The breakdown is in
 bloodborne-runtime's NATIVE_RENDERER.md.
 
-**The Direct3D 11 layer.** Between CoreGraphics2 and Gnm the executable holds a Direct3D 11 implementation of its own: 1,289 functions labelled `d3d11`. Its device, device context, resources, views, states and shaders keep Microsoft's published vtable order, so their slots have public names: `Map` on the context, `D3D11Device::CreateTexture2D` and so on, 333 in all, from one table in `names.py` (rule 23). The context's slots 115 to 128 go beyond the published interface and are not named yet.
+**The Direct3D 11 layer.** YEBIS brings its own Direct3D 11 implementation over Gnm, reached through `ppfxPlatformContextGnmShim`: 1,289 functions labelled `d3d11`. Its other callers are a few SDK and Havok functions; CoreGraphics2, the game's renderer, does not draw through it, and none of it is on the busy list. Its device, device context, resources, views, states and shaders keep Microsoft's published vtable order, so their slots have public names: `Map` on the context, `D3D11Device::CreateTexture2D` and so on, 333 in all, from one table in `names.py` (rule 23). The context's slots 115 to 128 go beyond the published interface and are not named yet.
 
 **The draw state** (`annotations/structs.h`, the annotations.3): one object carries everything a draw sets,
 0x1e70 bytes, modelled on Direct3D 11: its stages and slot counts, DXGI index formats,

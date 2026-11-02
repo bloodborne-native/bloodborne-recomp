@@ -26,7 +26,7 @@ def rows(name):
 functions = {int(r[0], 16): (int(r[1]), int(r[2])) for r in rows('functions.tsv')}
 starts = sorted(functions)
 modules = {int(r[0], 16): (r[2], r[3] if len(r) > 3 else '') for r in rows('modules.tsv')}
-# The Direct3D 11 layer over Gnm (rule 23) sits among Havok's code, and is not Havok's.
+# YEBIS's Direct3D 11 layer over Gnm (rule 23) sits among Havok's code, and is not Havok's.
 for f, (library, source) in modules.items():
     if library == 'havok' and (0x11d0000 <= f < 0x11f6000 or 0x2a39000 <= f < 0x2a56000):
         modules[f] = ('d3d11', source)
@@ -1657,7 +1657,7 @@ for f, name in list(names.items()):
             names[f], how[f] = f'{words.pop()}::fieldAccess_{f:x}', 'shape'
             field_named += 1
 print('singleton fields', field_named)
-# 23. The renderer stands on a Direct3D 11 layer over Gnm: Map returns DXGI_ERROR_WAS_STILL_DRAWING, UpdateSubresource tiles
+# 23. YEBIS carries a Direct3D 11 layer over Gnm (ppfxPlatformContextGnmShim calls it; CoreGraphics2 does not): Map returns DXGI_ERROR_WAS_STILL_DRAWING, UpdateSubresource tiles
 # through GpuAddress, and the slots keep Microsoft's published order (the sizes agree: constant buffer and sampler setters
 # are one template per stage, shader resource setters another, the private data pair is the same size in every class).
 D3D_UNKNOWN = ['QueryInterface', 'AddRef', 'Release']
