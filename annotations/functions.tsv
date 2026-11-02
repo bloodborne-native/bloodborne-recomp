@@ -59,6 +59,9 @@
 0xe571d0	FD4::Material::begin	guess	calls	void (FD4::Material *, int32_t technique, void *pass)
 0xe573d0	FD4::Material::apply	guess	calls	bool (FD4::Material *, void *, int32_t technique, void *pass)
 0xe57ad0	FD4::Material::end	guess	calls	void (FD4::Material *, void *pass)
+0xe5d1d0	LensSimuPass::enqueue	guess	calls	
+0xe60a20	LensSimu2Pass::enqueue	guess	calls	
+0xeb5340	ToneMapPass::enqueue	guess	calls	
 0xec9000	CG::CullVolume::testBox	guess	calls	bool (const CG::CullVolume *, const float (*box)[8])
 0xedca60	FD4::Material::applyInstanceParameters	guess	calls
 0xf2dfe0	Class_52eb030::createVolumeTarget	guess	calls	
@@ -425,6 +428,7 @@
 0x2166d00	CG::Device::createVertexShader	guess	calls	
 0x21672d0	CG::Device::createPixelShader	guess	calls	
 0x21673e0	CG::Device::createShaderStage	guess	calls	
+0x2168630	CG::DeviceContext::clearRenderTargetView	guess	calls	
 0x2168660	CG::DeviceContext::copyResource	guess	calls	
 0x2168a20	CG::GraphicsContext::updateConstantBuffer	guess	calls
 0x2168ca0	CG::GraphicsContext::setTopology	sure	calls	void (CG::GraphicsContext *, CG::DrawState *, uint32_t topology)
@@ -491,6 +495,10 @@
 0x21cfb30	CG::ModelRenderer::drawModel	sure	calls	void (const CG::Model *model, void *materials, void *pass, uint32_t instance_count, void **instances, bool)
 0x21d0640	CG::MeshRenderer::drawMesh	sure	calls	void (const CG::Model *model, void *pass, const CG::Mesh *mesh, const void *, const void *, uint32_t instances)
 0x227e230	FD4::SceneNode::collect	guess	calls	void (FD4::SceneNode *, void *pass)
+0x2289db0	RenderCommandList::allocate	guess	calls	
+0x228e3c0	RenderCommandList::end	guess	calls	
+0x228e430	RenderCommandList::begin	guess	calls	
+0x228e6a0	RenderCommandList::push	guess	calls	
 0x22bc720	FD4::LightRenderer::drawLightBatches	sure	calls
 0x22bd110	FD4::LightRenderer::drawLightBatches#2	guess	calls
 0x22bdb00	FD4::LightRenderer::drawLightBatches#3	guess	calls
