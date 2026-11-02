@@ -587,6 +587,7 @@
 0x2688df0	Lua::luaK_code	guess	message	
 0x268a7d0	Lua::read_numeral#2	guess	message	
 0x26adb90	CG::ResourceBinder::uploadConstants	guess	calls	void (void *, CG::ResourceBinder *, CG::DrawState *, const CG::ConstantBuffer *, const void *data)
+0x26addc0	CG::PageAllocator::allocate	guess	calls	
 0x26b2670	CG::SurfaceOps::copyBuffer	sure	calls
 0x26b2810	CG::SurfaceOps::copyBuffers	sure	calls
 0x26b2f40	CG::SurfaceOps::copyTexture	sure	calls
@@ -644,6 +645,7 @@
 0x292f510	CG::ShaderProgram::bind	sure	calls	void (const CG::ShaderProgram *, void *draw_state_builder)
 0x2967040	DL::WString::fromWide	sure	calls	
 0x29824b0	Json::Value::clear	guess	calls	
+0x298e220	DL::WString::appendFormat	guess	calls	
 0x2ba1b80	DL::PoolHeap::allocate	guess	calls	
 0x2ba7870	DL::SharedWString::copy	sure	calls	
 0x2ba7940	DL::SharedWString::release	sure	calls	
