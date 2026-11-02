@@ -1544,6 +1544,8 @@ SLOT_ROLES = [(re.compile(r'FXEvaluatable.*::vf1'), 'evaluate'),
               (re.compile(r'GUI\w*DataBase\w*::vf6'), 'formatValue'), (re.compile(r'GUI\w*DataBase\w*::vf7'), 'stepValue'),
               (re.compile(r'GUI\w*DataBase\w*::vf10'), 'readValue'), (re.compile(r'GUI\w*RangeTweaker\w*::vf5'), 'syncValue'),
               (re.compile(r'GUI\w*PropertyLabel\w*::vf60'), 'formatValue'),
+              # Menu dialogs: slot 33 reads the pad buttons and moves the selection, 37 places the cursor (one read each).
+              (re.compile(r'FrpgMenuDlg\w*::vf33'), 'handleInput'), (re.compile(r'FrpgMenuDlg\w*::vf37'), 'updateCursor'),
               # Debug menu items: slot 7 edits the value from the pad, slot 8 writes the item's text (two read).
               (re.compile(r'FD4DebugMenuItem_\w+::vf7'), 'onInput'), (re.compile(r'FD4DebugMenuItem_\w+::vf8'), 'writeText'),
               # Fading setting channels (one class per value type): a list of named states, a list of bound targets.
