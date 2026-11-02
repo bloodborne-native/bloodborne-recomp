@@ -65,7 +65,7 @@ reads, and plain accesses to private frames gain nothing. The order of the work:
 | Functions checked call by call (recordings) | `░░░░░░░░░░░░░░░░░░░░` 0.5% | 933 of 179,698 |
 | Functions labelled by library (2026-11-02) | `█████████████████░░░` 82.8% | 148,858 of 179,698 |
 | Functions named by hand (2026-11-02) | `░░░░░░░░░░░░░░░░░░░░` 0.2% | 408 of 179,698, 219 sure and 189 guesses (libGnm's command buffer methods; the engine's draw methods, state setters, mesh, model, material and lighting code; the synchronization primitives; the busiest functions; texture repositories) |
-| Functions placed, of those to understand (2026-11-02) | `███████████████░░░░░` 75% | 47,917 of 63,890 longer than five instructions, in FromSoftware's code or not labelled yet |
+| Functions placed, of those to understand (2026-11-02) | `███████████████░░░░░` 75% | 48,081 of 63,890 longer than five instructions, in FromSoftware's code or not labelled yet |
 | Functions identified, of the target (2026-11-02) | `██████░░░░░░░░░░░░░░` 32% | about 18,100 of about 56,000: 2,161 with the game's own name, 15,927 with a known role, much of that compiler and template code |
 
 Every function is generated; the ones left to the translator are the 660 import stubs, the 130
@@ -258,15 +258,20 @@ initialisers, FromSoftware's own labelled code longer than five instructions is 
 the 16,397 not labelled yet about half are FromSoftware's by their neighbours. So the target is about
 56,000 functions, an estimate because the labels are approximate.
 
+**Debug pages.** A class's destructor removes its debug page by a label in wide text, which names 13 classes
+(`MapItemMan`, `FrpgPhysWorld`, `WorldBackRead`). The label must be the only page that destructor removes, as
+one that removes several owns them as a group, and said by one class only. Constructors are not used: what adds
+a page also builds small menu callbacks, and samples read by hand got those wrong.
+
 **Where it stands (2026-11-02).** Of the non-trivial functions in FromSoftware's code or not labelled yet:
 
 | | Functions | What it says |
 |---|---:|---|
 | The game's own name | 2,161 | Registered methods, steps, messages, singletons, tables |
 | A known role | 15,927 | Destructors, class getters, `std::function` slots, EzState opcodes, delegates: much is compiler or template code |
-| In a named class or file | 13,590 | Where it belongs, not what it does |
-| Only an anonymous class | 16,239 | A vtable or object file, no name |
-| Nowhere yet | 15,973 | |
+| In a named class or file | 13,887 | Where it belongs, not what it does |
+| Only an anonymous class | 16,106 | A vtable or object file, no name |
+| Nowhere yet | 15,809 | |
 
 Text and compiler patterns are nearly used up, so what remains is mostly read by hand, a few functions at a
 time. A public name for a family of functions, or a subsystem that needs one, is what would speed it up.

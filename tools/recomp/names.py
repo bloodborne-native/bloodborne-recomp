@@ -407,6 +407,34 @@ for table, run in vtables.items():
     for f in set(run):
         if f in files:
             file_spread[files[f].rsplit('.', 1)[0]].add(table)
+# Debug pages: a destructor that removes a page labels it in wide text, usually with its class's name, but
+# sometimes with a parent page or a topic, so a label must be one word in mixed case, of 8 letters or more,
+# said by one class only, and the only page its destructor removes (one that removes several owns them as a
+# group). Not constructors: what adds a page also builds small menu callbacks that are
+# not the class (a sample read by hand).
+DEBUG_MENU = {0xfa3260, 0xfa33c0}
+ANY_LABEL = re.compile(rb'(?:[\x20-\x7e]\0){3,60}\0\0')
+PAGE_LABEL = re.compile(rb'(?:[A-Z]\0)(?:[a-z]\0)(?:[A-Za-z0-9]\0){6,48}\0\0')
+page_callers = {int(r[0], 16) for r in rows('calls.tsv') if int(r[1], 16) in DEBUG_MENU}
+page_labels = collections.defaultdict(set)
+for table, run in vtables.items():
+    for f in set(run[:2]) & page_callers:
+        at = f - text[3]
+        for m in re.finditer(rb'[\x48\x4c]\x8d[\x05\x0d\x15\x1d\x25\x2d\x35\x3d](.{4})', code[at:at + functions[f][0]], re.S):
+            target = f + m.end() + struct.unpack('<i', m.group(1))[0]
+            for p_ in loads:
+                if p_[3] <= target < p_[3] + p_[5]:
+                    hit = ANY_LABEL.match(image, p_[2] + target - p_[3])
+                    if hit:
+                        page_labels[table].add(hit.group(0)[:-2].decode('utf-16-le'))
+                    break
+page_said = collections.Counter(l for labels in page_labels.values() for l in labels)
+debug_pages = {}
+for table, labels in page_labels.items():
+    label = next(iter(labels))
+    if len(labels) == 1 and page_said[label] == 1 and PAGE_LABEL.fullmatch(label.encode('utf-16-le') + b'\0\0'):
+        debug_pages[table] = label
+print('classes named by debug pages', len(debug_pages))
 for table, run in vtables.items():
     ctors = {owner(s) for s in sites[table]} - {None}
     votes = collections.Counter()
@@ -427,6 +455,7 @@ for table, run in vtables.items():
         top, count = votes.most_common(1)[0]
         if count >= 3 and (len(votes) == 1 or count >= 2 * votes.most_common(2)[1][1]):
             name = top
+    name = name or debug_pages.get(table)
     if table in runtime_tables:
         name = runtime_tables[table]
         how_named[table] = 'runtime'
