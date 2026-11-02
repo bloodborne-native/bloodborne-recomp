@@ -51,6 +51,8 @@
 0xe57ad0	FD4::Material::end	guess	calls	void (FD4::Material *, void *pass)
 0xec9000	CG::CullVolume::testBox	guess	calls	bool (const CG::CullVolume *, const float (*box)[8])
 0xedca60	FD4::Material::applyInstanceParameters	guess	calls
+0xf6f340	FD4::IdTable::find	guess	calls	
+0xf9b740	FD4::DebugMenu::addItem	guess	calls	
 0xfaeaf0	FD4::ScopedProfile::begin	guess	calls	
 0xfaebc0	FD4::ScopedProfile::end	guess	calls	
 0xfe68f0	FD4::ResRepository::find	sure	calls	
@@ -142,6 +144,7 @@
 0x1399bf0	Sprj::EventFlagManager::getFlag	sure	message	bool (void *, uint32_t flag)
 0x1421d40	SprjFile::loadFile	guess	calls	
 0x193ac10	Sprj::World::update	guess	message	void (float frame_time, void *world)
+0x1a8bc00	SprjGaitem::releaseRef	sure	message	
 0x1d34880	FD4::Skeleton::getBoneMatrices	guess	calls	uint32_t (const FD4::Skeleton *, float (*matrices)[12], uint32_t count, uint32_t first)
 0x1d37400	FD4::ModelInstance::updateBoundsAndSkinning	guess	calls	void (FD4::ModelInstance *, void *)
 0x1d3ae20	FD4::Skeleton::getWorldBoneMatrices	guess	calls	int (const FD4::Skeleton *, float (*matrices)[12], uint32_t count, uint32_t first)
@@ -158,6 +161,7 @@
 0x1d8bef0	TexResCap::acquireHandle	guess	calls	
 0x1d8c0b0	TexResCap::acquireHandleWithLowRes	guess	calls	
 0x2067ac0	zlib::inflate#2	sure	message	
+0x207c460	DL::free	sure	message	
 0x207c4e0	DL::Heap::allocate	sure	calls	
 0x207d7a0	DL::threadContext	guess	calls	
 0x207e780	DL::ConditionSignal::signal	sure	source
@@ -177,7 +181,8 @@
 0x2084110	DL::PthreadMutex::lock	sure	source
 0x2084290	DL::PthreadMutex::unlock	sure	source
 0x20b55b0	DL::assertFailed	sure	calls	
-0x20b6d00	DL::HeapContainer::construct	guess	calls	
+0x20b6d00	DLRuntimeClass::construct	sure	calls	
+0x20b6dc0	DLRuntimeClass::setParent	sure	message	
 0x20ede50	DL::sharedMutex	guess	calls	
 0x2109c20	Lua::lua_getinfo	guess	message	
 0x210a0c0	Lua::luaG_aritherror	guess	message	
@@ -308,6 +313,8 @@
 0x28f89a0	CG::UploadRing::map	guess	calls
 0x28f8a30	CG::UploadRing::draw	guess	calls	void (CG::GraphicsContext *, CG::UploadRing *, uint32_t primitive, uint32_t index_count, uint32_t vertex_count, uint32_t stride, const int32_t *, const int32_t *)
 0x292f510	CG::ShaderProgram::bind	sure	calls	void (const CG::ShaderProgram *, void *draw_state_builder)
+0x2967040	DL::WString::fromWide	sure	calls	
+0x2ba1b80	DL::PoolHeap::allocate	guess	calls	
 0x2ba7870	DL::SharedWString::copy	sure	calls	
 0x2ba7940	DL::SharedWString::release	sure	calls	
 0x2ba81a0	DL::SharedWString::release#2	sure	calls	
