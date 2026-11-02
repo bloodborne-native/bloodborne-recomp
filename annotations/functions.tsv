@@ -386,6 +386,7 @@
 0x20c1530	DLResourceManagerImpl::finishLoad	guess	calls	
 0x20c1c20	DLResourceManagerImpl::setWorkerRequest	guess	calls	
 0x20e2b90	DL::Encoding::wideToMultibyte	guess	calls	
+0x20e2ff0	DL::Encoding::multibyteToWideLength	guess	calls	
 0x20ede50	DL::sharedMutex	guess	calls	
 0x2109c20	Lua::lua_getinfo	guess	message	
 0x210a0c0	Lua::luaG_aritherror	guess	message	
@@ -540,6 +541,7 @@
 0x21d0640	CG::MeshRenderer::drawMesh	sure	calls	void (const CG::Model *model, void *pass, const CG::Mesh *mesh, const void *, const void *, uint32_t instances)
 0x227e230	FD4::SceneNode::collect	guess	calls	void (FD4::SceneNode *, void *pass)
 0x2289db0	RenderCommandList::allocate	guess	calls	
+0x228a0a0	std::sort_228a0a0	guess	calls	
 0x228e3c0	RenderCommandList::end	guess	calls	
 0x228e430	RenderCommandList::begin	guess	calls	
 0x228e6a0	RenderCommandList::push	guess	calls	
