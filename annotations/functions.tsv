@@ -190,6 +190,7 @@
 0x19e94f0	WorldGroups::addCollisionGroups	guess	calls	
 0x1a89070	SprjGaitem::resolveHandle	sure	calls	
 0x1a8bc00	SprjGaitem::releaseRef	sure	message	
+0x1a8bed0	SprjGaitem::Handle::assign	guess	calls	
 0x1ac6ba0	MapInsUpdateHelper::applyQueuedLevels	guess	calls	
 0x1ae8cc0	Menu::messageText	sure	message	
 0x1d1b360	ModelIns::drawMesh	guess	calls	
