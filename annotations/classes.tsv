@@ -36,21 +36,6 @@
 0x533e0a0	ChrMake_SkinColorSelect	its methods say this name, no other class does
 0x535f850	BinderReader	reads a file entry from a bound archive, inflating it when flagged
 0x53a1950	SprjFD4Location	SprjFD4Location::updateTree works on it; the base of the location nodes
-0x532f2f0	SprjFD4LocationNode_532f2f0	its constructor builds the SprjFD4Location base, then its own table
-0x532f4d0	SprjFD4LocationNode_532f4d0	its constructor builds the SprjFD4Location base, then its own table
-0x532f5c0	SprjFD4LocationNode_532f5c0	its constructor builds the SprjFD4Location base, then its own table
-0x532f660	SprjFD4LocationNode_532f660	its constructor builds the SprjFD4Location base, then its own table
-0x532f6b0	SprjFD4LocationNode_532f6b0	its constructor builds the SprjFD4Location base, then its own table
-0x532f8a0	SprjFD4LocationNode_532f8a0	its constructor builds the SprjFD4Location base, then its own table
-0x534cf50	SprjFD4LocationNode_534cf50	its constructor builds the SprjFD4Location base, then its own table
-0x534d230	SprjFD4LocationNode_534d230	its constructor builds the SprjFD4Location base, then its own table
-0x534f180	SprjFD4LocationNode_534f180	its constructor builds the SprjFD4Location base, then its own table
-0x538df90	SprjFD4LocationNode_538df90	its constructor builds the SprjFD4Location base, then its own table
-0x538e060	SprjFD4LocationNode_538e060	its constructor builds the SprjFD4Location base, then its own table
-0x538e1a0	SprjFD4LocationNode_538e1a0	its constructor builds the SprjFD4Location base, then its own table
-0x538e200	SprjFD4LocationNode_538e200	its constructor builds the SprjFD4Location base, then its own table
-0x539cf90	SprjFD4LocationNode_539cf90	its constructor builds the SprjFD4Location base, then its own table
-0x539d160	SprjFD4LocationNode_539d160	its constructor builds the SprjFD4Location base, then its own table
 0x53a0df0	SprjFD4LocationNode_53a0df0	its constructor builds the SprjFD4Location base, then its own table
 0x53a0e50	SprjFD4LocationNode_53a0e50	its constructor builds the SprjFD4Location base, then its own table
 0x53a0eb0	SprjFD4LocationNode_53a0eb0	its constructor builds the SprjFD4Location base, then its own table
@@ -80,9 +65,3 @@
 0x53a1830	SprjFD4LocationNode_53a1830	its constructor builds the SprjFD4Location base, then its own table
 0x53a1890	SprjFD4LocationNode_53a1890	its constructor builds the SprjFD4Location base, then its own table
 0x53a18f0	SprjFD4LocationNode_53a18f0	its constructor builds the SprjFD4Location base, then its own table
-0x53aa690	SprjFD4LocationNode_53aa690	its constructor builds the SprjFD4Location base, then its own table
-0x53ac710	SprjFD4LocationNode_53ac710	its constructor builds the SprjFD4Location base, then its own table
-0x53ac7f0	SprjFD4LocationNode_53ac7f0	its constructor builds the SprjFD4Location base, then its own table
-0x53ac8d0	SprjFD4LocationNode_53ac8d0	its constructor builds the SprjFD4Location base, then its own table
-0x53ac9b0	SprjFD4LocationNode_53ac9b0	its constructor builds the SprjFD4Location base, then its own table
-0x53acf30	SprjFD4LocationNode_53acf30	its constructor builds the SprjFD4Location base, then its own table
