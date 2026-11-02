@@ -169,6 +169,7 @@
 0x1399bf0	Sprj::EventFlagManager::getFlag	sure	message	bool (void *, uint32_t flag)
 0x13c97a0	WorldChrMan::findChrByEntityId	sure	calls	
 0x1421d40	SprjFile::loadFile	guess	calls	
+0x1548740	Sprj::World::updateInstances	guess	calls	
 0x15553d0	WorldBackRead::deletingDestructor	guess	calls	
 0x15553f0	WorldBackRead::~WorldBackRead	guess	calls	
 0x1555510	WorldBackRead::clearCollisions	guess	calls	
@@ -183,8 +184,12 @@
 0x158eab0	FD4Step::setStep	sure	calls	
 0x158f550	FD4Step::update	sure	calls	
 0x15934d0	MapInsUpdateHelper::update	sure	calls	
+0x1596510	WorldMapPartsMan::update	guess	calls	
+0x15b82b0	WorldObjMan::update	guess	calls	
+0x15b8940	WorldObjMan::updateLate	guess	calls	
 0x15b9e30	WorldObjIns::waitForBlockObjects	guess	calls	
 0x1886b50	CollisionBlock::updateLevels	guess	calls	
+0x188a150	WorldHitMan::update	guess	calls	
 0x18bcd40	ChrIns::setHp	guess	calls	
 0x193ac10	Sprj::World::update	guess	message	void (float frame_time, void *world)
 0x19c52a0	SprjSaveDataLoadStepForNotTitleFlow::STEP_SelectDefaultStorage_Wait	sure	step	
