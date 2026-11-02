@@ -183,7 +183,9 @@
 0x158eab0	FD4Step::setStep	sure	calls	
 0x158f550	FD4Step::update	sure	calls	
 0x15934d0	MapInsUpdateHelper::update	sure	calls	
+0x15b9e30	WorldObjIns::waitForBlockObjects	guess	calls	
 0x1886b50	CollisionBlock::updateLevels	guess	calls	
+0x18bcd40	ChrIns::setHp	guess	calls	
 0x193ac10	Sprj::World::update	guess	message	void (float frame_time, void *world)
 0x19c52a0	SprjSaveDataLoadStepForNotTitleFlow::STEP_SelectDefaultStorage_Wait	sure	step	
 0x19e8190	WorldGroups::update	guess	calls	
@@ -197,6 +199,7 @@
 0x1d213b0	Drawable::submitIfMaskMatches	guess	calls	
 0x1d25550	ModelIns::updateSkinnedBounds	guess	calls	
 0x1d25fd0	ModelIns::walkDecalReceiver	guess	calls	
+0x1d2ab70	SprjFade::fadeColor	guess	calls	
 0x1d34880	FD4::Skeleton::getBoneMatrices	guess	calls	uint32_t (const FD4::Skeleton *, float (*matrices)[12], uint32_t count, uint32_t first)
 0x1d37400	FD4::ModelInstance::updateBoundsAndSkinning	guess	calls	void (FD4::ModelInstance *, void *)
 0x1d3ae20	FD4::Skeleton::getWorldBoneMatrices	guess	calls	int (const FD4::Skeleton *, float (*matrices)[12], uint32_t count, uint32_t first)
