@@ -1008,14 +1008,15 @@ print('NexusRevolution', nexus)
 # 9e. Dantelion's source directories: the functions between two that name a .cpp of one directory, within 200
 # functions, are that directory's (held out, 91% of the functions between two of one directory agree).
 DIRECTORY = re.compile(r'(?:Dantelion2|dantelion2_sprj)\\+(?:dist_ps4\\+)?source\\+(?:ClassLibrary|ApplicationLibrary)\\+(.*?)\\+[Ss]ource(?:\\.*)?\\+[^\\]+\.cpp$', re.I)
+GAME_DIRECTORY = re.compile(r'\\+Source\\+SPRJ\\+Source\\+(.*?)\\+[^\\]+\.cpp$', re.I)
 # A .cpp that many functions name is inlined (DLNew.cpp's message): it says nothing about where they lie.
 named_by = collections.Counter(s_ for said in by_function.values() for s_ in set(said) if s_.endswith('.cpp'))
 directories = {}
 for f, said in by_function.items():
-    if modules.get(f, ('', ''))[0] != 'dantelion2':
+    if modules.get(f, ('', ''))[0] not in ('dantelion2', 'game', 'fd4'):
         continue
     for s_ in said:
-        m = DIRECTORY.search(s_)
+        m = DIRECTORY.search(s_) or GAME_DIRECTORY.search(s_)
         if m and named_by[s_] <= 15:
             directories[f] = re.sub(r'\\+', '_', m.group(1))
             break
@@ -1026,8 +1027,8 @@ for a_, b_ in zip(seeds, seeds[1:]):
     if directories[a_] == directories[b_] and place[b_] - place[a_] <= 200:
         for g in ordered_functions[place[a_] + 1:place[b_]]:
             name = names.get(g, '')
-            if modules.get(g, ('', ''))[0] == 'dantelion2' and (not name or name.startswith(('Class_', 'shared_')) or how.get(g) == 'helper'):
-                names[g] = f"DL_{directories[a_]}::{name.split('::')[-1] if name else f'fn_{g:x}'}"
+            if modules.get(g, ('', ''))[0] == modules.get(a_, ('', ''))[0] and (not name or name.startswith(('Class_', 'shared_')) or how.get(g) == 'helper'):
+                names[g] = f"{'DL' if modules.get(a_, ('', ''))[0] == 'dantelion2' else 'SPRJ'}_{directories[a_]}::{name.split('::')[-1] if name else f'fn_{g:x}'}"
                 how[g] = 'unit'
                 in_directory += 1
 print('in a Dantelion directory', in_directory)
