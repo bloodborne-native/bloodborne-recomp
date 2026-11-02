@@ -1622,6 +1622,21 @@ for f, words in said.items():
     names[f] = 'Says::' + re.sub(r'\W+', '_', max(sorted(words), key=len))[:40].strip('_') + f'_{f:x}'
     how[f] = 'text'
 print('functions named by their text', len(said))
+# 20. Singleton fields: a short function whose only call is the failed check of one singleton reads or writes a field
+# of it (two read: SprjWorldAiManager, FrpgNetMan). A mention with other calls proves nothing, so those stay hints.
+SINGLETON_FAIL = 0x20b55b0
+callees = collections.defaultdict(set)
+for r in rows('calls.tsv'):
+    callees[int(r[0], 16)].add(int(r[1], 16))
+SINGLETON_NAME = re.compile(r'[A-Z][A-Za-z0-9]*(?:Man|Manager|Repository|System|Sfx|Gaitem|File)')
+field_named = 0
+for f, name in list(names.items()):
+    if how.get(f) == 'text' and functions[f][1] <= 30 and callees[f] <= {SINGLETON_FAIL}:
+        words = {s_ for s_ in by_function.get(f, ()) if SINGLETON_NAME.fullmatch(s_)}
+        if len(words) == 1:
+            names[f], how[f] = f'{words.pop()}::fieldAccess_{f:x}', 'shape'
+            field_named += 1
+print('singleton fields', field_named)
 with open(OUT / 'names.tsv', 'w') as out:
     out.write('address\tname\thow\tlibrary\tsource\n')
     for f in sorted(set(names) | set(files)):
