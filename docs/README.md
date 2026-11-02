@@ -4,6 +4,8 @@
 
 - [Recompilation](RECOMPILATION.md): the plan, the milestones, how the recompiler works, its tools,
   record and replay, what the game's executable contains, and the results so far.
+- [The PS4 layers](layers/README.md): the game's code and x86 memory ordering: what was done and what
+  is left.
 - [Annotations](RECOMPILATION.md#annotations): the project's names for the game's functions
   ([`annotations/functions.tsv`](../annotations/functions.tsv)) and the layouts of the objects they
   use ([`annotations/structs.h`](../annotations/structs.h)): what is known of the engine's render code.
