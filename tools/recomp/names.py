@@ -228,6 +228,13 @@ for run in vtables.values():
                 if got and got[0] == got[1]:
                     runtime_stubs[f] = got[0]
 print('runtime class stubs', len(runtime_stubs))
+# Survey: the first slots of the vtables.
+first = collections.Counter()
+sizes = collections.Counter()
+for table, run in vtables.items():
+    f = run[0]
+    first[(functions[f][1] if functions[f][1] < 6 else 6, code0[f - text0[3]])] += 1
+print('slot 0 (instructions, first byte)', first.most_common(10))
 class_of, class_methods = {}, collections.Counter()
 how_named = {}
 class_names = {}
@@ -238,13 +245,18 @@ for table, run in vtables.items():
         for s in by_function.get(f, ()):
             if CLASSY.match(s):
                 spread[s].add(table)
+file_spread = collections.defaultdict(set)
+for table, run in vtables.items():
+    for f in set(run):
+        if f in files:
+            file_spread[files[f].rsplit('.', 1)[0]].add(table)
 for table, run in vtables.items():
     ctors = {owner(s) for s in sites[table]} - {None}
     votes = collections.Counter()
     for f in set(run) | ctors:
         if f in files and files[f].endswith(('.cpp', '.c')):
             stem = files[f].rsplit('.', 1)[0]
-            if CLASSY.match(stem) and stem not in GENERIC:
+            if CLASSY.match(stem) and stem not in GENERIC and len(file_spread[stem]) <= 4:
                 votes[stem] += 3
         for s in by_function.get(f, ()):
             if CLASSY.match(s) and s not in GENERIC and len(s) < 48 and len(spread[s]) <= 2:
@@ -266,8 +278,10 @@ for table, run in vtables.items():
             break
     class_names[table] = name
     label = name or f'Class_{table:x}'
-    for f in ctors:
-        give(f, f'{label}::writes_vtable', 'class' if name else 'vtable')
+    # Many functions writing one vtable are its users (objects built in place), not its constructors.
+    if len(ctors) <= 8:
+        for f in ctors:
+            give(f, f'{label}::writes_vtable', 'class' if name else 'vtable')
     for index, f in enumerate(run):
         class_of.setdefault(f, table)
 print('named by DLRuntimeClass', len(how_named))
@@ -321,6 +335,27 @@ for f, tables in writers.items():
         parents[table] = next(iter(bases))
         by_ctor += 1
 print('parents from constructors', by_ctor)
+# The vtables named above are often those of a class's DLRuntimeClass object (their first slot goes to
+# DLRuntimeClass's). Such an object's slots create the class, so they write the class's real vtable.
+linked = 0
+for table in list(vtables):
+    name = class_names.get(table)
+    if not name or vtables[table][0] != 0x20b5a60 and functions[vtables[table][0]][1] > 1:
+        continue
+    made = set()
+    for f in set(vtables[table]):
+        for w in writers.get(f, ()):
+            made.add(w)
+        for callee in direct[f]:
+            for w in writers.get(callee, ()):
+                made.add(w)
+    made -= {table}
+    made = {m for m in made if not class_names.get(m)}
+    if 1 <= len(made) <= 2:
+        for m in made:
+            class_names[m] = name
+            linked += 1
+print('instance vtables named through their DLRuntimeClass', linked)
 children = collections.Counter(parents.values())
 roots = collections.Counter()
 for table in vtables:

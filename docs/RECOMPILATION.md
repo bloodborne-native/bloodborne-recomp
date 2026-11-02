@@ -257,15 +257,22 @@ longer than five instructions. Of the 90,259 not labelled yet, 51,117 are longer
 their neighbours about half are FromSoftware's. So the target is about 85,000 functions, an estimate
 because the labels are approximate.
 
-**What the executable gives by itself.** `tools/recomp/names.py` finds 5,944 vtables in the data and
-the functions that write them, which places 43,481 functions in classes without reading them, and
+**What the executable gives by itself.** `tools/recomp/names.py` finds the vtables in the data and
+the functions that write them, which places functions in classes without reading them, and
 spreads to a class's helpers through the call graph. Messages name few functions directly (about 580),
 and only 61 classes have a name that holds up: the class names in messages mostly belong to singletons
 other classes use. The names it writes stay with the player's copy; what is checked goes in
 `annotations/functions.tsv`.
 
+**DLRuntimeClass.** The engine has its own type information: startup code stores a class's name in an
+object of its own and links it to its parent's, which gives 1,410 class names (`GUIButton`,
+`EzMenuDialog`). Most vtables of that shape belong to these objects, not to the class's instances, so
+tying a name to the vtable objects use is still open: a first attempt linked 12. On this compiler
+objects hold a vtable's address past two header slots, and with those counted there are 12,970 vtables
+holding 80,317 functions.
+
 **The class tree.** A constructor calling its parent's, and slots two vtables share, give the parents of
-1,321 classes. The largest family, 603 classes, stands on a Dantelion2 root object that releases itself
+3,456 classes. The largest family, 553 classes, stands on a Dantelion2 root object that releases itself
 to its heap.
 
 **Singletons and `this`.** FD4's singletons assert on their global and say their class's name, which
