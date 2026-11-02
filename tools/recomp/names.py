@@ -168,6 +168,26 @@ for m in CATEGORY.finditer(code_, 0, code_end - code_text[3]):
     last_category = f
 print('object files', len(unit_starts))
 
+# 3a. Assertions: YEBIS passes the failed text, with its file, and the function's name to the C library's
+# assert, so a function that asserts says what it is.
+ASSERT_AT = {int(a, 16) for a, name in rows('imports.tsv') if name == '_Assert'}
+ASSERTION = re.compile(rb'\x48\x8d\x3d(.{4})\x48\x8d\x35(.{4})\xe8(.{4})', re.S)
+TEXT_AT = re.compile(rb'[\x20-\x7e]{1,300}\0')
+asserted = collections.defaultdict(collections.Counter)
+for m in ASSERTION.finditer(code_, 0, code_end - code_text[3]):
+    if m.start(3) + 4 + struct.unpack('<i', m.group(3))[0] + code_text[3] not in ASSERT_AT:
+        continue
+    where, what = (TEXT_AT.match(code_, m.start(n) + 4 + struct.unpack('<i', m.group(n))[0]) for n in (1, 2))
+    f = owner(m.start() + code_text[3])
+    if f is not None and where and what:
+        file_ = re.search(rb'([A-Za-z0-9_]+)\.(?:cpp|h)\(', where.group(0))
+        asserted[f][(file_.group(1).decode() if file_ else None, what.group(0)[:-1].decode())] += 1
+for f, seen in asserted.items():
+    (file_, function), _ = seen.most_common(1)[0]
+    if re.fullmatch(r'[A-Za-z_~][A-Za-z0-9_:]*', function):
+        give(f, f'{file_}::{function}' if file_ and '::' not in function else function, 'assert')
+print('named by assertions', sum(1 for h_ in how.values() if h_ == 'assert'))
+
 # 3c. Step tables: state machines fill a table of a function, a zero and its name in wide text, the whole
 # Class::STEP_name, in code. The pair of loads stores into the table.
 WIDE = re.compile(rb'(?:[A-Za-z0-9_:<> ]\0){4,120}\0\0')

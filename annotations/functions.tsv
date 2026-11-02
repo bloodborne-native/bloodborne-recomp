@@ -280,6 +280,8 @@
 0x2190d30	CG::ImmediateDraw::drawIndexedUserPrimitives	sure	calls	void (CG::ImmediateDraw *, uint32_t topology, uint32_t min_index, uint32_t max_index, uint32_t index_count, const void *indices, uint32_t index_format, const void *vertices, uint32_t stride)
 0x21a7d70	CG::Texture::createFromSource	guess	calls	
 0x21b8710	FD4::JobSystem::runAndWait	guess	calls	void (FD4::JobGroup *)
+0x21b9f40	GXGUITexture::GXGUITexture	sure	calls	
+0x21ba300	GXGUITexture::createLinearView	guess	calls	
 0x21c3f60	FD4::MaterialParameters::begin	guess	calls	void (FD4::MaterialParameters *, void *state_cache, void *pass)
 0x21c41a0	FD4::MaterialParameters::end	guess	calls	void (FD4::MaterialParameters *, void *state_cache, void *pass)
 0x21c8c50	CG::SkinningBuffer::update	guess	calls	void (CG::SkinningBuffer *, const float (*current)[12], const float (*previous)[12], uint32_t)
@@ -290,6 +292,7 @@
 0x22bd110	FD4::LightRenderer::drawLightBatches#2	guess	calls
 0x22bdb00	FD4::LightRenderer::drawLightBatches#3	guess	calls
 0x22be4f0	FD4::LightRenderer::drawLightBatches#4	guess	calls
+0x2348ca0	GUITextureViewer::setTexture	guess	calls	
 0x2382eb0	FD4::TextRenderer::drawString	guess	calls
 0x23ee1e0	Scaleform::RefCountBaseGC::release	guess	calls	
 0x23f6da0	Scaleform::RefCountBaseGC::release#2	guess	calls	

@@ -64,7 +64,7 @@ reads, and plain accesses to private frames gain nothing. The order of the work:
 | CPU time recompiled, against the translator | `█████████████████░░░` 86% | 344% of one core against 402% (1st Floor Sickroom), 360% against 397% (Iosefka's Clinic, 2026-10-27) |
 | Functions checked call by call (recordings) | `░░░░░░░░░░░░░░░░░░░░` 0.5% | 933 of 179,698 |
 | Functions labelled by library (2026-11-02) | `█████████████████░░░` 82.8% | 148,858 of 179,698 |
-| Functions named (2026-11-02) | `░░░░░░░░░░░░░░░░░░░░` 0.2% | 336 of 179,698 (libGnm's command buffer methods; the engine's draw methods, state setters, mesh, model, material and lighting code; the synchronization primitives; the busiest functions) |
+| Functions named (2026-11-02) | `░░░░░░░░░░░░░░░░░░░░` 0.2% | 339 of 179,698 (libGnm's command buffer methods; the engine's draw methods, state setters, mesh, model, material and lighting code; the synchronization primitives; the busiest functions) |
 
 Every function is generated; the ones left to the translator are the 660 import stubs, the 130
 functions that call `setjmp`, and 53 that the game's patches (51) or the runtime's live switches
@@ -298,6 +298,9 @@ object's slots give its name, label and type tags, destroy an instance and retur
 its own vtable to the object is its destructor (4,081, and 1,608 deleting ones); one writing to its second
 argument is a clone. Of six sampled with that check, the five that could be read were right.
 
+**Assertions.** YEBIS passes its failed text and the function's name to the C library's assert, which gives 642
+exact names (`GPURenderTexture::SetMultisampleBufferMode`). It is middleware, but it runs the post-effects.
+
 **Step tables.** FD4's state machines fill a table in code with each step's function and its whole name
 in wide text (`SprjGraphicsStep::STEP_Update`), which gives 742 exact names.
 
@@ -359,7 +362,7 @@ Dantelion2's CoreGraphics2, whose classes use a `CG` prefix. Evidence: `pm4` (a 
 named from the packets it writes, as `gpu/shim/bbport_gnm_table.inc` in bloodborne-runtime does),
 `calls` (the functions it calls and how its arguments reach them), `source` (a source path in its
 messages names the class), `message` (an error text, a profiler label or a singleton's name in it
-names the function), `binding` (registered in its class under that name), `step` (a state machine's table holds its name). `DL::` is Dantelion2's core library, `FD4::` FromSoftware's engine, `FX::`
+names the function), `assert` (an assertion says its name), `binding` (registered in its class under that name), `step` (a state machine's table holds its name). `DL::` is Dantelion2's core library, `FD4::` FromSoftware's engine, `FX::`
 the visual effects (a guess); `hk::`, `FMOD::`, `Scaleform::` and `Lua::` the middleware. Class names are the project's unless the evidence is `source`. The
 names are the project's work, not the game's: no decompiled code goes into the file or its
 evidence.
