@@ -26,8 +26,8 @@ same frame rate.
 
 The library is opt-in: a player who has not built it runs on the translator.
 
-What the code does is known for part of it: about 29,100 of the about 58,000 functions to understand have a
-name or a known role, much of that compiler and template code, and 49,050 are placed in a class or a source
+What the code does is known for part of it: about 29,200 of the about 58,000 functions to understand have a
+name or a known role, much of that compiler and template code, and 49,056 are placed in a class or a source
 file ([Annotations](../RECOMPILATION.md#annotations)).
 
 ## What is left
