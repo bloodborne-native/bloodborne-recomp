@@ -867,7 +867,9 @@ for round_ in range(3):
 # Template methods compile to the same bytes but for addresses, so one read example names its group.
 MEMBER_CALL = re.compile(rb'(?:\xf6[\xc0-\xc3]\x01|\xa8\x01)\x74.(?:[\x48\x49]\x8b.)?[\x48\x4c]\x8b[\x44\x4c\x54\x5c\x7c].{1}\xff', re.S)
 MASK = re.compile(rb'\xe8.{4}|\xe9.{4}|[\x48\x4c\x49\x4d]?[\x8b\x8d\x89\x83\xc7\x3b\x39][\x05\x0d\x15\x1d\x25\x2d\x35\x3d].{4}', re.S)
-EXAMPLES = {0x12a5050: 'push_back', 0x12b7550: 'treeErase', 0x12afa40: 'destroyInstance'}
+EXAMPLES = {0x12a5050: 'push_back', 0x12b7550: 'treeErase', 0x12afa40: 'destroyInstance', 0x12f1c70: 'treeErase',
+            0x12b7f20: 'treeInsertNode', 0xf85d60: 'getClassObject', 0x12226b0: 'addDebugItem', 0x144ea40: 'addDebugToggle',
+            0x144e810: 'addDebugButton', 0x142ebe0: 'removeDebugPage'}
 def body_shape(f):
     body = code0[f - text0[3]:f - text0[3] + functions[f][0]]
     return MASK.sub(lambda m: m.group(0)[:-4] + b'\0\0\0\0', body)
@@ -878,7 +880,7 @@ for f, (size, count) in functions.items():
         continue
     known = how.get(f) in ('message', 'table', 'binding', 'step', 'singleton', 'static')
     name = names.get(f, '')
-    if known or re.search(r'::[a-z_A-Z]*[Dd]estructor$|::_', name):
+    if known or re.search(r'::[a-z_A-Z]*[Dd]estructor$|::_|getClassObject', name):
         continue
     what = None
     if f >= unit_starts[0] and count <= 60 and MEMBER_CALL.search(code0, f - text0[3], f - text0[3] + size):

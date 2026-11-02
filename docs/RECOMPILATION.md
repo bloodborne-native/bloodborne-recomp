@@ -65,8 +65,8 @@ reads, and plain accesses to private frames gain nothing. The order of the work:
 | Functions checked call by call (recordings) | `░░░░░░░░░░░░░░░░░░░░` 0.5% | 933 of 179,698 |
 | Functions labelled by library (2026-11-02) | `█████████████████░░░` 82.8% | 148,858 of 179,698 |
 | Functions named by hand (2026-11-02) | `░░░░░░░░░░░░░░░░░░░░` 0.2% | 412 of 179,698, 219 sure and 193 guesses (libGnm's command buffer methods; the engine's draw methods, state setters, mesh, model, material and lighting code; the synchronization primitives; the busiest functions; texture repositories) |
-| Functions placed, of those to understand (2026-11-02) | `███████████████░░░░░` 75% | 48,237 of 63,890 longer than five instructions, in FromSoftware's code or not labelled yet |
-| Functions identified, of the target (2026-11-02) | `██████░░░░░░░░░░░░░░` 32% | about 18,100 of about 56,000: 2,161 with the game's own name, 15,927 with a known role, much of that compiler and template code |
+| Functions placed, of those to understand (2026-11-02) | `███████████████░░░░░` 75% | 48,233 of 63,890 longer than five instructions, in FromSoftware's code or not labelled yet |
+| Functions identified, of the target (2026-11-02) | `██████░░░░░░░░░░░░░░` 34% | about 19,000 of about 56,000: 2,161 with the game's own name, 16,867 with a known role, much of that compiler and template code |
 
 Every function is generated; the ones left to the translator are the 660 import stubs, the 130
 functions that call `setjmp`, and 53 that the game's patches (51) or the runtime's live switches
@@ -269,15 +269,19 @@ page. Both say the same wide text, which names 121 copies at once.
 **Shader passes.** A function that loads shader programs by name in wide text sets up that pass, and takes the
 name the programs share: 53 functions.
 
+**Largest groups.** Functions that compile to the same bytes but for addresses are ranked by size, and reading one
+of a group names all of it. Seven reads named 766: the tree's erase and insert, class object getters, and the helpers
+that add and remove debug menu items.
+
 **Where it stands (2026-11-02).** Of the non-trivial functions in FromSoftware's code or not labelled yet:
 
 | | Functions | What it says |
 |---|---:|---|
 | The game's own name | 2,161 | Registered methods, steps, messages, singletons, tables |
-| A known role | 16,101 | Destructors, class getters, `std::function` slots, EzState opcodes, delegates: much is compiler or template code |
-| In a named class or file | 14,292 | Where it belongs, not what it does |
-| Only an anonymous class | 15,683 | A vtable or object file, no name |
-| Nowhere yet | 15,653 | |
+| A known role | 16,867 | Destructors, class getters, `std::function` slots, EzState opcodes, delegates: much is compiler or template code |
+| In a named class or file | 13,683 | Where it belongs, not what it does |
+| Only an anonymous class | 15,522 | A vtable or object file, no name |
+| Nowhere yet | 15,657 | |
 
 Text and compiler patterns are nearly used up, so what remains is mostly read by hand, a few functions at a
 time. A public name for a family of functions, or a subsystem that needs one, is what would speed it up.
