@@ -960,6 +960,29 @@ with open(OUT / 'units.tsv', 'w') as out:
 tally = collections.Counter(how.values())
 named_target = {f for f in names if modules.get(f, ('', ''))[0] in TARGET}
 big = [f for f, (s, c) in functions.items() if c > 5 and modules.get(f, ('', ''))[0] in TARGET and f not in static_inits]
+# 9b. FD4Step is a template, so each step class has its own copy of its update and its debug page, which say
+# the same wide text. They were read by hand; a copy keeps its class, and takes the template's name without one.
+STEP_TEXT = {'State Finished.(No StepMethod is Executing.)': 'stepUpdate', 'StepMethodList': 'stepDebugPage'}
+step_text = {}
+for text_, role in STEP_TEXT.items():
+    wide = text_.encode('utf-16-le') + b'\0\0'
+    for m in re.finditer(re.escape(wide), image):
+        for p_ in loads:
+            if p_[2] <= m.start() < p_[2] + p_[5]:
+                step_text[p_[3] + m.start() - p_[2]] = role
+step_roles = 0
+for m in re.finditer(rb'[\x48\x4c]\x8d[\x05\x0d\x15\x1d\x25\x2d\x35\x3d](.{4})', code, re.S):
+    role = step_text.get(text[3] + m.end() + struct.unpack('<i', m.group(1))[0])
+    f = owner(text[3] + m.start()) if role else None
+    if f is None or names.get(f, '').endswith(role):
+        continue
+    label = names.get(f, '').split('::')[0]
+    if not label or re.search(r'Class_|shared_', names.get(f, '')):
+        label = f'FD4Step_{f:x}'
+    names[f] = f'{label}::{role}'
+    how[f] = 'shape'
+    step_roles += 1
+print('step templates', step_roles)
 with open(OUT / 'names.tsv', 'w') as out:
     out.write('address\tname\thow\tlibrary\tsource\n')
     for f in sorted(set(names) | set(files)):
