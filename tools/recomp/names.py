@@ -1233,7 +1233,7 @@ print('shader passes', shader_passes)
 # 11. Identical code: functions with the same instructions, constants aside, are copies of one template. Where a
 # group's known members mostly agree on a role the others take it (99.3% of 15,664 held-out names), and a group's
 # role can be read once in the code (SHAPE_ROLES). Short bodies say too little.
-SHAPE_ROLES = {0x16f3170: 'std::vector::reallocate', 0x12da780: 'std::vector::reallocate', 0x127db90: 'std::tree::eraseNodes',
+SHAPE_ROLES = {0x1495250: 'std::vector::push_back', 0x2acd200: 'FXResource::relocateAndSwap', 0x16f3170: 'std::vector::reallocate', 0x12da780: 'std::vector::reallocate', 0x127db90: 'std::tree::eraseNodes',
                0x1ea54d0: 'std::map::extract', 0x230dc40: 'RenderPass::bindCommonTextures',
                0x29116a0: 'std::vector::eraseRange', 0x2911940: 'GUIComboTweaker::populateItems', 0x2188630: 'std::unordered_map::constructor',
                0x21e17a0: 'GUICallbackObject::connectSignals', 0x19b2d60: 'std::tree::constructor', 0x13ec140: 'std::vector::push_back', 0x1785460: 'SprjSessionManager::findMember',
