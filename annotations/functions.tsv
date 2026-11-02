@@ -375,6 +375,10 @@
 0x11fd230	Gnm::ConstantCommandBuffer::waitOnDeCounterDiff	sure	pm4
 0x11fd280	Gnm::ConstantCommandBuffer::writeToCpRam	guess	pm4
 0x11fd320	Gnm::ConstantCommandBuffer::cpRamDump	guess	pm4
+0x12241d0	ChrInsAccessor::getName	guess	calls	
+0x1224220	ChrInsAccessor::getHandle	guess	calls	
+0x12244e0	ChrInsAccessor::getCurrentWeaponSlot	guess	calls	
+0x1224790	ChrInsAccessor::getAiScriptId	guess	calls	
 0x12334b0	NvmLocator::locate	guess	calls	
 0x125bad0	SprjAiFunc::IsApparentDeath	sure	binding	
 0x12acfa0	Sprj::ParamList::selectActive	guess	calls	void *(void *)

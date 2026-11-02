@@ -174,3 +174,4 @@
 0x53af8a0	DebugCamPad	constructor titles itself
 0x53274d0	WorldSound_DebugPage	constructor titles itself
 0x5327300	WorldBlockPoint_DebugPage	constructor titles itself
+0x53185b0	ChrInsAccessor	fifty slots read one character through slot 6: name, id, equipment state, AI id (seven read)
