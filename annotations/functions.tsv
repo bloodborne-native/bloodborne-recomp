@@ -313,11 +313,15 @@
 0x2192660	CG::Resource::deferRelease	guess	calls	
 0x219ef50	CG::DepthTarget::release	sure	calls	
 0x219f130	CG::DepthTarget::create	sure	calls	
+0x21a32f0	CG::RenderTarget::create	sure	calls	
 0x21a47e0	CG::ShaderStage::recreate	guess	calls	
 0x21a6a00	CG::TextureRegistry::removeAndRelease	sure	calls	
 0x21a6c00	CG::Texture2D::create	sure	calls	
 0x21a7d70	CG::Texture::createFromSource	guess	calls	
+0x21a7f20	CG::TextureCube::create	sure	calls	
 0x21ac690	CG::ResourceTotals::addTexture2D	sure	calls	
+0x21ac7d0	CG::ResourceTotals::addTextureCube	sure	calls	
+0x21ac900	CG::ResourceTotals::addRenderTarget	sure	calls	
 0x21aca50	CG::ResourceTotals::addDepthTarget	sure	calls	
 0x21b8710	FD4::JobSystem::runAndWait	guess	calls	void (FD4::JobGroup *)
 0x21b9f40	GXGUITexture::GXGUITexture	sure	calls	
