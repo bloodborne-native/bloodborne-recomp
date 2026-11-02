@@ -1530,6 +1530,8 @@ SLOT_ROLES = [(re.compile(r'FXEvaluatable.*::vf1'), 'evaluate'),
               # File capsules: slot 7 passes the loaded data on (two read). Location nodes: slot 8 copies a range of 0x30-byte
               # matrices out (one read).
               (re.compile(r'\w+FileCap::vf7'), 'onFileLoaded'), (re.compile(r'SprjFD4LocationNode_\w+::vf8'), 'getMatrices'),
+              # Debug menu items: slot 7 edits the value from the pad, slot 8 writes the item's text (two read).
+              (re.compile(r'FD4DebugMenuItem_\w+::vf7'), 'onInput'), (re.compile(r'FD4DebugMenuItem_\w+::vf8'), 'writeText'),
               # Fading setting channels (one class per value type): a list of named states, a list of bound targets.
               # Read in one class: the slots do the same in the rest, only the value's size differs.
               *[(re.compile(r'GraphicsParamChannel_\w+::vf%d' % slot), role) for slot, role in
