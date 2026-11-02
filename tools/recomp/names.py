@@ -934,6 +934,10 @@ print('behind a named front', behind)
 
 # 9. Object files: in one where every class-named function has one class, the rest belong with it. Holding
 # out functions of known class this agrees 98.4%, against 91.6% for taking the class of most of them.
+# A stretch without a marker can be many object files: 13,874 functions in one, whose only .cpp named a
+# Havok file over FromSoftware's debug menu code. Stretches of more than 500 are not one file.
+unit_sizes = collections.Counter(bisect.bisect_right(unit_starts, f) - 1 for f in functions if f >= unit_starts[0])
+HUGE_UNIT = 500
 unit_classes = collections.defaultdict(collections.Counter)
 for f, name in names.items():
     if how[f] in ('class', 'binding', 'step') and not name.startswith('Class_') and f >= unit_starts[0]:
@@ -942,8 +946,9 @@ placed_in_unit = 0
 for f in functions:
     if f < unit_starts[0] or f >= code_end or f in static_inits:
         continue
-    found = unit_classes.get(bisect.bisect_right(unit_starts, f) - 1)
-    if not found or len(found) != 1:
+    unit = bisect.bisect_right(unit_starts, f) - 1
+    found = unit_classes.get(unit)
+    if not found or len(found) != 1 or unit_sizes[unit] > HUGE_UNIT:
         continue
     only = next(iter(found))
     if f not in names:
@@ -962,8 +967,9 @@ placed_by_file = 0
 for f in functions:
     if f < unit_starts[0] or f >= code_end or f in static_inits:
         continue
-    found = unit_files.get(bisect.bisect_right(unit_starts, f) - 1)
-    if not found or len(found) != 1:
+    unit = bisect.bisect_right(unit_starts, f) - 1
+    found = unit_files.get(unit)
+    if not found or len(found) != 1 or unit_sizes[unit] > HUGE_UNIT:
         continue
     stem = tidy(next(iter(found)).rsplit('.', 1)[0])
     if f not in names:
