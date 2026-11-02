@@ -76,6 +76,7 @@
 0xfe68f0	FD4::ResRepository::find	sure	calls	
 0xfe6a70	FD4::ResRepository::insert	guess	calls	
 0xfe6ae0	FD4ResCapHolder::release	sure	calls	
+0xfe6bd0	TexResCap::acquire	guess	calls	
 0xfe6c30	FD4ResCapHolder::addHold	sure	calls	
 0xfe6c40	FD4ResCapHolder::releaseHold	sure	calls	
 0xfe8200	FD4ResRep::FD4ResRep	sure	calls	
@@ -187,9 +188,13 @@
 0x1555c00	WorldBackRead::addCollision	guess	calls	
 0x1556040	WorldBackRead::ageCollisions	guess	calls	
 0x1586d10	MapInsUpdateHelper::makeTimestampName	guess	calls	
+0x1586ff0	MapInsPiece::constructor	guess	calls	
 0x1587a40	MapIns::applyDrawFlags	guess	calls	
+0x1587c30	MapInsPiece::setFlagAndQueue	guess	calls	
 0x1587dd0	MapIns::setDrawFlag	guess	calls	
 0x1587ed0	MapInsUpdateHelper::requestLevel	sure	calls	
+0x15881a0	MapInsPiece::holdTextures	guess	calls	
+0x1588220	MapRes::clearHolders	guess	calls	
 0x15885f0	MapRes::TexHolder::release	guess	calls	
 0x1588780	MapRes::holdTextures	guess	calls	
 0x1588fe0	MapRes::releaseHeldTextures	guess	calls	
@@ -238,6 +243,7 @@
 0x1a89070	SprjGaitem::resolveHandle	sure	calls	
 0x1a8bc00	SprjGaitem::releaseRef	sure	message	
 0x1a8bed0	SprjGaitem::Handle::assign	guess	calls	
+0x1ac69b0	MapInsWorkList::constructor	guess	calls	
 0x1ac6ba0	MapInsUpdateHelper::applyQueuedLevels	guess	calls	
 0x1ae8cc0	Menu::messageText	sure	message	
 0x1d1b360	ModelIns::drawMesh	guess	calls	
@@ -427,6 +433,8 @@
 0x21b8710	FD4::JobSystem::runAndWait	guess	calls	void (FD4::JobGroup *)
 0x21b9f40	GXGUITexture::GXGUITexture	sure	calls	
 0x21ba300	GXGUITexture::createLinearView	guess	calls	
+0x21c0240	TpfResCap::setTextureIndex	guess	calls	
+0x21c02b0	TpfResCap::createTexture	guess	calls	
 0x21c3f60	FD4::MaterialParameters::begin	guess	calls	void (FD4::MaterialParameters *, void *state_cache, void *pass)
 0x21c41a0	FD4::MaterialParameters::end	guess	calls	void (FD4::MaterialParameters *, void *state_cache, void *pass)
 0x21c8c50	CG::SkinningBuffer::update	guess	calls	void (CG::SkinningBuffer *, const float (*current)[12], const float (*previous)[12], uint32_t)
