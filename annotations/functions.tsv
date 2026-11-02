@@ -597,6 +597,10 @@
 0x26aa860	CG::GpuHeap::reclaimRetired	guess	calls	
 0x26adb90	CG::ResourceBinder::uploadConstants	guess	calls	void (void *, CG::ResourceBinder *, CG::DrawState *, const CG::ConstantBuffer *, const void *data)
 0x26addc0	CG::PageAllocator::allocate	guess	calls	
+0x26aec40	CG::GnmContext::destroy	guess	calls	
+0x26af3f0	CG::GnmContext::reset	guess	calls	
+0x26af700	CG::GnmContext::flush	guess	calls	
+0x26b0b00	CG::GnmContext::submitCommandBuffer	guess	calls	
 0x26b2670	CG::SurfaceOps::copyBuffer	sure	calls
 0x26b2810	CG::SurfaceOps::copyBuffers	sure	calls
 0x26b2f40	CG::SurfaceOps::copyTexture	sure	calls
