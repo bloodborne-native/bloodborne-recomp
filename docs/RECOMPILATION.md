@@ -65,8 +65,8 @@ reads, and plain accesses to private frames gain nothing. The order of the work:
 | Functions checked call by call (recordings) | `░░░░░░░░░░░░░░░░░░░░` 0.5% | 933 of 179,698 |
 | Functions labelled by library (2026-11-02) | `█████████████████░░░` 82.8% | 148,858 of 179,698 |
 | Functions named by hand (2026-11-02) | `░░░░░░░░░░░░░░░░░░░░` 0.2% | 412 of 179,698, 219 sure and 193 guesses (libGnm's command buffer methods; the engine's draw methods, state setters, mesh, model, material and lighting code; the synchronization primitives; the busiest functions; texture repositories) |
-| Functions placed, of those to understand (2026-11-02) | `███████████████░░░░░` 75% | 48,335 of 63,890 longer than five instructions, in FromSoftware's code or not labelled yet |
-| Functions identified, of the target (2026-11-02) | `███████░░░░░░░░░░░░░` 35% | about 19,600 of about 56,000: 2,161 with the game's own name, 17,432 with a known role, much of that compiler and template code |
+| Functions placed, of those to understand (2026-11-02) | `███████████████░░░░░` 75% | 48,378 of 63,890 longer than five instructions, in FromSoftware's code or not labelled yet |
+| Functions identified, of the target (2026-11-02) | `███████░░░░░░░░░░░░░` 35% | about 19,800 of about 56,000: 2,161 with the game's own name, 17,631 with a known role, much of that compiler and template code |
 
 Every function is generated; the ones left to the translator are the 660 import stubs, the 130
 functions that call `setjmp`, and 53 that the game's patches (51) or the runtime's live switches
@@ -273,6 +273,9 @@ name the programs share: 53 functions.
 of a group names all of it. Thirteen reads named 1,036: the tree's erase and insert, class object getters, the helpers
 that add and remove debug menu items, and those that set a play log's fields, each with the field's name.
 
+**Settings.** A short function that reads one setting says its dotted name in wide text, such as
+`Game.Option.Control.RotLR`: 98 functions.
+
 **Standard library.** A short function that says only a container's failure text, such as `vector<T> too long`, is
 that template. Longer ones have the template inlined in real work, so each kind has a size limit.
 
@@ -281,10 +284,10 @@ that template. Longer ones have the template inlined in real work, so each kind 
 | | Functions | What it says |
 |---|---:|---|
 | The game's own name | 2,161 | Registered methods, steps, messages, singletons, tables |
-| A known role | 17,432 | Destructors, class getters, `std::function` slots, EzState opcodes, delegates: much is compiler or template code |
-| In a named class or file | 13,340 | Where it belongs, not what it does |
-| Only an anonymous class | 15,402 | A vtable or object file, no name |
-| Nowhere yet | 15,555 | |
+| A known role | 17,631 | Destructors, class getters, `std::function` slots, EzState opcodes, delegates: much is compiler or template code |
+| In a named class or file | 13,217 | Where it belongs, not what it does |
+| Only an anonymous class | 15,369 | A vtable or object file, no name |
+| Nowhere yet | 15,512 | |
 
 Text and compiler patterns are nearly used up, so what remains is mostly read by hand, a few functions at a
 time. A public name for a family of functions, or a subsystem that needs one, is what would speed it up.
