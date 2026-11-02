@@ -1779,6 +1779,28 @@ for f in functions:
         names[f], how[f] = f'{next(iter(owners))}::{kind}_{f:x}', 'helper'
         placed_late[kind] += 1
 print('no reference at all', unused, 'placed by their one owner', dict(placed_late))
+# 24b. A helper or near label far from everything solid in its class is a template or a shared utility that a class happens
+# to use (two of three read were: a vector assignment, a number parser). Those lose the label: 1 MiB, the width of a large
+# object file, measured against vtable slots, constructors and hand names.
+SOLID_HOW = ('class', 'vtable', 'shape', 'hand', 'step', 'message', 'binding')
+solid = collections.defaultdict(list)
+for f, name in names.items():
+    if how.get(f) in SOLID_HOW and '::' in name:
+        solid[name.split('::')[0]].append(f)
+for anchors in solid.values():
+    anchors.sort()
+far_labels = 0
+for f, name in list(names.items()):
+    if how.get(f) in ('helper', 'near') and '::' in name and modules.get(f, ('', ''))[0] in TARGET:
+        anchors = solid.get(name.split('::')[0])
+        if anchors:
+            i = bisect.bisect_left(anchors, f)
+            nearest = min((abs(anchors[j] - f) for j in (i - 1, i) if 0 <= j < len(anchors)))
+            if nearest > 0x100000:
+                del names[f]
+                how.pop(f, None)
+                far_labels += 1
+print('labels dropped for distance', far_labels)
 # 22. A std::function is built where its table is written: the only writer outside the table's own slots says whose lambda it is.
 WEAK_OWNER = re.compile(r'^(?:Class_|shared_|fn_|Says::|Import::|std::|DL::)|::(?:near_|helper_|unit_|vf\d+$|fn_|writes_vtable)')
 lambdas = collections.Counter()

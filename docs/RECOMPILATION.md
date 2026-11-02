@@ -65,7 +65,7 @@ reads, and plain accesses to private frames gain nothing. The order of the work:
 | Functions checked call by call (recordings) | `░░░░░░░░░░░░░░░░░░░░` 0.5% | 933 of 179,698 |
 | Functions labelled by library (2026-11-02) | `███████████████████░` 95.5% | 171,706 of 179,698 |
 | Functions named by hand (2026-11-02) | `░░░░░░░░░░░░░░░░░░░░` 0.2% | 828 of 179,698, 228 sure and 600 guesses (libGnm's command buffer methods; the engine's draw methods, state setters, mesh, model, material and lighting code; the synchronization primitives; the busiest functions; texture repositories) |
-| Functions placed, of those to understand (2026-11-02) | `████████████████░░░░` 83% | 49,838 of 59,867 longer than five instructions, in FromSoftware's code or not labelled yet |
+| Functions placed, of those to understand (2026-11-02) | `████████████████░░░░` 80% | 48,333 of 59,867 longer than five instructions, in FromSoftware's code or not labelled yet |
 | Functions identified, of the target (2026-11-02) | `██████████░░░░░░░░░░` 51% | about 29,600 of about 58,000: 2,414 with the game's own name, 27,233 with a known role, much of that compiler and template code |
 
 Every function is generated; the ones left to the translator are the 660 import stubs, the 130
@@ -298,15 +298,15 @@ that template. Longer ones have the template inlined in real work, so each kind 
 |---|---:|---|
 | The game's own name | 2,414 | Registered methods, steps, messages, singletons, tables |
 | A known role | 27,233 | Destructors, class getters, `std::function` slots, EzState opcodes, delegates: much is compiler or template code |
-| In a named class or file | 8,484 | Where it belongs, not what it does; 3,703 of them only by their callers, which about half of known functions agree with |
+| In a named class or file | 6,979 | Where it belongs, not what it does; 3,703 of them only by their callers, which about half of known functions agree with |
 | Only an anonymous class | 11,707 | A vtable or object file, no name |
-| Nowhere yet | 10,029 | 5,202 of them have no reference at all |
+| Nowhere yet | 11,534 | 5,198 of them have no reference at all |
 
 Scripts and debug menus register methods with their names in wide text next to the code pointer, so those methods carry the names the game gives them.
 
 A function known only by the wide text it loads is named `Says::` plus that text: a hint, not a role. It counts in the "named class or file" row as placed, never as identified.
 
-Those 5,202 have no call, jump, address taken or data pointer anywhere in the executable, and Ghidra agrees on a sample: nothing can run them, so they matter only to the count. A function with one owner goes with it, `Owner::helper_` or `Owner::callback_`: that says who uses it, and a template used by one class lands there too.
+Those 5,198 have no call, jump, address taken or data pointer anywhere in the executable, and Ghidra agrees on a sample: nothing can run them, so they matter only to the count. A function with one owner goes with it, `Owner::helper_` or `Owner::callback_`: that says who uses it, and a template used by one class lands there too. A helper or nearby label more than 1 MiB from everything solid in its class is dropped: two of three read were shared code the class only uses.
 
 Text and compiler patterns are nearly used up, so what remains is mostly read by hand, a few functions at a
 time. A public name for a family of functions, or a subsystem that needs one, is what would speed it up.
