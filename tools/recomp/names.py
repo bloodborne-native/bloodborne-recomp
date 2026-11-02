@@ -1648,6 +1648,27 @@ for f, name in list(names.items()):
             names[f], how[f] = f'{words.pop()}::fieldAccess_{f:x}', 'shape'
             field_named += 1
 print('singleton fields', field_named)
+# 22. A std::function is built where its table is written: the only writer outside the table's own slots says whose lambda it is.
+WEAK_OWNER = re.compile(r'^(?:Class_|shared_|fn_|Says::|Import::|std::|DL::)|::(?:near_|helper_|unit_|vf\d+$|fn_|writes_vtable)')
+lambdas = collections.Counter()
+for table, run in vtables.items():
+    if len(run) < 3 or not names.get(run[2], '').startswith(f'std::_Func_impl_{table:x}::_Do_call'):
+        continue
+    owners = sites_writers.get(table, set()) - set(run)
+    if len(owners) != 1:
+        lambdas['writers %s' % min(len(owners), 2)] += 1
+        continue
+    owner = next(iter(owners))
+    owner_name = names.get(owner, '')
+    if not owner_name or WEAK_OWNER.search(owner_name):
+        # Only the owner's class is worth keeping, when it has one.
+        owner_name = owner_name.split('::')[0]
+        if not owner_name or WEAK_OWNER.search(owner_name + '::'):
+            lambdas['weak owner'] += 1
+            continue
+    names[run[2]] = f'{owner_name}::lambda_{run[2]:x}'
+    lambdas['named'] += 1
+print('lambdas', dict(lambdas))
 with open(OUT / 'names.tsv', 'w') as out:
     out.write('address\tname\thow\tlibrary\tsource\n')
     for f in sorted(set(names) | set(files)):

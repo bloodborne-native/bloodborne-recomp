@@ -362,7 +362,7 @@ in wide text (`SprjGraphicsStep::STEP_Update`), which gives 742 exact names.
 
 **Recipes the compiler repeats.** Grouping functions by their bytes, with addresses masked, shows template
 code. A deleting destructor that calls another function names that function the destructor, which with the
-rule above gives 5,630 deleting destructors and 5,003 others. 1,018 tables are `std::function` implementations: copy, move, the call,
+rule above gives 5,630 deleting destructors and 5,003 others. 1,018 tables are `std::function` implementations (192 of their call slots are `Owner::lambda_`, from the only function outside the table that builds it): copy, move, the call,
 the target's type, delete-this. A function that writes a class object's vtable is its getter (819), and
 1,148 functions belong to the method invokers, one template per signature (164). Their slots were read;
 what a `_Do_call` calls is still what says what such a function does.
