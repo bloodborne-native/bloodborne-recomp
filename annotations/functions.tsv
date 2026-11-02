@@ -251,8 +251,10 @@
 0x2169900	CG::GraphicsContext::drawIndexedInstanced	sure	calls	void (CG::GraphicsContext *, const CG::DrawState *, uint32_t index_count, uint32_t instances, uint32_t first_index, uint32_t base_vertex)
 0x21699d0	CG::GraphicsContext::drawIndirect	sure	calls	void (CG::GraphicsContext *, const CG::DrawState *, const CG::Buffer *arguments, uint32_t offset)
 0x2169ab0	CG::GraphicsContext::drawIndexedIndirect	sure	calls	void (CG::GraphicsContext *, const CG::DrawState *, const CG::Buffer *arguments, uint32_t offset)
+0x217fef0	CG::Texture::createFromSource#2	guess	calls	
 0x2190be0	CG::ImmediateDraw::drawUserPrimitives	sure	calls	void (CG::ImmediateDraw *, uint32_t topology, uint32_t vertex_count, const void *vertices, uint32_t stride)
 0x2190d30	CG::ImmediateDraw::drawIndexedUserPrimitives	sure	calls	void (CG::ImmediateDraw *, uint32_t topology, uint32_t min_index, uint32_t max_index, uint32_t index_count, const void *indices, uint32_t index_format, const void *vertices, uint32_t stride)
+0x21a7d70	CG::Texture::createFromSource	guess	calls	
 0x21b8710	FD4::JobSystem::runAndWait	guess	calls	void (FD4::JobGroup *)
 0x21c3f60	FD4::MaterialParameters::begin	guess	calls	void (FD4::MaterialParameters *, void *state_cache, void *pass)
 0x21c41a0	FD4::MaterialParameters::end	guess	calls	void (FD4::MaterialParameters *, void *state_cache, void *pass)
