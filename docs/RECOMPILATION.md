@@ -296,7 +296,7 @@ executable gives.
 object's slots give its name, label and type tags, destroy an instance and return its size, so the size of
 1,256 classes is known (`EnemyIns` 1,024 bytes, `TexRepositoryImp` 216). A virtual function that writes
 its own vtable to the object is its destructor (4,081, and 1,608 deleting ones); one writing to its second
-argument is a clone. Of nine sampled, the eight that could be read were right once that was checked.
+argument is a clone. Of six sampled with that check, the five that could be read were right.
 
 **Step tables.** FD4's state machines fill a table in code with each step's function and its whole name
 in wide text (`SprjGraphicsStep::STEP_Update`), which gives 742 exact names.
