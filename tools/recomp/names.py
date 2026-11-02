@@ -1707,6 +1707,38 @@ for table, (label, slots) in D3D_TABLES.items():
                 names[target], how[target] = f'{label}::{slot}Impl', 'shape'
                 d3d_named += 1
 print('Direct3D slots', d3d_named)
+# 24. The SDK's command buffer writes PM4 packets with their headers as constants, so the opcode says what a short function
+# does, and for a register write the next constant says which register.
+PM4_OPS = {0x10: 'nop', 0x12: 'clearState', 0x13: 'indexBufferSize', 0x15: 'dispatchDirect', 0x16: 'dispatchIndirect', 0x20: 'setPredication',
+           0x24: 'drawIndirect', 0x25: 'drawIndexIndirect', 0x26: 'indexBase', 0x27: 'drawIndex2', 0x28: 'contextControl', 0x2a: 'indexType',
+           0x2d: 'drawIndexAuto', 0x2f: 'numInstances', 0x33: 'indirectBufferConst', 0x34: 'strmoutBufferUpdate', 0x35: 'drawIndexOffset2',
+           0x37: 'writeData', 0x39: 'memSemaphore', 0x3c: 'waitRegMem', 0x3f: 'indirectBuffer', 0x40: 'copyData', 0x42: 'pfpSyncMe',
+           0x43: 'surfaceSync', 0x45: 'condWrite', 0x46: 'eventWrite', 0x47: 'eventWriteEop', 0x48: 'eventWriteEos', 0x49: 'releaseMem',
+           0x50: 'dmaData', 0x58: 'acquireMem', 0x59: 'rewind', 0x68: 'setConfigReg', 0x69: 'setContextReg', 0x76: 'setShReg', 0x79: 'setUconfigReg',
+           0x83: 'dumpConstRam', 0x84: 'incrementCeCounter', 0x85: 'incrementDeCounter', 0x86: 'waitOnCeCounter', 0x88: 'waitOnDeCounterDiff'}
+PM4_HEADER = re.compile(rb'\xc7[\x00\x40-\x47]([\x00-\xf8]?)\x00([\x10-\x88])([\x00-\x3f])\xc0')
+PM4_NEXT = re.compile(rb'\xc7[\x40-\x47][\x00-\xf8](....)', re.S)
+pm4_named = collections.Counter()
+for f, (size, count, *_) in functions.items():
+    if size > 1200 or modules.get(f, ('', ''))[0] in ('havok', 'scaleform', 'fmod', 'lua', 'yebis') or how.get(f) == 'hand':
+        continue
+    start = f - text0[3]
+    packets = []
+    for m in PM4_HEADER.finditer(code0, start, start + size):
+        if m.group(2)[0] in PM4_OPS:
+            operand = PM4_NEXT.match(code0, m.end())
+            packets.append((m.group(2)[0], int.from_bytes(operand.group(1), 'little') if operand else None))
+    if not packets or not (names.get(f, '') == '' or re.search(r'::(?:near_|helper_|unit_|vf\d+$)|^shared_', names[f])):
+        continue
+    op, register = next((p for p in packets if p[0] != 0x10), packets[0])
+    if op == 0x10:  # a padding packet says nothing
+        continue
+    label = PM4_OPS[op]
+    if op in (0x68, 0x69, 0x76, 0x79) and register is not None and register < 0x10000:
+        label += f'_{register:x}'
+    names[f], how[f] = f'Gnm::DrawCommandBuffer::{label}_{f:x}', 'shape'
+    pm4_named[PM4_OPS[op]] += 1
+print('command buffer packets', sum(pm4_named.values()), dict(pm4_named))
 # 22. A std::function is built where its table is written: the only writer outside the table's own slots says whose lambda it is.
 WEAK_OWNER = re.compile(r'^(?:Class_|shared_|fn_|Says::|Import::|std::|DL::)|::(?:near_|helper_|unit_|vf\d+$|fn_|writes_vtable)')
 lambdas = collections.Counter()
