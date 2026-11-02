@@ -308,6 +308,10 @@ the target's type, delete-this. A function that writes a class object's vtable i
 1,148 functions belong to the method invokers, one template per signature (164). Their slots were read;
 what a `_Do_call` calls is still what says what such a function does.
 
+One read example also names a template's copies, which compile to the same bytes but for addresses
+(vector `push_back`, tree erase), and short functions that test a pointer-to-member's low bit and call it
+are delegates, in FromSoftware's code only: a Havok function of that form is a forwarder.
+
 **Object files.** The executable lists its static initialisers in one table of 18,444. 12,045 of them are
 the three standard error categories, initialised again in each of 4,015 source files that include them,
 so each set marks an object file and what lies between two sets is one source file: of 195 stretches

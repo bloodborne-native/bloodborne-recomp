@@ -795,6 +795,36 @@ for round_ in range(3):
     if not found:
         break
 
+# 8b. Shapes. A short function that tests a pointer-to-member's low bit and calls it is a delegate's call
+# (in FromSoftware's code: middleware has forwarders of that form).
+# Template methods compile to the same bytes but for addresses, so one read example names its group.
+MEMBER_CALL = re.compile(rb'(?:\xf6[\xc0-\xc3]\x01|\xa8\x01)\x74.(?:[\x48\x49]\x8b.)?[\x48\x4c]\x8b[\x44\x4c\x54\x5c\x7c].{1}\xff', re.S)
+MASK = re.compile(rb'\xe8.{4}|\xe9.{4}|[\x48\x4c\x49\x4d]?[\x8b\x8d\x89\x83\xc7\x3b\x39][\x05\x0d\x15\x1d\x25\x2d\x35\x3d].{4}', re.S)
+EXAMPLES = {0x12a5050: 'push_back', 0x12b7550: 'treeErase', 0x12afa40: 'destroyInstance'}
+def body_shape(f):
+    body = code0[f - text0[3]:f - text0[3] + functions[f][0]]
+    return MASK.sub(lambda m: m.group(0)[:-4] + b'\0\0\0\0', body)
+example_shapes = {body_shape(f): name for f, name in EXAMPLES.items()}
+shaped = collections.Counter()
+for f, (size, count) in functions.items():
+    if f >= code_end or f in static_inits or count < 6:
+        continue
+    known = how.get(f) in ('message', 'table', 'binding', 'step', 'singleton', 'static')
+    name = names.get(f, '')
+    if known or re.search(r'::[a-z_A-Z]*[Dd]estructor$|::_', name):
+        continue
+    what = None
+    if f >= unit_starts[0] and count <= 60 and MEMBER_CALL.search(code0, f - text0[3], f - text0[3] + size):
+        what = 'delegateCall'
+    else:
+        what = example_shapes.get(body_shape(f))
+    if what:
+        owner_name = name.split('::')[0] if '::' in name and not name.startswith(('Class_', 'shared_')) else 'Template'
+        names[f] = f'{owner_name}::{what}_{f:x}'
+        how[f] = 'shape'
+        shaped[what] += 1
+print('shapes', dict(shaped))
+
 # 9. Object files: in one where every class-named function has one class, the rest belong with it. Holding
 # out functions of known class this agrees 98.4%, against 91.6% for taking the class of most of them.
 unit_classes = collections.defaultdict(collections.Counter)
