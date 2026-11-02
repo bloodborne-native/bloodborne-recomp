@@ -88,7 +88,9 @@
 0xeddff0	FD4::MaterialParameters::applyTextures	guess	calls	
 0xf2dfe0	Class_52eb030::createVolumeTarget	guess	calls	
 0xf2e160	Class_52eb030::createVolumeView	guess	calls	
+0xf31b90	Class_52eb030::blurPingPong	guess	calls	
 0xf33a00	Class_52eb030::createNoiseTexture	guess	calls	
+0xf3d320	Class_52eb030::drawFullscreen	guess	calls	
 0xf5d720	DoubleBuffer::swap	guess	calls	
 0xf6f340	FD4::IdTable::find	guess	calls	
 0xf84700	FD4ResCap::FD4ResCap	sure	calls	
@@ -688,6 +690,7 @@
 0x21692e0	CG::GraphicsContext::setPixelTextures	sure	calls	void (CG::GraphicsContext *, CG::DrawState *, uint32_t first_slot, uint32_t count, const CG::Texture *const *)
 0x2169370	CG::GraphicsContext::setPixelConstantBuffers	sure	calls	void (CG::GraphicsContext *, CG::DrawState *, uint32_t first_slot, uint32_t count, const CG::ConstantBuffer *const *)
 0x21693e0	CG::GraphicsContext::setPixelShader	sure	calls	void (CG::GraphicsContext *, CG::DrawState *, const CG::Shader *)
+0x2169420	CG::GraphicsContext::setRenderTargets	guess	calls	
 0x2169440	CG::GraphicsContext::markComputeSlotsDirty	guess	calls	
 0x2169460	CG::GraphicsContext::setComputeTextures	guess	calls	
 0x21694f0	CG::GraphicsContext::setComputeConstantBuffers	guess	calls	
@@ -703,6 +706,7 @@
 0x2169ab0	CG::GraphicsContext::drawIndexedIndirect	sure	calls	void (CG::GraphicsContext *, const CG::DrawState *, const CG::Buffer *arguments, uint32_t offset)
 0x2169c30	CG::DeviceContext::map	guess	calls	
 0x2169eb0	CG::DeviceContext::unmap	guess	calls	
+0x216d8f0	CG::Texture::getDimension	guess	calls	
 0x2171d60	CG::Device::allocateTexture2DStorage	guess	calls	
 0x21722c0	CG::Texture::getDesc	guess	calls	
 0x21723a0	CG::Device::allocateTexture3DStorage	guess	calls	
@@ -776,6 +780,8 @@
 0x22bdb00	FD4::LightRenderer::drawLightBatches#3	guess	calls
 0x22be4f0	FD4::LightRenderer::drawLightBatches#4	guess	calls
 0x22ec420	Class_53b8ad0::createResources	guess	calls	
+0x230ddc0	ShaderPass::begin	guess	calls	
+0x230e840	ShaderPass::apply	guess	calls	
 0x230f420	GXFfxpointSprite::loadShaders	guess	calls	
 0x2348ca0	GUITextureViewer::setTexture	guess	calls	
 0x2382eb0	FD4::TextRenderer::drawString	guess	calls
