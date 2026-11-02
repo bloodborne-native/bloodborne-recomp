@@ -1592,6 +1592,11 @@ for f in find_callers:
         names[f], how[f] = f'{repos.pop()}::findResource_{f:x}', 'shape'
         repo_named += 1
 print('repository lookups', repo_named)
+# 21. Import stubs carry their library name, whatever the rules above made of the callers around them.
+for r in rows('imports.tsv'):
+    f = int(r[0], 16)
+    if f in functions or f in names:
+        names[f], how[f] = 'Import::' + r[1], 'binding'
 # 15. Text: a function no rule placed but that loads wide text says what it deals with. That is a hint, not its
 # role, so the name says only that (Says::), it never replaces another name, and it counts as placed, not identified.
 SAYS = re.compile(rb'(?:[\x20-\x7e]\0){5,60}\0\0')
