@@ -271,6 +271,9 @@ tying a name to the vtable objects use is still open: a first attempt linked 12.
 objects hold a vtable's address past two header slots, and with those counted there are 12,970 vtables
 holding 80,317 functions.
 
+About 1,170 classes build a heap allocator of their own in place from an early slot (`SprjMemoryHeapAllocator`),
+so a vtable a slot writes is not the class's description.
+
 **The class tree.** A constructor calling its parent's, and slots two vtables share, give the parents of
 3,456 classes. The largest family, 553 classes, stands on a Dantelion2 root object that releases itself
 to its heap.
