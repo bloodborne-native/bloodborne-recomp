@@ -137,6 +137,37 @@ IDENT = re.compile(rb'[A-Za-z_][A-Za-z0-9_]{3,60}\0')
 # Code ends at the import stubs; what follows in the segment is text and tables.
 code_end = max(int(r[0], 16) for r in rows('imports.tsv')) + 16
 
+# 3b. Static initialisers: the executable lists them in one long table (the longest run of pointers to
+# code). Each source file that includes <system_error> initialises the same three error categories, in
+# order: a set marks an object file, so what lies between two sets is one source file (of 195 stretches
+# that name a .cpp, 180 name exactly one). They stay out of what there is to understand.
+CATEGORY = re.compile(rb'\x48\x8d\x05.{4}\x80\x38\x00\x75.\x48\x8d\x0d(.{4})\x48\x83\xc1\x10\x48\x8d\x15.{4}\x48\x89\x0a\x48\xc7\x00\x01\0\0\0\xc3', re.S)
+ordered_slots = sorted(slots)
+longest = current = (0, 0)
+for address in ordered_slots:
+    current = (current[0], current[1] + 1) if address == current[0] + current[1] * 8 and slots[address] in functions else (address, 1 if slots[address] in functions else 0)
+    if current[1] > longest[1]:
+        longest = current
+static_inits = {slots[longest[0] + i * 8] for i in range(longest[1])}
+categories = collections.Counter()
+for m in CATEGORY.finditer(code_, 0, code_end - code_text[3]):
+    table_at = m.start(1) + 4 + struct.unpack('<i', m.group(1))[0]
+    categories[table_at] += 1
+    f = m.start() + code_text[3]
+    if f in static_inits:
+        give(f, f'std::_Error_objects::init_{table_at:x}', 'static')
+for f in static_inits:
+    give(f, f'staticInit_{f:x}', 'static')
+print('static initialisers', len(static_inits), 'error categories', sum(categories.values()), 'source files', max(categories.values(), default=0))
+unit_starts = []
+last_category = 0
+for m in CATEGORY.finditer(code_, 0, code_end - code_text[3]):
+    f = m.start() + code_text[3]
+    if f - last_category > 0x30:
+        unit_starts.append(f)
+    last_category = f
+print('object files', len(unit_starts))
+
 # 3c. Step tables: state machines fill a table of a function, a zero and its name in wide text, the whole
 # Class::STEP_name, in code. The pair of loads stores into the table.
 WIDE = re.compile(rb'(?:[A-Za-z0-9_:<> ]\0){4,120}\0\0')
@@ -715,7 +746,7 @@ for f, source in files.items():
 ordered_functions = sorted(functions)
 def group(f):
     name = names.get(f, '')
-    return name.split('::')[0] if '::' in name and how.get(f) != 'shared' else None
+    return name.split('::')[0] if '::' in name and how.get(f) not in ('shared', 'static') else None
 for round_ in range(3):
     found = 0
     last_index, last_group = None, None
@@ -732,9 +763,37 @@ for round_ in range(3):
     if not found:
         break
 
+# 9. Object files: in one where every class-named function has one class, the rest belong with it. Holding
+# out functions of known class this agrees 98.4%, against 91.6% for taking the class of most of them.
+unit_classes = collections.defaultdict(collections.Counter)
+for f, name in names.items():
+    if how[f] in ('class', 'binding', 'step') and not name.startswith('Class_') and f >= unit_starts[0]:
+        unit_classes[bisect.bisect_right(unit_starts, f) - 1][name.split('::')[0]] += 1
+placed_in_unit = 0
+for f in functions:
+    if f < unit_starts[0] or f >= code_end or f in static_inits:
+        continue
+    found = unit_classes.get(bisect.bisect_right(unit_starts, f) - 1)
+    if not found or len(found) != 1:
+        continue
+    only = next(iter(found))
+    if f not in names:
+        placed_in_unit += give(f, f'{only}::unit_{f:x}', 'unit')
+    elif names[f].startswith(('Class_', 'shared_')):
+        names[f] = f'{only}::{names[f]}'
+        how[f] = 'unit'
+        placed_in_unit += 1
+print('placed by object file', placed_in_unit)
+with open(OUT / 'units.tsv', 'w') as out:
+    out.write('start\tend\tfunctions\tclasses\n')
+    for index, start in enumerate(unit_starts):
+        end = unit_starts[index + 1] if index + 1 < len(unit_starts) else code_end
+        count = bisect.bisect_left(order, end) - bisect.bisect_left(order, start)
+        out.write(f"{start:#x}\t{end:#x}\t{count}\t{' '.join(unit_classes.get(index, ()))}\n")
+
 tally = collections.Counter(how.values())
 named_target = {f for f in names if modules.get(f, ('', ''))[0] in TARGET}
-big = [f for f, (s, c) in functions.items() if c > 5 and modules.get(f, ('', ''))[0] in TARGET]
+big = [f for f, (s, c) in functions.items() if c > 5 and modules.get(f, ('', ''))[0] in TARGET and f not in static_inits]
 with open(OUT / 'names.tsv', 'w') as out:
     out.write('address\tname\thow\tlibrary\tsource\n')
     for f in sorted(set(names) | set(files)):
