@@ -82,14 +82,17 @@ any target and optimize like any other program, and it is no longer tied to the 
 
 ## What is still not native
 
-Recompiling is one layer of several. The game's code now runs natively, but it still expects a PS4:
+Recompiling is one layer of [several](https://github.com/bloodborne-native/bloodborne-mac/blob/main/docs/ROADMAP.md#the-ps4-layers), and
+a layer counts as native only when nothing in it is translated any more. Recompiled code runs
+natively, but the library is opt-in, and it still expects a PS4:
 it writes PS4 GPU commands that have to be decoded each frame, and it calls PS4 system libraries
 that the runtime provides. That work is in
 [bloodborne-runtime](https://github.com/bloodborne-native/bloodborne-runtime), through the
 [native renderer](https://github.com/bloodborne-native/bloodborne-runtime/blob/main/docs/NATIVE_RENDERER.md).
 
-Here, what remains of the CPU work is memory ordering, kept only around the engine's
-synchronization. Other ideas were measured and gained little or nothing (flags, private frames,
+This repository owns two layers: [the game's code](docs/layers/game-code.md) and
+[x86 memory ordering](docs/layers/memory-ordering.md). What remains of the CPU work is memory
+ordering, kept only around the engine's synchronization. Other ideas were measured and gained little or nothing (flags, private frames,
 vector barriers, the host-call path). Details:
 [docs/RECOMPILATION.md](docs/RECOMPILATION.md) and the
 [status page](https://github.com/bloodborne-native/bloodborne-recomp/wiki/Recompilation-status).
