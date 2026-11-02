@@ -603,10 +603,11 @@ for table, run in vtables.items():
     if table in invoker_tables or table - 16 in invoker_tables:
         for index, f in enumerate(run):
             rename(f, f'DLMethodInvoker_{table:x}::{INVOKER_SLOTS.get(index, f"vf{index}")}')
-# Two tables of opcode handlers: each entry works on a stack of tagged values (int, float, object) at +0x480.
+# EzState's expression evaluator: two tables of opcode handlers, on a stack of tagged values (int, float,
+# object) at +0x480. EzStateEventImpl runs each event argument through it.
 for table in (0x52c8e60, 0x52c8880):
     for index, f in enumerate(vtables.get(table, ())):
-        rename(f, f'ValueStackVM_{table:x}::op{index}')
+        rename(f, f'EzStateExpression_{table:x}::op{index}')
 print('slots with a meaning', meaning, 'std::function implementations', function_tables)
 instance_sizes = {}
 for table, name_ in runtime_objects.items():

@@ -337,7 +337,9 @@
 0x26db1b0	CG::UploadRing::allocate	guess	calls	int (CG::UploadRing *, void **memory, CG::GraphicsContext *, uint32_t size)
 0x26db300	CG::UploadRing::finish	guess	calls	void (CG::UploadRing *, const CG::Buffer **buffer, uint32_t *offset, CG::GraphicsContext *)
 0x273df10	DL::WStringNode::construct	guess	calls	
+0x2744e80	EzStateEventImpl::dispatch	sure	source	
 0x2762d00	DL::WString::format	sure	message	
+0x2773910	EzStateExpression::evaluate	sure	calls	
 0x27c0e00	DL::WString::fromWideChars	sure	calls	
 0x28ec760	FX::PrimitiveRenderer::draw#1	guess	calls
 0x28efc10	FX::PrimitiveRenderer::draw#2	guess	calls
