@@ -298,6 +298,7 @@
 0x212d390	Lua::str_concat	guess	message	
 0x212e360	Lua::auxsort	guess	message	
 0x21305a0	Lua::luaB_print#2	guess	message	
+0x2165300	CG::Device::create	guess	calls	
 0x2165c10	CG::Device::createBuffer	sure	calls	
 0x2165f90	CG::Device::createTexture2D	sure	calls	
 0x2166300	CG::Device::createTexture3D	guess	calls	
@@ -328,7 +329,8 @@
 0x2169900	CG::GraphicsContext::drawIndexedInstanced	sure	calls	void (CG::GraphicsContext *, const CG::DrawState *, uint32_t index_count, uint32_t instances, uint32_t first_index, uint32_t base_vertex)
 0x21699d0	CG::GraphicsContext::drawIndirect	sure	calls	void (CG::GraphicsContext *, const CG::DrawState *, const CG::Buffer *arguments, uint32_t offset)
 0x2169ab0	CG::GraphicsContext::drawIndexedIndirect	sure	calls	void (CG::GraphicsContext *, const CG::DrawState *, const CG::Buffer *arguments, uint32_t offset)
-0x21723a0	CG::Device::allocateTextureStorage	guess	calls	
+0x2171d60	CG::Device::allocateTexture2DStorage	guess	calls	
+0x21723a0	CG::Device::allocateTexture3DStorage	guess	calls	
 0x217fef0	CG::Texture::createFromSource#2	guess	calls	
 0x2190be0	CG::ImmediateDraw::drawUserPrimitives	sure	calls	void (CG::ImmediateDraw *, uint32_t topology, uint32_t vertex_count, const void *vertices, uint32_t stride)
 0x2190d30	CG::ImmediateDraw::drawIndexedUserPrimitives	sure	calls	void (CG::ImmediateDraw *, uint32_t topology, uint32_t min_index, uint32_t max_index, uint32_t index_count, const void *indices, uint32_t index_format, const void *vertices, uint32_t stride)
@@ -345,6 +347,7 @@
 0x21ac7d0	CG::ResourceTotals::addTextureCube	sure	calls	
 0x21ac900	CG::ResourceTotals::addRenderTarget	sure	calls	
 0x21aca50	CG::ResourceTotals::addDepthTarget	sure	calls	
+0x21b6910	CG::DeviceThread::run	guess	calls	
 0x21b8710	FD4::JobSystem::runAndWait	guess	calls	void (FD4::JobGroup *)
 0x21b9f40	GXGUITexture::GXGUITexture	sure	calls	
 0x21ba300	GXGUITexture::createLinearView	guess	calls	
