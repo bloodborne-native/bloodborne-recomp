@@ -992,6 +992,18 @@ with open(OUT / 'units.tsv', 'w') as out:
         count = bisect.bisect_left(order, end) - bisect.bisect_left(order, start)
         out.write(f"{start:#x}\t{end:#x}\t{count}\t{' '.join(unit_classes.get(index, ()))}\n")
 
+# 9d. NexusRevolution2, Dantelion's network library: its thread names and source paths lie in this range, so
+# what has no class of its own there is the library's.
+nexus = 0
+for f in functions:
+    if 0xc83000 <= f < 0xcdd030 and modules.get(f, ('', ''))[0] == 'dantelion2':
+        name = names.get(f, '')
+        if not name or name.startswith(('Class_', 'shared_')):
+            names[f] = f'NexusRevolution::{name or f"fn_{f:x}"}'
+            how[f] = 'unit'
+            nexus += 1
+print('NexusRevolution', nexus)
+
 # 10. What was named by hand (annotations/functions.tsv) comes last and wins.
 for line in (Path(__file__).resolve().parents[2] / 'annotations' / 'functions.tsv').read_text().splitlines():
     if line and not line.startswith('#'):
