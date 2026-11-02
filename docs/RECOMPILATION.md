@@ -264,6 +264,10 @@ and only 61 classes have a name that holds up: the class names in messages mostl
 other classes use. The names it writes stay with the player's copy; what is checked goes in
 `annotations/functions.tsv`.
 
+**The class tree.** A constructor calling its parent's, and slots two vtables share, give the parents of
+1,321 classes. The largest family, 603 classes, stands on a Dantelion2 root object that releases itself
+to its heap.
+
 **Public source as a reference.** Names can come from public source. zlib's `inflate` (1.2.7, and a
 second copy) is known by its messages. The script VM is Havok Script (`hksObject.cpp`, `ksTable`), built
 around Lua and with a `Lua 5.0.2` string, not plain Lua or LuaPlus: 62 of its functions hold messages of
