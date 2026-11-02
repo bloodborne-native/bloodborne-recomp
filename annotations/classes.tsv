@@ -67,3 +67,4 @@
 0x53a18f0	SprjFD4LocationNode_53a18f0	its constructor builds the SprjFD4Location base, then its own table
 0x52f1840	FD4TaskAddCommand	queued by addTask while the manager runs
 0x52f1810	FD4TaskRemoveCommand	queued by removeTaskDeferred while the manager runs
+0x52fe0b0	FD4TaskGroup	built by the group table with a debug page named TaskGroup
