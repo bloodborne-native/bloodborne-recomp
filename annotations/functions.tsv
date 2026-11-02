@@ -442,6 +442,10 @@
 0x21669a0	CG::Device::createShaderResourceView	sure	calls	
 0x2166b60	CG::Device::createUnorderedAccessView	sure	calls	
 0x2166d00	CG::Device::createVertexShader	guess	calls	
+0x2166e10	CG::Device::createHullShader	guess	calls	
+0x2166f20	CG::Device::createDomainShader	guess	calls	
+0x2167030	CG::Device::createGeometryShader	guess	calls	
+0x2167140	CG::Device::createGeometryShaderWithStreamOutput	guess	calls	
 0x21672d0	CG::Device::createPixelShader	guess	calls	
 0x21673e0	CG::Device::createShaderStage	guess	calls	
 0x2168630	CG::DeviceContext::clearRenderTargetView	guess	calls	
@@ -473,7 +477,10 @@
 0x2169440	CG::GraphicsContext::markComputeSlotsDirty	guess	calls	
 0x2169460	CG::GraphicsContext::setComputeTextures	guess	calls	
 0x21694f0	CG::GraphicsContext::setComputeConstantBuffers	guess	calls	
+0x2169560	CG::GraphicsContext::setComputeUnorderedAccessViews	guess	calls	
+0x21695b0	CG::GraphicsContext::setComputeShader	guess	calls	
 0x21695c0	CG::GraphicsContext::dispatch	sure	calls	void (CG::GraphicsContext *, const CG::ComputeState *, uint32_t x, uint32_t y, uint32_t z)
+0x2169640	CG::GraphicsContext::dispatchIndirect	guess	calls	
 0x21696c0	CG::GraphicsContext::draw	sure	calls	void (CG::GraphicsContext *, const CG::DrawState *, uint32_t vertex_count, uint32_t base_vertex)
 0x2169780	CG::GraphicsContext::drawIndexed	sure	calls	void (CG::GraphicsContext *, const CG::DrawState *, uint32_t index_count, uint32_t first_index, uint32_t base_vertex)
 0x2169840	CG::GraphicsContext::drawInstanced	sure	calls	void (CG::GraphicsContext *, const CG::DrawState *, uint32_t vertex_count, uint32_t instances, uint32_t base_vertex)
