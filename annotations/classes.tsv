@@ -6,4 +6,28 @@
 0x52e9b00	ToneMapPass	calls the ToneMap shaders
 0x535fc50	DdsTextureLoader	creates textures from DDS files
 0x53b8450	PostEffectRenderer	its constructor builds the lens, tone map and motion blur passes
-0x52c6320	JsonValue	writes null, booleans, numbers, strings, arrays and objects by type
+0x52c6320	Json::Value	writes null, booleans, numbers, strings, arrays and objects by type
+0x52fe680	FD4PerfGroup	its constructor or destructor says this name, no other class does
+0x5318aa0	SprjRouteManager	its constructor or destructor says this name, no other class does
+0x531aa60	SprjAiScriptPerf	its constructor or destructor says this name, no other class does
+0x531c620	SprjTeamAi	its constructor or destructor says this name, no other class does
+0x531c970	SprjEmkConditionHolder	its constructor or destructor says this name, no other class does
+0x531c990	SprjEmkEventIns	its constructor or destructor says this name, no other class does
+0x53203d0	SprjObjActInfo	its constructor or destructor says this name, no other class does
+0x5327a50	MenuContentsHelpManImp	its constructor or destructor says this name, no other class does
+0x533dc40	ChrMake_IconGrid	its constructor or destructor says this name, no other class does
+0x533e9b0	ChrMake_OriginSelect	its constructor or destructor says this name, no other class does
+0x533efa0	ChrMakeCommandList	its constructor or destructor says this name, no other class does
+0x534bc80	SprjRemoEnvSfxSlot	its constructor or destructor says this name, no other class does
+0x534bcd0	SprjRemoEnvSoundSlot	its constructor or destructor says this name, no other class does
+0x534df50	CSEzOffscreenRend	its constructor or destructor says this name, no other class does
+0x5350380	EzWork_NpAuthDelayDelete	its constructor or destructor says this name, no other class does
+0x535aab0	SprjWorldBlockTalk	its constructor or destructor says this name, no other class does
+0x536e080	FrpgNetNodeDbItem	its constructor or destructor says this name, no other class does
+0x537e4c0	GenDlgCtrl	its constructor or destructor says this name, no other class does
+0x5384cd0	MenuMsgTagMan	its constructor or destructor says this name, no other class does
+0x538d750	DbgMenuPad	its constructor or destructor says this name, no other class does
+0x53af820	DebugBootMenuPad	its constructor or destructor says this name, no other class does
+0x53afc10	SprjModelViewerPad	its constructor or destructor says this name, no other class does
+0x53b1c80	SprjTalkAction	its constructor or destructor says this name, no other class does
+0x53b2540	SprjMenuViewerPad	its constructor or destructor says this name, no other class does
