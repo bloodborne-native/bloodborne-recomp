@@ -166,6 +166,7 @@
 0x207d7a0	DL::threadContext	guess	calls	
 0x207e780	DL::ConditionSignal::signal	sure	source
 0x207e8f0	DL::ConditionSignal::reset	guess	source
+0x207ee40	DL::LightMutex::init	sure	calls	
 0x207ee90	DL::LightMutex::lock	sure	source
 0x207f070	DL::LightMutex::unlock	sure	source
 0x207f1f0	DL::ReadWriteLock::destroy	sure	source
@@ -301,6 +302,7 @@
 0x26d3370	CG::RasterizerState::apply	sure	calls	void (CG::RasterizerState *, CG::GraphicsContext *, const CG::DrawState *)
 0x26db1b0	CG::UploadRing::allocate	guess	calls	int (CG::UploadRing *, void **memory, CG::GraphicsContext *, uint32_t size)
 0x26db300	CG::UploadRing::finish	guess	calls	void (CG::UploadRing *, const CG::Buffer **buffer, uint32_t *offset, CG::GraphicsContext *)
+0x273df10	DL::WStringNode::construct	guess	calls	
 0x27c0e00	DL::WString::fromWideChars	sure	calls	
 0x28ec760	FX::PrimitiveRenderer::draw#1	guess	calls
 0x28efc10	FX::PrimitiveRenderer::draw#2	guess	calls
