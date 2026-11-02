@@ -287,6 +287,7 @@ for getter, name_ in runtime_getters.items():
 # invoker and the name. The invoker holds the function, stored just before; a getter called just before
 # gives the class. These are the functions event and AI scripts call.
 pairs = collections.defaultdict(set)
+invoker_tables = set()
 # lea rax, [function]; mov [global + 8], rax; ...; call getter; ...; lea rdx, [name]; lea rcx, [text]; ...; call [reg + 0x58]
 NAMED = re.compile(rb'\x48\x8d\x15(.{4})\x48\x8d\x0d', re.S)
 STORED = re.compile(rb'\x48\x8d\x05(.{4})\x48\x89\x05', re.S)
@@ -299,6 +300,7 @@ for m in NAMED.finditer(code_):
     low = max(0, m.start() - 96)
     start = max([low] + [c.end() for c in REGISTERED.finditer(code_, low, m.start())])
     stores = [s_.start() + 7 + struct.unpack('<i', s_.group(1))[0] + code_text[3] for s_ in STORED.finditer(code_, start, m.start())]
+    invoker_tables.update(a for a in stores if a not in functions)
     stores = [a for a in stores if a in functions and a < code_end]
     if not stores:
         continue
@@ -531,10 +533,14 @@ def writes_itself(f, table):
         move = bytes([0x48 | (base >> 3), 0x89, 0xf8 | (base & 7)])
         return code0.find(move, start, m.start()) >= 0
     return False
-meaning = 0
+meaning = function_tables = 0
+sites_writers = collections.defaultdict(set)
+for f, tables in writers.items():
+    for table in tables:
+        sites_writers[table].add(f)
 def rename(f, name):
     global meaning
-    if f in names and re.search(r'::(?:vf\d+|writes_vtable)$', names[f]):
+    if f in names and (names[f].startswith('shared_') or re.search(r'^Class_.*::(?:vf\d+|writes_vtable)$|::(?:vf\d+|writes_vtable)$', names[f])):
         names[f] = name
         meaning += 1
 for table, run in vtables.items():
@@ -548,7 +554,33 @@ for table, run in vtables.items():
     for f in run:
         if table in writers.get(f, ()) and writes_itself(f, table):
             rename(f, f'{label}::{"deletingDestructor" if direct[f] & OPERATOR_DELETE else "destructor"}')
-print('slots with a meaning', meaning)
+# Recipes the compiler repeats. A deleting destructor that calls a function and then operator delete has
+# the destructor as that function. std::function's implementations hold, in order, copy, move, the call,
+# the target's type and delete-this, which calls slot 5 and then operator delete if asked to. A class
+# object's getter is the function that writes its vtable. Method invokers are templates by signature.
+FUNCTION_SLOTS = ('_Copy', '_Move', '_Do_call', '_Target_type', '_Delete_this', 'destructor', 'deletingDestructor', '_Get')
+INVOKER_SLOTS = {2: 'deletingDestructor', 3: 'argumentCount', 4: 'argumentTypes'}
+DELETE_THIS = re.compile(rb'\xff[\x50-\x57\x60-\x67]\x28')
+for table, run in vtables.items():
+    label = class_names[table] or f'Class_{table:x}'
+    for f in run:
+        if functions[f][1] <= 12 and len(direct[f]) == 2 and direct[f] & OPERATOR_DELETE:
+            other = next(iter(direct[f] - OPERATOR_DELETE))
+            rename(f, f'{label}::deletingDestructor')
+            if other in run:
+                rename(other, f'{label}::destructor')
+    if len(run) in (7, 8) and direct[run[4]] & OPERATOR_DELETE and functions[run[4]][1] <= 20 and \
+            DELETE_THIS.search(code0, run[4] - text0[3], run[4] - text0[3] + functions[run[4]][0]):
+        for f, slot in zip(run, FUNCTION_SLOTS):
+            rename(f, f'std::_Func_impl_{table:x}::{slot}')
+        function_tables += 1
+    if table in runtime_objects:
+        for f in sites_writers.get(table, ()):
+            rename(f, f'{runtime_objects[table]}::getClassObject')
+    if table in invoker_tables or table - 16 in invoker_tables:
+        for index, f in enumerate(run):
+            rename(f, f'DLMethodInvoker_{table:x}::{INVOKER_SLOTS.get(index, f"vf{index}")}')
+print('slots with a meaning', meaning, 'std::function implementations', function_tables)
 instance_sizes = {}
 for table, name_ in runtime_objects.items():
     at = vtables[table][10] - text0[3]

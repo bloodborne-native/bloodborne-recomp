@@ -301,6 +301,13 @@ argument is a clone. Of six sampled with that check, the five that could be read
 **Step tables.** FD4's state machines fill a table in code with each step's function and its whole name
 in wide text (`SprjGraphicsStep::STEP_Update`), which gives 742 exact names.
 
+**Recipes the compiler repeats.** Grouping functions by their bytes, with addresses masked, shows template
+code. A deleting destructor that calls another function names that function the destructor (4,579
+deleting ones now, 5,007 others). 1,018 tables are `std::function` implementations: copy, move, the call,
+the target's type, delete-this. A function that writes a class object's vtable is its getter (819), and
+1,148 functions belong to the method invokers, one template per signature (164). Their slots were read;
+what a `_Do_call` calls is still what says what such a function does.
+
 **Object files.** The executable lists its static initialisers in one table of 18,444. 12,045 of them are
 the three standard error categories, initialised again in each of 4,015 source files that include them,
 so each set marks an object file and what lies between two sets is one source file: of 195 stretches
