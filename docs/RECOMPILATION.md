@@ -264,7 +264,7 @@ the 16,397 not labelled yet about half are FromSoftware's by their neighbours. S
 |---|---:|---|
 | The game's own name | 2,161 | Registered methods, steps, messages, singletons, tables |
 | A known role | 15,927 | Destructors, class getters, `std::function` slots, EzState opcodes, delegates: much is compiler or template code |
-| In a named class or file | 13,694 | Where it belongs, not what it does |
+| In a named class or file | 13,590 | Where it belongs, not what it does |
 | Only an anonymous class | 16,239 | A vtable or object file, no name |
 | Nowhere yet | 15,973 | |
 
