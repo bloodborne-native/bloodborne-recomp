@@ -1292,6 +1292,7 @@ if objdump and elf.exists():
                 shapes[digest.digest()].append(current)
             current, digest = at, hashlib.blake2b(digest_size=8)
             this_regs, new_regs, table_regs, stores = {'%rdi'}, set(), {}, set()
+            loaded = {}
         if current is not None and at < current + functions[current][0] and \
                 re.search(r'writes_vtable$|::vf\d+$', names.get(current, '')):
             # Who the vtable is stored into: the first argument, a new object or a local.
@@ -1304,8 +1305,18 @@ if objdump and elf.exists():
                 new_regs.add(copy.group(2))
             if load:
                 table_regs.pop(load.group(1), None)
-                if int(load.group(2), 16) in vtables:
-                    table_regs[load.group(1)] = int(load.group(2), 16)
+                loaded[load.group(1)] = int(load.group(2), 16)
+                if loaded[load.group(1)] in vtables:
+                    table_regs[load.group(1)] = loaded[load.group(1)]
+            # The address is often loaded early, with the offset added after (or in a second lea).
+            added = re.match(r'addq\s+\$(0x[0-9a-f]+), (%\w+)$', hit.group(2).strip())
+            moved = re.match(r'leaq\s+(0x[0-9a-f]+)\((%\w+)\), (%\w+)$', hit.group(2).strip())
+            if added and added.group(2) in loaded:
+                loaded[added.group(2)] += int(added.group(1), 16)
+                if loaded[added.group(2)] in vtables:
+                    table_regs[added.group(2)] = loaded[added.group(2)]
+            if moved and moved.group(2) in loaded and loaded[moved.group(2)] + int(moved.group(1), 16) in vtables:
+                table_regs[moved.group(3)] = loaded[moved.group(2)] + int(moved.group(1), 16)
             if store and store.group(1) in table_regs:
                 stores.add('this' if store.group(2) in this_regs else
                            'new' if store.group(2) in new_regs | {'%rax'} else 'other')
