@@ -66,35 +66,43 @@ any target and optimize like any other program, and it is no longer tied to the 
   [iPhone proof of concept](https://github.com/bloodborne-native/bloodborne-ios) runs because the
   code is already compiled when the game starts.
 
-## What has been done
+## The layers this repository removes
 
-| Milestone | Progress | |
+Running on anything but a PS4 takes [layers that stand in for one](https://github.com/bloodborne-native/bloodborne-mac/blob/main/docs/ROADMAP.md#the-ps4-layers).
+A layer counts as native only when nothing in it is translated any more. Two of them are here:
+
+| Layer | Native | |
 |---|---|---|
-| R0–R2 · every function recompiled | `████████████████████` 100% | 240,978 of the game's 241,821 functions run recompiled; 99.1% of their instructions in plain C |
-| R3 · speed | `████████████████████` 100% | 14% less CPU time than the translator at the same frame rate |
-| R4 · annotations | `████████████████████` 100% | 204 functions named; the engine's draw state, models, materials and shaders described ([`annotations/`](annotations)) |
+| [The game's code](docs/layers/game-code.md) | `███████████████████░` 96% | 10,861,735 of 11,268,132 instructions recompiled; opt-in, the translator is the default |
+| [x86 memory ordering](docs/layers/memory-ordering.md) | `░░░░░░░░░░░░░░░░░░░░` 0% | Every load and store keeps x86's order; only arm64 needs this layer |
 
-- **Built on the player's device.** The launcher builds the library with no Xcode or developer
-  setup, and later updates compile only what changed.
-- **Less memory.** The game's peak footprint on the Mac went from 7.8 GB to 5.7 GB, because the
-  library no longer keeps the whole game decoded after checking it.
-- **Fewer calls back to the translator:** from 69,600 a second to 9,400.
+### The game's code
 
-## What is still not native
+- **Done:** 240,978 of 241,821 functions run recompiled, 99.1% of their instructions in plain C, with
+  14% less CPU time than the translator at the same frame rate. Calls left to the translator went
+  from 69,600 a second to 9,400. The launcher builds the library on the player's device, later updates
+  compile only what changed, and the library no longer keeps the whole game decoded (peak footprint
+  7.8 GB to 5.7 GB on the Mac). 204 functions are named, with the engine's draw state, models,
+  materials and shaders described ([`annotations/`](annotations)), which is what the renderer's work
+  stands on.
+- **Left:** making the library the default, the import stubs and the code rewritten while the game
+  runs, and building for other architectures.
 
-Recompiling is one layer of [several](https://github.com/bloodborne-native/bloodborne-mac/blob/main/docs/ROADMAP.md#the-ps4-layers), and
-a layer counts as native only when nothing in it is translated any more. Recompiled code runs
-natively, but the library is opt-in, and it still expects a PS4:
-it writes PS4 GPU commands that have to be decoded each frame, and it calls PS4 system libraries
-that the runtime provides. That work is in
-[bloodborne-runtime](https://github.com/bloodborne-native/bloodborne-runtime), through the
-[native renderer](https://github.com/bloodborne-native/bloodborne-runtime/blob/main/docs/NATIVE_RENDERER.md).
+### x86 memory ordering
 
-This repository owns two layers: [the game's code](docs/layers/game-code.md) and
-[x86 memory ordering](docs/layers/memory-ordering.md). What remains of the CPU work is memory
-ordering, kept only around the engine's synchronization. Other ideas were measured and gained little or nothing (flags, private frames,
-vector barriers, the host-call path). Details:
-[docs/RECOMPILATION.md](docs/RECOMPILATION.md) and the
+- **Done:** guest loads acquire and stores release in the translator and in the generated code,
+  because the game publishes data between threads with plain stores. It is correct, and it is paid
+  on every access.
+- **Left:** keeping ordering only around the engine's synchronization, with the maintainer's
+  conditions (the generator's analysis, a safety case and a long play session). The other CPU ideas
+  were measured and gained little or nothing: flags, private frames, vector barriers and the
+  host-call path.
+
+The rest of the way to native is outside this repository: the game's code still expects a PS4, so it
+writes PS4 GPU commands and makes PS4 system calls. Those layers are in
+[bloodborne-runtime](https://github.com/bloodborne-native/bloodborne-runtime).
+
+Milestones and details: [docs/RECOMPILATION.md](docs/RECOMPILATION.md) and the
 [status page](https://github.com/bloodborne-native/bloodborne-recomp/wiki/Recompilation-status).
 All docs: [docs/README.md](docs/README.md).
 
