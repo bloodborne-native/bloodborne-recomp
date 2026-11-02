@@ -42,6 +42,7 @@
 0xa5d030	Lua::lua_yield	guess	message	
 0xa6c3c0	Lua::getinfo	guess	message	
 0xa724e0	Lua::getfunc	guess	message	
+0xcecaf0	EzMenuDialog::findByName	guess	calls	
 0xd1acd0	FMOD::CriticalSection::enter	sure	calls
 0xd1acf0	FMOD::CriticalSection::leave	sure	calls
 0xe4b060	FD4::ConstantBuffer::setVectors	sure	calls	void (FD4::ConstantBuffer *, uint32_t first_register, uint32_t count, const float (*)[4])
@@ -149,6 +150,7 @@
 0x193ac10	Sprj::World::update	guess	message	void (float frame_time, void *world)
 0x19c52a0	SprjSaveDataLoadStepForNotTitleFlow::STEP_SelectDefaultStorage_Wait	sure	step	
 0x1a8bc00	SprjGaitem::releaseRef	sure	message	
+0x1ae8cc0	Menu::messageText	sure	message	
 0x1d34880	FD4::Skeleton::getBoneMatrices	guess	calls	uint32_t (const FD4::Skeleton *, float (*matrices)[12], uint32_t count, uint32_t first)
 0x1d37400	FD4::ModelInstance::updateBoundsAndSkinning	guess	calls	void (FD4::ModelInstance *, void *)
 0x1d3ae20	FD4::Skeleton::getWorldBoneMatrices	guess	calls	int (const FD4::Skeleton *, float (*matrices)[12], uint32_t count, uint32_t first)
@@ -167,9 +169,12 @@
 0x1d8bef0	TexResCap::acquireHandle	guess	calls	
 0x1d8c0b0	TexResCap::acquireHandleWithLowRes	guess	calls	
 0x1d9b340	SprjGraphicsStep::STEP_Update	sure	step	
+0x1f29aa0	EquipParamWeapon::findWithReinforcement	guess	calls	
 0x2067ac0	zlib::inflate#2	sure	message	
+0x207b720	DL::Heap::ofPointer	sure	calls	
 0x207c460	DL::free	sure	message	
 0x207c4e0	DL::Heap::allocate	sure	calls	
+0x207d250	DL::TemporaryHeap::ensureForThread	sure	message	
 0x207d7a0	DL::threadContext	guess	calls	
 0x207e780	DL::ConditionSignal::signal	sure	source
 0x207e8f0	DL::ConditionSignal::reset	guess	source
@@ -189,6 +194,7 @@
 0x2084110	DL::PthreadMutex::lock	sure	source
 0x2084290	DL::PthreadMutex::unlock	sure	source
 0x20b55b0	DL::assertFailed	sure	calls	
+0x20b5d80	DL::RuntimeClass::registry	guess	calls	
 0x20b6d00	DLRuntimeClass::construct	sure	calls	
 0x20b6dc0	DLRuntimeClass::setParent	sure	message	
 0x20b6e20	DL::RuntimeClass::registerMethod	sure	message	
@@ -275,8 +281,13 @@
 0x22bdb00	FD4::LightRenderer::drawLightBatches#3	guess	calls
 0x22be4f0	FD4::LightRenderer::drawLightBatches#4	guess	calls
 0x2382eb0	FD4::TextRenderer::drawString	guess	calls
+0x23ee1e0	Scaleform::RefCountBaseGC::release	guess	calls	
+0x23f6da0	Scaleform::RefCountBaseGC::release#2	guess	calls	
 0x261a1b0	memcpy	sure	calls	void *(void *destination, const void *source, size_t size)
 0x261af30	memcpy#blocks	sure	calls	void (void *destination, const void *source, size_t size)
+0x262a310	DL::WString::assign	sure	calls	
+0x262a720	DL::WString::assign#2	sure	calls	
+0x2639560	DL::WString::append	sure	calls	
 0x263abe0	DL::Semaphore::destroy#2	guess	source
 0x263ac50	DL::Semaphore::destroy	sure	source
 0x263acc0	DL::Semaphore::create	sure	source
@@ -313,6 +324,7 @@
 0x26db1b0	CG::UploadRing::allocate	guess	calls	int (CG::UploadRing *, void **memory, CG::GraphicsContext *, uint32_t size)
 0x26db300	CG::UploadRing::finish	guess	calls	void (CG::UploadRing *, const CG::Buffer **buffer, uint32_t *offset, CG::GraphicsContext *)
 0x273df10	DL::WStringNode::construct	guess	calls	
+0x2762d00	DL::WString::format	sure	message	
 0x27c0e00	DL::WString::fromWideChars	sure	calls	
 0x28ec760	FX::PrimitiveRenderer::draw#1	guess	calls
 0x28efc10	FX::PrimitiveRenderer::draw#2	guess	calls
@@ -326,6 +338,7 @@
 0x28f8a30	CG::UploadRing::draw	guess	calls	void (CG::GraphicsContext *, CG::UploadRing *, uint32_t primitive, uint32_t index_count, uint32_t vertex_count, uint32_t stride, const int32_t *, const int32_t *)
 0x292f510	CG::ShaderProgram::bind	sure	calls	void (const CG::ShaderProgram *, void *draw_state_builder)
 0x2967040	DL::WString::fromWide	sure	calls	
+0x29824b0	Json::Value::clear	guess	calls	
 0x2ba1b80	DL::PoolHeap::allocate	guess	calls	
 0x2ba7870	DL::SharedWString::copy	sure	calls	
 0x2ba7940	DL::SharedWString::release	sure	calls	
