@@ -536,7 +536,11 @@
 0x21c03f0	TpfResCap::createTexture3D	guess	calls	
 0x21c04c0	TpfResCap::createTextureArray	guess	calls	
 0x21c08b0	BinderReader::close	guess	calls	
+0x21c09e0	BinderReader::open	guess	calls	
+0x21c0b60	BinderReader::readEntryByName	guess	calls	
+0x21c0c50	BinderReader::readCurrentEntry	guess	calls	
 0x21c0d30	BinderReader::readEntry	guess	calls	
+0x21c0ea0	BinderReader::readCurrentEntryAligned	guess	calls	
 0x21c3f60	FD4::MaterialParameters::begin	guess	calls	void (FD4::MaterialParameters *, void *state_cache, void *pass)
 0x21c41a0	FD4::MaterialParameters::end	guess	calls	void (FD4::MaterialParameters *, void *state_cache, void *pass)
 0x21c8c50	CG::SkinningBuffer::update	guess	calls	void (CG::SkinningBuffer *, const float (*current)[12], const float (*previous)[12], uint32_t)
