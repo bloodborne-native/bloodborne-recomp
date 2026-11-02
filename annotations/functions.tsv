@@ -206,6 +206,8 @@
 0x1399bf0	Sprj::EventFlagManager::getFlag	sure	message	bool (void *, uint32_t flag)
 0x13c97a0	WorldChrMan::findChrByEntityId	sure	calls	
 0x13c99e0	WorldObjMan::findObjByEntityId	guess	calls	
+0x13d1d40	std::tree::eraseKey_13d1d40	guess	calls	
+0x13d1e90	std::tree::insertUnique_13d1e90	guess	calls	
 0x1421d40	SprjFile::loadFile	guess	calls	
 0x1422710	ResRepository::findOrCreate	guess	calls	
 0x15486b0	WorldRes::stepWaitBlockLoaded	guess	calls	
@@ -348,6 +350,7 @@
 0x1fc0e60	SprjMemory::initialize	sure	calls	
 0x204f940	SprjTaskEntry::replace	guess	calls	
 0x204fc30	SprjTaskEntry::remove	guess	calls	
+0x2050560	FD4TaskManager::unregisterTask	guess	calls	
 0x2067ac0	zlib::inflate#2	sure	message	
 0x207b720	DL::Heap::ofPointer	sure	calls	
 0x207c460	DL::free	sure	message	
