@@ -6,9 +6,12 @@ file): game-derived, so it stays with the player's copy. annotations/functions.t
 holds only what was checked. Prints what each step gave and how much of the target is covered."""
 import bisect
 import collections
+import hashlib
 import os
 import re
+import shutil
 import struct
+import subprocess
 import sys
 from pathlib import Path
 
@@ -1219,6 +1222,53 @@ for f, stems in programs.items():
     how[f] = 'shape'
     shader_passes += 1
 print('shader passes', shader_passes)
+# 11. Identical code: functions with the same instructions, constants aside, are copies of one template. Where a
+# group's known members mostly agree on a role the others take it (99.3% of 15,664 held-out names), and a group's
+# role can be read once in the code (SHAPE_ROLES). Short bodies say too little.
+SHAPE_ROLES = {0x26f4cb0: 'destructor', 0x26f4d00: 'deletingDestructor', 0x26f1910: 'create',
+               0x2880000: 'deletingDestructor', 0x1dea0: 'deletingDestructorThunk',
+               0x2405a00: 'deletingDestructorThunk', 0x2611020: 'std::tree::eraseRange'}
+WEAK_ROLE = ('helper', 'near', 'unit', 'method', 'vf', 'writes_vtable', 'shared', 'fn', '_Do_call')
+role_of = lambda f: re.sub(r'_[0-9a-f]{5,}$', '', names.get(f, '').split('::')[-1])
+objdump = shutil.which('llvm-objdump') or shutil.which('objdump')
+elf = OUT / 'eboot_ghidra.elf'
+shapes = collections.defaultdict(list)
+if objdump and elf.exists():
+    current, digest = None, None
+    constants = re.compile(r'-?0x[0-9a-f]+|\b\d+\b')
+    listing = subprocess.Popen([objdump, '-d', '--no-show-raw-insn', str(elf)], stdout=subprocess.PIPE, text=True,
+                               errors='replace')
+    for line in listing.stdout:
+        hit = re.match(r'\s*([0-9a-f]+):\s+(.*)', line)
+        if not hit:
+            continue
+        at = int(hit.group(1), 16)
+        if at in functions:
+            if current is not None and functions[current][1] >= 8:
+                shapes[digest.digest()].append(current)
+            current, digest = at, hashlib.blake2b(digest_size=8)
+        code_text = hit.group(2).split('#')[0].split('<')[0].strip()
+        if current is not None and not code_text.startswith('nop'):
+            digest.update(constants.sub('#', code_text).encode())
+identical = 0
+for group in shapes.values():
+    known = collections.Counter(role_of(f) for f in group
+                                if role_of(f) and not role_of(f).startswith(WEAK_ROLE))
+    seeded = next((SHAPE_ROLES[f] for f in group if f in SHAPE_ROLES), None)
+    total = sum(known.values())
+    mixed = set(known) == {'destructor', 'deletingDestructor'}
+    role = seeded or (known.most_common(1)[0][0] if total >= 3 and known.most_common(1)[0][1] / total >= 0.8 else None)
+    if not role and not mixed:
+        continue
+    for f in group:
+        if how.get(f) in OWN_NAME or (role_of(f) and not role_of(f).startswith(WEAK_ROLE)):
+            continue
+        this = role or ('deletingDestructor' if direct[f] & OPERATOR_DELETE else 'destructor')
+        label = names.get(f, '').split('::')[0]
+        names[f] = this + f'_{f:x}' if '::' in this else f'{label}::{this}' if label else f'Copy::{this}_{f:x}'
+        how[f] = 'shape'
+        identical += 1
+print('identical code', identical)
 names.update(hand)
 how.update(dict.fromkeys(hand, 'hand'))
 with open(OUT / 'names.tsv', 'w') as out:
