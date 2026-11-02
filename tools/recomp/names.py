@@ -1234,7 +1234,8 @@ print('shader passes', shader_passes)
 # group's known members mostly agree on a role the others take it (99.3% of 15,664 held-out names), and a group's
 # role can be read once in the code (SHAPE_ROLES). Short bodies say too little.
 SHAPE_ROLES = {0x2b3a3f0: 'FX::serializeMember', 0x2ae99d0: 'FX::freeKeys', 0x2935d50: 'std::unordered_map::erase', 0x2911290: 'std::vector::push_back',
-               0x29117e0: 'std::vector::reallocate', 0xe73800: 'FD4DebugMenu::addCallbackItem',
+               0x29117e0: 'std::vector::reallocate', 0xe73800: 'Template::destroyMembers', 0x2b767e0: 'FX::serializeChildren', 0x2aebdd0: 'FX::allocateKeys',
+               0x2936200: 'std::unordered_map::insertUnique', 0x21e0120: 'std::unordered_map::clearNested',
                0x2b385c0: 'FX::serializeMember', 0x2904800: 'std::unordered_map::insert', 0x2967530: 'FD4DebugMenu::addCallbackItem',
                0x1d86ba0: 'ResRepository::findByPath', 0x1ae12c0: 'Menu::fixedMessageText',
                0x2905050: 'std::unordered_map::constructor', 0x2904af0: 'std::vector::insertN', 0x26f4cb0: 'destructor', 0x26f4d00: 'deletingDestructor', 0x26f1910: 'create',
