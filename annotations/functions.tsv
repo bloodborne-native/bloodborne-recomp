@@ -659,6 +659,7 @@
 0x217fba0	CG::Texture3D::create	guess	calls	
 0x217fe60	CG::Texture3D::createShaderView	guess	calls	
 0x217fef0	CG::Texture::createFromSource#2	guess	calls	
+0x21880a0	Class_535f4f0::updateFadesRange	guess	calls	
 0x2190be0	CG::ImmediateDraw::drawUserPrimitives	sure	calls	void (CG::ImmediateDraw *, uint32_t topology, uint32_t vertex_count, const void *vertices, uint32_t stride)
 0x2190d30	CG::ImmediateDraw::drawIndexedUserPrimitives	sure	calls	void (CG::ImmediateDraw *, uint32_t topology, uint32_t min_index, uint32_t max_index, uint32_t index_count, const void *indices, uint32_t index_format, const void *vertices, uint32_t stride)
 0x2192660	CG::Resource::deferRelease	guess	calls	
@@ -791,6 +792,10 @@
 0x26d9fe0	TpfFile::createTexture2DArray	guess	calls	
 0x26db1b0	CG::UploadRing::allocate	guess	calls	int (CG::UploadRing *, void **memory, CG::GraphicsContext *, uint32_t size)
 0x26db300	CG::UploadRing::finish	guess	calls	void (CG::UploadRing *, const CG::Buffer **buffer, uint32_t *offset, CG::GraphicsContext *)
+0x2739b40	EzStateMachineImpl::run	guess	calls	
+0x273be20	EzStateMachineImpl::findTransition	guess	calls	
+0x273c250	EzStateMachineImpl::enterState	guess	calls	
+0x273c370	EzStateMachineImpl::runStateEvents	guess	calls	
 0x273df10	DL::WStringNode::construct	guess	calls	
 0x2744e80	EzStateEventImpl::dispatch	sure	source	
 0x27478a0	DLBinArchive::throwError	guess	calls	

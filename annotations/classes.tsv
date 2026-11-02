@@ -146,3 +146,4 @@
 0x536f3e0	FD4DebugMenuItem_536f3e0	derives from FD4DebugMenuNode
 0x538da20	FD4DebugMenuItem_538da20	derives from FD4DebugMenuNode
 0x53b02e0	FD4DebugMenuItem_53b02e0	derives from FD4DebugMenuNode
+0x52c7040	EzStateMachineImpl	vf6 runs transitions until none fires, entering and leaving states
