@@ -1533,6 +1533,9 @@ SLOT_ROLES = [(re.compile(r'FXEvaluatable.*::vf1'), 'evaluate'),
               # Effect drawing: ten setup slots for the effect kinds read their curves, then 32 copies the scene region and 33 draws.
               (re.compile(r'FXRenderMaterial::vf(1[4-9]|2[0-3])'), 'setupEffect'), (re.compile(r'FXRenderMaterial::vf32'), 'copySceneRegion'),
               (re.compile(r'FXRenderMaterial::vf33'), 'draw'), (re.compile(r'FXRenderMaterial::vf34'), 'setMatrices'),
+              # FX runtime sequences (one read each): slot 11 evaluates, 9 sizes the stored value, 4 frees the keys; constants: 8 copies to a like object.
+              (re.compile(r'FX\w*SequenceParamRuntime::vf11'), 'evaluate'), (re.compile(r'FX\w*ParamRuntime::vf9'), 'getStoredSize'),
+              (re.compile(r'FX\w*SequenceParamRuntime::vf4'), 'freeKeys'), (re.compile(r'FX(?:(?!Sequence)\w)*ParamReal::vf8'), 'copyTo'),
               # Debug menu items: slot 7 edits the value from the pad, slot 8 writes the item's text (two read).
               (re.compile(r'FD4DebugMenuItem_\w+::vf7'), 'onInput'), (re.compile(r'FD4DebugMenuItem_\w+::vf8'), 'writeText'),
               # Fading setting channels (one class per value type): a list of named states, a list of bound targets.
