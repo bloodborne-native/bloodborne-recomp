@@ -162,6 +162,9 @@
 0x1399bf0	Sprj::EventFlagManager::getFlag	sure	message	bool (void *, uint32_t flag)
 0x13c97a0	WorldChrMan::findChrByEntityId	sure	calls	
 0x1421d40	SprjFile::loadFile	guess	calls	
+0x15556b0	WorldGroupTracker::update	guess	calls	
+0x1555c00	WorldGroupTracker::addCollision	guess	calls	
+0x1556040	WorldGroupTracker::ageCollisions	guess	calls	
 0x1587ed0	MapInsUpdateHelper::requestLevel	sure	calls	
 0x1588780	MapRes::holdTextures	guess	calls	
 0x1588fe0	MapRes::releaseHeldTextures	guess	calls	
@@ -170,8 +173,11 @@
 0x158eab0	FD4Step::setStep	sure	calls	
 0x158f550	FD4Step::update	sure	calls	
 0x15934d0	MapInsUpdateHelper::update	sure	calls	
+0x1886b50	CollisionBlock::updateLevels	guess	calls	
 0x193ac10	Sprj::World::update	guess	message	void (float frame_time, void *world)
 0x19c52a0	SprjSaveDataLoadStepForNotTitleFlow::STEP_SelectDefaultStorage_Wait	sure	step	
+0x19e8190	WorldGroups::update	guess	calls	
+0x19e94f0	WorldGroups::addCollisionGroups	guess	calls	
 0x1a89070	SprjGaitem::resolveHandle	sure	calls	
 0x1a8bc00	SprjGaitem::releaseRef	sure	message	
 0x1ac6ba0	MapInsUpdateHelper::applyQueuedLevels	guess	calls	
