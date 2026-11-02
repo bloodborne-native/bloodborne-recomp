@@ -1508,6 +1508,9 @@ SLOT_ROLES = [(re.compile(r'FXEvaluatable.*::vf1'), 'evaluate'),
               # stores the chosen item's value, a range's data parses text into its limits.
               (re.compile(r'GUI(?:Combo|OnOff)Tweaker::vf5'), 'syncValue'), (re.compile(r'GUIComboTweaker::vf7'), 'selectItem'),
               (re.compile(r'GUIRangeDataBase::vf5'), 'parseValue'),
+              # FX sequences: slot 11 evaluates at a tick, slot 18 finds the smallest key, slot 19 beside it the largest.
+              (re.compile(r'FX\w*SequenceParamReal::vf11'), 'evaluate'), (re.compile(r'FX\w*SequenceParamReal::vf18'), 'getMinValue'),
+              (re.compile(r'FX\w*SequenceParamReal::vf19'), 'getMaxValue'),
               # A method invoker calls its member function pointer and stores the result.
               (re.compile(r'DLMethodInvoker_\w+::vf0'), 'invoke')]
 slot_named = 0
