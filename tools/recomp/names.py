@@ -875,7 +875,7 @@ EXAMPLES = {0x12a5050: 'push_back', 0x12b7550: 'treeErase', 0x12afa40: 'destroyI
             0x2008570: 'setLogField', 0x13c3d70: 'treeEraseRange', 0x12b75b0: 'treeEraseRange', 0x20ed680: 'treeFindString',
             0x1d445b0: 'findResourceByName', 0xfce860: 'findResource', 0x20088a0: 'setLogField', 0x20093c0: 'setLogField',
             0x2009260: 'setLogField', 0x2008740: 'setLogField', 0x1ac8640: 'makeResourcePath', 0x1ac8730: 'makeResourcePath',
-            0x1fb2e60: 'callRemote', 0x1fb2be0: 'callRemote', 0x1fb3880: 'callRemote', 0x127afc0: 'lazyStaticList',
+            0x1fb2e60: 'callRemote', 0x1fb2be0: 'callRemote', 0x1fb3880: 'callRemote', 0x127afc0: 'lazyStaticList', 0x1d813f0: 'findTextureHandle',
             0x137d550: 'lazyStaticList'}
 def wide_text_of(f):
     at = f - text0[3]
