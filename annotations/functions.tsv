@@ -45,6 +45,7 @@
 0xcea890	EzMenuDlgObj::getString	guess	calls	
 0xcecaf0	EzMenuDialog::findByName	guess	calls	
 0xcedd90	EzMenuDlgObj::getBool	guess	calls	
+0xcee600	EzMenuDlgObj::exchangeFlagBit1	guess	calls	
 0xcf3520	MenuLayout::createSprite	guess	calls	
 0xcf3580	MenuLayout::createNull	guess	calls	
 0xcf35d0	MenuLayout::createMonoFrame	guess	calls	
@@ -258,6 +259,7 @@
 0x15b93f0	WorldObjMan::applyReloads	guess	calls	
 0x15b9e30	WorldObjIns::waitForBlockObjects	guess	calls	
 0x1773250	MsgTagSlots::setTag	guess	calls	
+0x1774690	MenuSound::play	guess	calls	
 0x1886b50	CollisionBlock::updateLevels	guess	calls	
 0x188a150	WorldHitMan::update	guess	calls	
 0x188a570	WorldHitMan::reloadsReady	guess	calls	
@@ -353,6 +355,7 @@
 0x207ec00	DL::atomicDecrement	sure	calls	
 0x207edc0	DL::PthreadMutex::destroy	sure	message	
 0x207ee40	DL::LightMutex::init	sure	calls	
+0x207ee80	DL::PthreadMutex::isInitialized	guess	calls	
 0x207ee90	DL::LightMutex::lock	sure	source
 0x207f070	DL::LightMutex::unlock	sure	source
 0x207f1f0	DL::ReadWriteLock::destroy	sure	source
@@ -549,6 +552,7 @@
 0x21cfb30	CG::ModelRenderer::drawModel	sure	calls	void (const CG::Model *model, void *materials, void *pass, uint32_t instance_count, void **instances, bool)
 0x21d0640	CG::MeshRenderer::drawMesh	sure	calls	void (const CG::Model *model, void *pass, const CG::Mesh *mesh, const void *, const void *, uint32_t instances)
 0x227e230	FD4::SceneNode::collect	guess	calls	void (FD4::SceneNode *, void *pass)
+0x2289bb0	CG::CommandRing::allocate	guess	calls	
 0x2289db0	RenderCommandList::allocate	guess	calls	
 0x228a0a0	std::sort_228a0a0	guess	calls	
 0x228e3c0	RenderCommandList::end	guess	calls	
@@ -621,6 +625,7 @@
 0x26db300	CG::UploadRing::finish	guess	calls	void (CG::UploadRing *, const CG::Buffer **buffer, uint32_t *offset, CG::GraphicsContext *)
 0x273df10	DL::WStringNode::construct	guess	calls	
 0x2744e80	EzStateEventImpl::dispatch	sure	source	
+0x27478a0	DLBinArchive::throwError	guess	calls	
 0x2762d00	DL::WString::format	sure	message	
 0x2763430	EzStateExpression::callFunction0	sure	calls	
 0x2773910	EzStateExpression::evaluate	sure	calls	
