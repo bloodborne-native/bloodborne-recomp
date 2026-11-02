@@ -140,10 +140,10 @@
 0x11fd230	Gnm::ConstantCommandBuffer::waitOnDeCounterDiff	sure	pm4
 0x11fd280	Gnm::ConstantCommandBuffer::writeToCpRam	guess	pm4
 0x11fd320	Gnm::ConstantCommandBuffer::cpRamDump	guess	pm4
-0x125bad0	Script::IsApparentDeath	sure	binding	
+0x125bad0	SprjAiFunc::IsApparentDeath	sure	binding	
 0x12acfa0	Sprj::ParamList::selectActive	guess	calls	void *(void *)
-0x1335870	Script::DisableHpGauge	sure	binding	
-0x13386d0	Script::SetEventFlagValue	sure	binding	
+0x1335870	SprjLuaEventProxy::DisableHpGauge	sure	binding	
+0x13386d0	SprjLuaEventProxy::SetEventFlagValue	sure	binding	
 0x1399bf0	Sprj::EventFlagManager::getFlag	sure	message	bool (void *, uint32_t flag)
 0x1421d40	SprjFile::loadFile	guess	calls	
 0x193ac10	Sprj::World::update	guess	message	void (float frame_time, void *world)
@@ -191,6 +191,7 @@
 0x20b55b0	DL::assertFailed	sure	calls	
 0x20b6d00	DLRuntimeClass::construct	sure	calls	
 0x20b6dc0	DLRuntimeClass::setParent	sure	message	
+0x20b6e20	DL::RuntimeClass::registerMethod	sure	message	
 0x20ede50	DL::sharedMutex	guess	calls	
 0x2109c20	Lua::lua_getinfo	guess	message	
 0x210a0c0	Lua::luaG_aritherror	guess	message	

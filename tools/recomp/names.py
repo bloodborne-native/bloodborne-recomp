@@ -132,32 +132,10 @@ for name, fs in tables.items():
     if len(fs) == 1:
         give(next(iter(fs)), name, 'table')
 
-# 3b. Script bindings: the function stored into a slot, then its name passed to the registrar.
 code_text = loads_[0]
 IDENT = re.compile(rb'[A-Za-z_][A-Za-z0-9_]{3,60}\0')
 # Code ends at the import stubs; what follows in the segment is text and tables.
 code_end = max(int(r[0], 16) for r in rows('imports.tsv')) + 16
-pairs = collections.defaultdict(set)
-# lea rax, [function]; mov [global + 8], rax; ...; lea rdx, [name]; lea rcx, [text]; ...; call [reg + 0x58]
-# A slot may first get a descriptor the same way, so the function is the last store before the name.
-NAMED = re.compile(rb'\x48\x8d\x15(.{4})\x48\x8d\x0d', re.S)
-STORED = re.compile(rb'\x48\x8d\x05(.{4})\x48\x89\x05', re.S)
-REGISTERED = re.compile(rb'\xff[\x50-\x57]\x58')
-for m in NAMED.finditer(code_):
-    name_at = m.start(1) + 4 + struct.unpack('<i', m.group(1))[0]
-    hit = IDENT.match(code_, name_at) if 0 <= name_at < len(code_) else None
-    if not hit:
-        continue
-    start = max(max(0, m.start() - 96), *(c.end() for c in REGISTERED.finditer(code_, max(0, m.start() - 96), m.start())), 0)
-    stores = [s.start() + 7 + struct.unpack('<i', s.group(1))[0] + code_text[3] for s in STORED.finditer(code_, start, m.start())]
-    stores = [a for a in stores if a in functions and a < code_end]
-    if stores:
-        pairs[hit.group(0)[:-1].decode()].add(stores[-1])
-bound = 0
-for name, fs in pairs.items():
-    if len(fs) == 1:
-        bound += give(next(iter(fs)), name, 'binding')
-print('script bindings', bound)
 
 # 3c. Step tables: state machines fill a table of a function, a zero and its name in wide text, the whole
 # Class::STEP_name, in code. The pair of loads stores into the table.
@@ -246,6 +224,7 @@ def pointer_tested(site, low):
         return pointer_loaded(low, near_jump)
     return None
 runtime_globals = {}
+runtime_getters = {}
 previous = 0
 for i, name_ in runtime_sites:
     low = max(order[bisect.bisect_right(order, i + text0[3]) - 1] - text0[3], previous)
@@ -256,8 +235,11 @@ for i, name_ in runtime_sites:
         for c in range(i - 5, max(low, i - 40) - 1, -1):
             if code0[c] == 0xe8:
                 t = c + 5 + struct.unpack_from('<i', code0, c + 1)[0] + text0[3]
-                if t in functions and functions[t][0] < 400:
-                    pointer = pointer_loaded(t - text0[3], t - text0[3] + functions[t][0])
+                if t in functions and functions[t][0] < 1024:
+                    body = (t - text0[3], t - text0[3] + functions[t][0])
+                    read = re.compile(rb'\x48\x8b\x05(.{4})\x48\x85\xc0', re.S).search(code0, *body)
+                    pointer = read.start() + 7 + struct.unpack('<i', read.group(1))[0] + text0[3] if read else pointer_loaded(*body)
+                    runtime_getters[t] = name_
                 break
     if pointer:
         runtime_globals[pointer] = name_
@@ -267,6 +249,42 @@ for m in re.finditer(rb'[\x48\x4c][\x8b\x8d][\x05\x0d\x15\x1d\x25\x2d\x35\x3d](.
     target = m.start() + 7 + struct.unpack('<i', m.group(1))[0] + text0[3]
     if target in runtime_globals:
         pointer_readers[order[bisect.bisect_right(order, m.start() + text0[3]) - 1]].add(runtime_globals[target])
+for getter, name_ in runtime_getters.items():
+    pointer_readers[getter].add(name_)
+
+# 4a2. Method registry: a class registers a method by calling slot 11 of its class object (+0x58) with an
+# invoker and the name. The invoker holds the function, stored just before; a getter called just before
+# gives the class. These are the functions event and AI scripts call.
+pairs = collections.defaultdict(set)
+# lea rax, [function]; mov [global + 8], rax; ...; call getter; ...; lea rdx, [name]; lea rcx, [text]; ...; call [reg + 0x58]
+NAMED = re.compile(rb'\x48\x8d\x15(.{4})\x48\x8d\x0d', re.S)
+STORED = re.compile(rb'\x48\x8d\x05(.{4})\x48\x89\x05', re.S)
+REGISTERED = re.compile(rb'\xff[\x50-\x57]\x58')
+for m in NAMED.finditer(code_):
+    name_at = m.start(1) + 4 + struct.unpack('<i', m.group(1))[0]
+    hit = IDENT.match(code_, name_at) if 0 <= name_at < len(code_) else None
+    if not hit:
+        continue
+    low = max(0, m.start() - 96)
+    start = max([low] + [c.end() for c in REGISTERED.finditer(code_, low, m.start())])
+    stores = [s_.start() + 7 + struct.unpack('<i', s_.group(1))[0] + code_text[3] for s_ in STORED.finditer(code_, start, m.start())]
+    stores = [a for a in stores if a in functions and a < code_end]
+    if not stores:
+        continue
+    owner_class = None
+    for c in range(m.start() - 5, start - 1, -1):
+        if code_[c] == 0xe8:
+            readers = pointer_readers.get(c + 5 + struct.unpack_from('<i', code_, c + 1)[0] + code_text[3], ())
+            if len(readers) == 1:
+                owner_class = next(iter(readers))
+                break
+    pairs[(owner_class, hit.group(0)[:-1].decode())].add(stores[-1])
+bound = with_class = 0
+for (owner_class, name), fs in pairs.items():
+    if len(fs) == 1 and give(next(iter(fs)), f'{owner_class}::{name}' if owner_class else name, 'binding'):
+        bound += 1
+        with_class += owner_class is not None
+print('registered methods', bound, 'with their class', with_class)
 
 # 4b. Classes: a vtable is a run of slots that hold functions; a function that takes its address is
 # one of the class's constructors or destructors. The class takes the name its functions agree on: a
@@ -429,11 +447,6 @@ for table in vtables:
 print('inheritance', len(parents), 'classes with a parent;', len(roots), 'families; the largest',
       [(class_names.get(r) or hex(r), n, len(vtables[r])) for r, n in roots.most_common(10)])
 print('classes named', sum(1 for n in class_names.values() if n))
-with open(OUT / 'classes.tsv', 'w') as out:
-    out.write('vtable\tname\tslots\tparent\tchildren\n')
-    for table, run in sorted(vtables.items()):
-        out.write(f"{table:#x}\t{class_names.get(table) or ''}\t{len(run)}\t{parents.get(table, 0):#x}\t{children[table]}\n")
-
 shared = collections.Counter(f for run in vtables.values() for f in set(run))
 for table, run in vtables.items():
     label = class_names[table] or f'Class_{table:x}'
@@ -443,6 +456,59 @@ for table, run in vtables.items():
 for f, count in shared.items():
     if count > 1 and f in class_of:
         give(f, f'shared_{class_of[f]:x}', 'shared')
+
+# 4b2. Slots that mean the same in every class. A virtual function that writes its own class's vtable is
+# its destructor, and it calls operator delete if it is the deleting one. The write must go to the object
+# itself: one writing to its second argument is a clone. A class object's slots answer
+# its name, label and type tags, destroy an instance and give its size.
+OPERATOR_DELETE = {int(a, 16) for a, name in rows('imports.tsv') if name == '_ZdlPv'}
+OBJECT_SLOTS = {2: 'getName', 3: 'getLabel', 4: 'typeTag1', 5: 'typeTag2', 6: 'typeTag3', 7: 'typeTag4',
+                9: 'destroyInstance', 10: 'instanceSize'}
+VTABLE_STORE = re.compile(rb'\x48\x8d[\x05\x0d\x15\x1d\x35\x3d](.{4})(?:\x48\x83[\xc0-\xc7]\x10|\x48\x8d[\x40-\x47]\x10)?([\x48\x49])\x89([\x00-\x07])', re.S)
+def writes_itself(f, table):
+    start = f - text0[3]
+    end = start + functions[f][0]
+    for m in VTABLE_STORE.finditer(code0, start, end):
+        target = m.start() + 7 + struct.unpack('<i', m.group(1))[0] + text0[3]
+        if target not in (table, table - 16):
+            continue
+        base = m.group(3)[0] | (8 if m.group(2) == b'\x49' else 0)
+        if base == 7:  # rdi
+            return True
+        if base == 6:  # rsi
+            return False
+        # mov base, rdi
+        move = bytes([0x48 | (base >> 3), 0x89, 0xf8 | (base & 7)])
+        return code0.find(move, start, m.start()) >= 0
+    return False
+meaning = 0
+def rename(f, name):
+    global meaning
+    if f in names and re.search(r'::(?:vf\d+|writes_vtable)$', names[f]):
+        names[f] = name
+        meaning += 1
+for table, run in vtables.items():
+    label = class_names[table] or f'Class_{table:x}'
+    if table in runtime_tables:
+        rename(run[0], f'{label}::getRuntimeClass')
+    if table in runtime_objects:
+        for index, slot in OBJECT_SLOTS.items():
+            if index < len(run):
+                rename(run[index], f'{label}::{slot}')
+    for f in run:
+        if table in writers.get(f, ()) and writes_itself(f, table):
+            rename(f, f'{label}::{"deletingDestructor" if direct[f] & OPERATOR_DELETE else "destructor"}')
+print('slots with a meaning', meaning)
+instance_sizes = {}
+for table, name_ in runtime_objects.items():
+    at = vtables[table][10] - text0[3]
+    if code0[at] == 0xb8 and code0[at + 5] == 0xc3:
+        instance_sizes[name_] = struct.unpack_from('<I', code0, at + 1)[0]
+print('instance sizes', len(instance_sizes))
+with open(OUT / 'classes.tsv', 'w') as out:
+    out.write('vtable\tname\tslots\tparent\tchildren\tsize\n')
+    for table, run in sorted(vtables.items()):
+        out.write(f"{table:#x}\t{class_names.get(table) or ''}\t{len(run)}\t{parents.get(table, 0):#x}\t{children[table]}\t{instance_sizes.get(class_names.get(table), '')}\n")
 
 # 4c. Singletons: FD4Singleton checks a global and says the class's name if it is null. That ties the
 # global to the name, and a function called with that global as its first argument is a method of it.
