@@ -87,7 +87,8 @@
 0x52e6ee0	GraphicsParamChannel_52e6ee0	built by the graphics setting groups; fades a typed setting between named states
 0x530a380	D3D11DeviceContext	Map and UpdateSubresource in their published slots
 0x5308810	D3D11Device	the private data pair in its published slots; its Create slots build the classes below
-0x530b800	D3D11Buffer	GetDesc copies a buffer description
+0x530b800	D3D11Texture1D	built by the device's CreateTexture1D slot
+0x530cdb0	D3D11Buffer	built by the device's CreateBuffer slot
 0x530bc00	D3D11Texture2D	GetDesc copies a 2D texture description
 0x530be80	D3D11Texture3D	GetDesc copies a 3D texture description
 0x530cc80	D3D11BlendState	built by the device's CreateBlendState slot

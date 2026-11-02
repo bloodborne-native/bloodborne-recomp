@@ -1687,7 +1687,8 @@ D3D_TABLES = {
         CreateDeferredContext OpenSharedResource CheckFormatSupport CheckMultisampleQualityLevels CheckCounterInfo CheckCounter
         CheckFeatureSupport GetPrivateData SetPrivateData SetPrivateDataInterface GetFeatureLevel GetCreationFlags GetDeviceRemovedReason
         GetImmediateContext SetExceptionMode GetExceptionMode""".split()),
-    0x530b800: ('D3D11Buffer', D3D_CHILD + ['GetType', 'SetEvictionPriority', 'GetEvictionPriority', 'GetDesc']),
+    0x530b800: ('D3D11Texture1D', D3D_CHILD + ['GetType', 'SetEvictionPriority', 'GetEvictionPriority', 'GetDesc']),
+    0x530cdb0: ('D3D11Buffer', D3D_CHILD + ['GetType', 'SetEvictionPriority', 'GetEvictionPriority', 'GetDesc']),
     0x530bc00: ('D3D11Texture2D', D3D_CHILD + ['GetType', 'SetEvictionPriority', 'GetEvictionPriority', 'GetDesc']),
     0x530be80: ('D3D11Texture3D', D3D_CHILD + ['GetType', 'SetEvictionPriority', 'GetEvictionPriority', 'GetDesc']),
 }

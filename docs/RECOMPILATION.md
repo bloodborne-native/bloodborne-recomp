@@ -64,7 +64,7 @@ reads, and plain accesses to private frames gain nothing. The order of the work:
 | CPU time recompiled, against the translator | `█████████████████░░░` 86% | 344% of one core against 402% (1st Floor Sickroom), 360% against 397% (Iosefka's Clinic, 2026-10-27) |
 | Functions checked call by call (recordings) | `░░░░░░░░░░░░░░░░░░░░` 0.5% | 933 of 179,698 |
 | Functions labelled by library (2026-11-02) | `███████████████████░` 95.5% | 171,706 of 179,698 |
-| Functions named by hand (2026-11-02) | `░░░░░░░░░░░░░░░░░░░░` 0.2% | 828 of 179,698, 228 sure and 600 guesses (libGnm's command buffer methods; the engine's draw methods, state setters, mesh, model, material and lighting code; the synchronization primitives; the busiest functions; texture repositories) |
+| Functions named by hand (2026-11-02) | `░░░░░░░░░░░░░░░░░░░░` 0.2% | 850 of 179,698, 228 sure and 622 guesses (libGnm's command buffer methods; the engine's draw methods, state setters, mesh, model, material and lighting code; the synchronization primitives; the busiest functions; texture repositories) |
 | Functions placed, of those to understand (2026-11-02) | `████████████████░░░░` 80% | 48,340 of 59,867 longer than five instructions, in FromSoftware's code or not labelled yet |
 | Functions identified, of the target (2026-11-02) | `██████████░░░░░░░░░░` 51% | about 29,700 of about 58,000: 2,414 with the game's own name, 27,246 with a known role, much of that compiler and template code |
 
