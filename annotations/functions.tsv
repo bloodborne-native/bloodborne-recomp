@@ -68,6 +68,7 @@
 0xe48400	TextureReadback::update	guess	calls	
 0xe49180	TextureReadback::readTile	guess	calls	
 0xe4b060	FD4::ConstantBuffer::setVectors	sure	calls	void (FD4::ConstantBuffer *, uint32_t first_register, uint32_t count, const float (*)[4])
+0xe4b0c0	FD4::MaterialTextures::bindToStages	guess	calls	
 0xe553b0	FD4::MaterialTextures::bind	guess	calls	bool (FD4::MaterialTextures *, void *pass)
 0xe571d0	FD4::Material::begin	guess	calls	void (FD4::Material *, int32_t technique, void *pass)
 0xe573d0	FD4::Material::apply	guess	calls	bool (FD4::Material *, void *, int32_t technique, void *pass)
@@ -76,7 +77,9 @@
 0xe60a20	LensSimu2Pass::enqueue	guess	calls	
 0xeb5340	ToneMapPass::enqueue	guess	calls	
 0xec9000	CG::CullVolume::testBox	guess	calls	bool (const CG::CullVolume *, const float (*box)[8])
+0xedb160	FD4::MaterialParameters::applyByName	guess	calls	
 0xedca60	FD4::Material::applyInstanceParameters	guess	calls
+0xeddff0	FD4::MaterialParameters::applyTextures	guess	calls	
 0xf2dfe0	Class_52eb030::createVolumeTarget	guess	calls	
 0xf2e160	Class_52eb030::createVolumeView	guess	calls	
 0xf33a00	Class_52eb030::createNoiseTexture	guess	calls	
@@ -205,6 +208,7 @@
 0x1074c50	Gnm::DrawCommandBuffer::dispatch	sure	pm4
 0x1074de0	Gnm::DrawCommandBuffer::dispatchIndirect	sure	pm4
 0x1074f90	Gnm::DrawCommandBuffer::setVertexReuseEnable	sure	pm4
+0x1075000	Gnm::DrawCommandBuffer::setPsInputUsage	guess	calls	
 0x1075270	Gnm::DrawCommandBuffer::setIndexSize	sure	pm4
 0x10752c0	Gnm::DrawCommandBuffer::setIndexBuffer	sure	pm4
 0x1075370	Gnm::DrawCommandBuffer::setNumInstances	sure	pm4
@@ -752,6 +756,8 @@
 0x26aa860	CG::GpuHeap::reclaimRetired	guess	calls	
 0x26adb90	CG::ResourceBinder::uploadConstants	guess	calls	void (void *, CG::ResourceBinder *, CG::DrawState *, const CG::ConstantBuffer *, const void *data)
 0x26addc0	CG::PageAllocator::allocate	guess	calls	
+0x26ae840	CG::ResourceMap::find	guess	calls	
+0x26ae900	CG::ResourceMap::clearSlot	guess	calls	
 0x26aec40	CG::GnmContext::destroy	guess	calls	
 0x26af3f0	CG::GnmContext::reset	guess	calls	
 0x26af700	CG::GnmContext::flush	guess	calls	
@@ -779,6 +785,9 @@
 0x26cd400	CG::ResourceBinder::setComputeShader	guess	calls
 0x26cd5d0	CG::ResourceBinder::commitComputePass	guess	calls
 0x26ce110	CG::ResourceBinder::endComputePass	guess	calls
+0x26ce1e0	CG::ResourceBinder::bindVertexPixelShaders	guess	calls	
+0x26cfc20	CG::ResourceBinder::endSurfaceOp	guess	calls	
+0x26d0360	CG::ResourceBinder::bindComputeStage	guess	calls	
 0x26d2230	CG::OutputMergerState::apply	sure	calls	void (CG::OutputMergerState *, CG::GraphicsContext *, const CG::DrawState *)
 0x26d3370	CG::RasterizerState::apply	sure	calls	void (CG::RasterizerState *, CG::GraphicsContext *, const CG::DrawState *)
 0x26d7510	DdsFile::isValid	guess	calls	
