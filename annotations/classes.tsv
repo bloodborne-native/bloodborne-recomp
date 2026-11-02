@@ -34,3 +34,4 @@
 0x531b990	SprjAiUpdateTimeSchedular	its methods say this name, no other class does
 0x532dc40	FrpgHavokPerf	its methods say this name, no other class does
 0x533e0a0	ChrMake_SkinColorSelect	its methods say this name, no other class does
+0x535f850	BinderReader	reads a file entry from a bound archive, inflating it when flagged
