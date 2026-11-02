@@ -1420,6 +1420,29 @@ for f, seen in lock_calls.items():
 print('locked accessors', locked)
 names.update(hand)
 how.update(dict.fromkeys(hand, 'hand'))
+# 15. Text: a function no rule placed but that loads wide text says what it deals with. That is a hint, not its
+# role, so the name says only that (Says::), it never replaces another name, and it counts as placed, not identified.
+SAYS = re.compile(rb'(?:[\x20-\x7e]\0){5,60}\0\0')
+SAYS_WORD = re.compile(r'[A-Za-z][A-Za-z0-9_.:/ ]{4,}')
+SAYS_GENERIC = {'unknown', 'Enable', 'value', 'Dummy', 'cursor', 'common', 'debug', 'Memory allocation failed!'}
+said = collections.defaultdict(set)
+for m in re.finditer(rb'[\x48\x4c]\x8d[\x05\x0d\x15\x1d\x25\x2d\x35\x3d](.{4})', code, re.S):
+    target = text[3] + m.end() + struct.unpack('<i', m.group(1))[0]
+    f = owner(text[3] + m.start())
+    if f is None or names.get(f) or f in static_inits or modules.get(f, ('', ''))[0] not in TARGET:
+        continue
+    for p_ in loads:
+        if p_[3] <= target < p_[3] + p_[5]:
+            hit = SAYS.match(image, p_[2] + target - p_[3])
+            if hit:
+                word = SAYS_WORD.search(hit.group(0)[:-2].decode('utf-16-le'))
+                if word and word.group(0) not in SAYS_GENERIC:
+                    said[f].add(word.group(0))
+            break
+for f, words in said.items():
+    names[f] = 'Says::' + re.sub(r'\W+', '_', max(sorted(words), key=len))[:40].strip('_') + f'_{f:x}'
+    how[f] = 'text'
+print('functions named by their text', len(said))
 with open(OUT / 'names.tsv', 'w') as out:
     out.write('address\tname\thow\tlibrary\tsource\n')
     for f in sorted(set(names) | set(files)):
