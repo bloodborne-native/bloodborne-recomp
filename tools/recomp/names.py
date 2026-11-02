@@ -870,7 +870,9 @@ MASK = re.compile(rb'\xe8.{4}|\xe9.{4}|[\x48\x4c\x49\x4d]?[\x8b\x8d\x89\x83\xc7\
 EXAMPLES = {0x12a5050: 'push_back', 0x12b7550: 'treeErase', 0x12afa40: 'destroyInstance', 0x12f1c70: 'treeErase',
             0x12b7f20: 'treeInsertNode', 0xf85d60: 'getClassObject', 0x12226b0: 'addDebugItem', 0x144ea40: 'addDebugToggle',
             0x144e810: 'addDebugButton', 0x142ebe0: 'removeDebugPage', 0x122ef60: 'addDebugItem', 0x12dfa60: 'addDebugItem',
-            0x1470f60: 'removeDebugPage', 0xfce990: 'eraseAndDelete', 0xff6f90: 'removeDebugEntry', 0x2007a70: 'setLogField'}
+            0x1470f60: 'removeDebugPage', 0xfce990: 'eraseAndDelete', 0xff6f90: 'removeDebugEntry', 0x2007a70: 'setLogField',
+            0x2008570: 'setLogField', 0x13c3d70: 'treeEraseRange', 0x12b75b0: 'treeEraseRange', 0x20ed680: 'treeFindString',
+            0x1d445b0: 'findResourceByName', 0xfce860: 'findResource'}
 def wide_text_of(f):
     at = f - text0[3]
     for m in re.finditer(rb'[\x48\x4c]\x8d[\x05\x0d\x15\x1d\x25\x2d\x35\x3d](.{4})', code0[at:at + functions[f][0]], re.S):
@@ -979,6 +981,24 @@ with open(OUT / 'units.tsv', 'w') as out:
 tally = collections.Counter(how.values())
 named_target = {f for f in names if modules.get(f, ('', ''))[0] in TARGET}
 big = [f for f, (s, c) in functions.items() if c > 5 and modules.get(f, ('', ''))[0] in TARGET and f not in static_inits]
+# 8c2. Settings: a short function that reads one setting says its dotted name in wide text.
+SETTING = re.compile(rb'(?:[A-Z]\0)(?:[A-Za-z0-9_]\0)+(?:\.\0(?:[A-Za-z0-9_]\0)+)+\0\0')
+settings = 0
+for m in re.finditer(rb'[\x48\x4c]\x8d[\x05\x0d\x15\x1d\x25\x2d\x35\x3d](.{4})', code, re.S):
+    target = text[3] + m.end() + struct.unpack('<i', m.group(1))[0]
+    f = owner(text[3] + m.start())
+    if f is None or functions[f][1] > 60 or how.get(f) in ('step', 'binding', 'message'):
+        continue
+    for p_ in loads:
+        if p_[3] <= target < p_[3] + p_[5]:
+            hit = SETTING.match(image, p_[2] + target - p_[3])
+            if hit:
+                names[f] = 'Setting::' + hit.group(0)[:-2].decode('utf-16-le').replace('.', '_')
+                how[f] = 'shape'
+                settings += 1
+            break
+print('settings', settings)
+
 # 8d. The standard library says what it is when it fails, and a short function that says only that is its
 # template. Longer ones have the template inlined in real work (samples read by hand), so each has a limit.
 STD_TEXT = {'vector<T> too long': 'vector::_Xlen', 'deque<T> too long': 'deque::_Xlen', 'string too long': 'string::_Xlen',
