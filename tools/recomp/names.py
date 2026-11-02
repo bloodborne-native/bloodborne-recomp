@@ -1502,6 +1502,8 @@ SLOT_ROLES = [(re.compile(r'FXEvaluatable.*::vf1'), 'evaluate'),
               (re.compile(r'FrpgMenuDlg\w*::vf24'), 'attachChildren'), (re.compile(r'FrpgMenuDlg\w*::vf27'), 'onMessage'),
               # Slot 17 passes the frame on to the base dialog's update (three read).
               (re.compile(r'FrpgMenuDlg\w*::vf17'), 'update'),
+              # A GUI object's slot 3 drops what it owns and calls the base's slot 3 (five read).
+              (re.compile(r'GUI\w*::vf3'), 'releaseChildren'),
               # A method invoker calls its member function pointer and stores the result.
               (re.compile(r'DLMethodInvoker_\w+::vf0'), 'invoke')]
 slot_named = 0
