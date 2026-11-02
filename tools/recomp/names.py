@@ -1264,6 +1264,7 @@ elf = OUT / 'eboot_ghidra.elf'
 shapes = collections.defaultdict(list)
 writers = {}
 vtable_stores = collections.Counter()
+first_stores = set()
 if objdump and elf.exists():
     current, digest = None, None
     constants = re.compile(r'-?0x[0-9a-f]+|\b\d+\b')
@@ -1279,7 +1280,8 @@ if objdump and elf.exists():
                 shapes[digest.digest()].append(current)
             current, digest = at, hashlib.blake2b(digest_size=8)
             this_regs, new_regs, table_regs, stores = {'%rdi'}, set(), set(), set()
-        if current is not None and names.get(current, '').endswith('writes_vtable'):
+        if current is not None and at < current + functions[current][0] and \
+                re.search(r'writes_vtable$|::vf\d+$', names.get(current, '')):
             # Who the vtable is stored into: the first argument, a new object or a local.
             copy = re.match(r'movq\s+(%\w+), (%\w+)$', hit.group(2).strip())
             load = re.match(r'leaq\s+\S+\(%rip\), (%\w+)\s+# (0x[0-9a-f]+)', hit.group(2))
@@ -1295,6 +1297,8 @@ if objdump and elf.exists():
                            'new' if store.group(2) in new_regs | {'%rax'} else 'other')
                 writers[current] = stores
                 vtable_stores[current] += 1
+                if store.group(2) in this_regs and at < current + 48:
+                    first_stores.add(current)
         code_text = hit.group(2).split('#')[0].split('<')[0].strip()
         if current is not None and not code_text.startswith('nop'):
             digest.update(constants.sub('#', code_text).encode())
@@ -1319,15 +1323,25 @@ for group in shapes.values():
 print('identical code', identical)
 # 12. A function that stores its class's vtable and is no slot of it builds an object: its first argument
 # (a constructor) or, when short with one store, what it allocated (a factory: longer ones build debug pages).
-built = 0
+built = virtual_destructors = 0
 for f, stores in writers.items():
-    if how.get(f) in OWN_NAME or not names.get(f, '').endswith('writes_vtable'):
+    if how.get(f) in OWN_NAME:
+        continue
+    # A virtual method that starts by storing a vtable into its own object is a destructor.
+    if re.search(r'::vf\d+$', names.get(f, '')):
+        if f in first_stores:
+            names[f] = names[f].rsplit('::', 1)[0] + (
+                '::deletingDestructor' if direct[f] & OPERATOR_DELETE else '::destructor')
+            how[f] = 'shape'
+            virtual_destructors += 1
+        continue
+    if not names.get(f, '').endswith('writes_vtable'):
         continue
     if 'this' in stores or ('new' in stores and vtable_stores[f] == 1 and functions[f][1] <= 120):
         names[f] = names[f].rsplit('::', 1)[0] + ('::constructor' if 'this' in stores else '::create')
         how[f] = 'shape'
         built += 1
-print('constructors', built)
+print('constructors', built, 'virtual destructors', virtual_destructors)
 # 13. A short function that calls the debug menu's item makers fills a debug page.
 ITEM_MAKERS = ('addItem', 'addDebugItem', 'addDebugToggle', 'addDebugButton')
 page_fillers = 0
