@@ -5,3 +5,5 @@
 0x52e7f50	MotionBlurPass	calls the MotionBlur shaders
 0x52e9b00	ToneMapPass	calls the ToneMap shaders
 0x535fc50	DdsTextureLoader	creates textures from DDS files
+0x53b8450	PostEffectRenderer	its constructor builds the lens, tone map and motion blur passes
+0x52c6320	JsonValue	writes null, booleans, numbers, strings, arrays and objects by type
