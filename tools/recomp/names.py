@@ -1511,6 +1511,9 @@ SLOT_ROLES = [(re.compile(r'FXEvaluatable.*::vf1'), 'evaluate'),
               # FX sequences: slot 11 evaluates at a tick, slot 18 finds the smallest key, slot 19 beside it the largest.
               (re.compile(r'FX\w*SequenceParamReal::vf11'), 'evaluate'), (re.compile(r'FX\w*SequenceParamReal::vf18'), 'getMinValue'),
               (re.compile(r'FX\w*SequenceParamReal::vf19'), 'getMaxValue'),
+              # File capsules: slot 7 passes the loaded data on (two read). Location nodes: slot 8 copies a range of 0x30-byte
+              # matrices out (one read).
+              (re.compile(r'\w+FileCap::vf7'), 'onFileLoaded'), (re.compile(r'SprjFD4LocationNode_\w+::vf8'), 'getMatrices'),
               # A method invoker calls its member function pointer and stores the result.
               (re.compile(r'DLMethodInvoker_\w+::vf0'), 'invoke')]
 slot_named = 0
