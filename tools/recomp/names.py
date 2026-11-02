@@ -1495,6 +1495,18 @@ for slot, target in slots.items():
             tabled += 1
             break
 print('natives in tables', tabled)
+# 17. Slot roles: a family of classes shares what a virtual slot does, read once in the code. An evaluatable's slot 1
+# evaluates: the operators call slot 1 of both operands and combine the results.
+SLOT_ROLES = [(re.compile(r'FXEvaluatable.*::vf1'), 'evaluate')]
+slot_named = 0
+for f, name in list(names.items()):
+    if how.get(f) in ('class', 'vtable'):
+        for pattern, role in SLOT_ROLES:
+            if pattern.fullmatch(name):
+                names[f] = name.rsplit('::', 1)[0] + '::' + role
+                how[f] = 'shape'
+                slot_named += 1
+print('slot roles', slot_named)
 # 15. Text: a function no rule placed but that loads wide text says what it deals with. That is a hint, not its
 # role, so the name says only that (Says::), it never replaces another name, and it counts as placed, not identified.
 SAYS = re.compile(rb'(?:[\x20-\x7e]\0){5,60}\0\0')
