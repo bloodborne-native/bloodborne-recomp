@@ -1540,6 +1540,10 @@ SLOT_ROLES = [(re.compile(r'FXEvaluatable.*::vf1'), 'evaluate'),
               (re.compile(r'SprjFD4LocationNode_\w+::vf5'), 'getTransform'), (re.compile(r'SprjFD4LocationNode_\w+::vf6'), 'getInverseTransform'),
               (re.compile(r'SprjFD4LocationNode_\w+::vf7'), 'getTransforms'),
               (re.compile(r'FD4DebugMenuItem_\w+::vf2'), 'getLabel'), (re.compile(r'FD4DebugMenuItem_\w+::vf15'), 'onEvent'),
+              # Tweaker values (one read each): 6 formats the value, 7 steps and clamps it, 10 reads it back; range tweakers sync in slot 5.
+              (re.compile(r'GUI\w*DataBase\w*::vf6'), 'formatValue'), (re.compile(r'GUI\w*DataBase\w*::vf7'), 'stepValue'),
+              (re.compile(r'GUI\w*DataBase\w*::vf10'), 'readValue'), (re.compile(r'GUI\w*RangeTweaker\w*::vf5'), 'syncValue'),
+              (re.compile(r'GUI\w*PropertyLabel\w*::vf60'), 'formatValue'),
               # Debug menu items: slot 7 edits the value from the pad, slot 8 writes the item's text (two read).
               (re.compile(r'FD4DebugMenuItem_\w+::vf7'), 'onInput'), (re.compile(r'FD4DebugMenuItem_\w+::vf8'), 'writeText'),
               # Fading setting channels (one class per value type): a list of named states, a list of bound targets.
@@ -1813,7 +1817,7 @@ for table, run in vtables.items():
     for f, name in list(names.items()):
         if name.startswith(old) and how.get(f) != 'hand':
             names[f] = label + '::' + name[len(old):]
-    for index, role in ((2, 'check'), (5, 'describe'), (6, 'raise')):
+    for index, role in ((2, 'check'), (3, 'matchEvent'), (5, 'describe'), (6, 'raise')):
         if how.get(run[index]) != 'hand':
             names[run[index]], how[run[index]] = f'{label}::{role}', 'shape'
 print('event conditions', conditions)
