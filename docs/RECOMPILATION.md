@@ -268,10 +268,13 @@ other classes use. The names it writes stay with the player's copy; what is chec
 1,321 classes. The largest family, 603 classes, stands on a Dantelion2 root object that releases itself
 to its heap.
 
-**Singletons.** FD4's singletons assert on their global and say their class's name, and the function
-called next with that global is one of the class's methods. That ties 157 globals to 141 classes and
-499 functions to 94 of them. Read by hand, the first two checked were right. The call graph carries
-those names on to helpers.
+**Singletons and `this`.** FD4's singletons assert on their global and say their class's name, which
+ties 157 globals to 141 classes. A function called on one, or called with a method's first argument,
+may be a method of that class, and the linker keeps a file's functions together, so neighbours follow.
+These are placements, not understanding. A first rule, on one call, was wrong for four of seven functions
+read by hand: a singleton passed to a mutex or a container says nothing of what those are. With two
+calls required, and a function's own messages winning, none of eight read was clearly wrong, about four
+looked right and four could not be told from the code: small functions rarely show their class.
 
 **Public source as a reference.** Names can come from public source. zlib's `inflate` (1.2.7, and a
 second copy) is known by its messages. The script VM is Havok Script (`hksObject.cpp`, `ksTable`), built
