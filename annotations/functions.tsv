@@ -174,6 +174,7 @@
 0x19c52a0	SprjSaveDataLoadStepForNotTitleFlow::STEP_SelectDefaultStorage_Wait	sure	step	
 0x1a89070	SprjGaitem::resolveHandle	sure	calls	
 0x1a8bc00	SprjGaitem::releaseRef	sure	message	
+0x1ac6ba0	MapInsUpdateHelper::applyQueuedLevels	guess	calls	
 0x1ae8cc0	Menu::messageText	sure	message	
 0x1d1b360	ModelIns::drawMesh	guess	calls	
 0x1d213b0	Drawable::submitIfMaskMatches	guess	calls	
