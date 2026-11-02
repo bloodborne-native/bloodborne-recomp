@@ -586,8 +586,14 @@
 0x266c530	DLResourceStreamLoadEventQueue::pop	guess	calls	
 0x2688df0	Lua::luaK_code	guess	message	
 0x268a7d0	Lua::read_numeral#2	guess	message	
+0x26a9b50	CG::GpuHeap::init	guess	calls	
 0x26a9d50	CG::GpuHeap::allocate	guess	calls	
 0x26a9db0	CG::GpuHeap::allocateLocked	guess	calls	
+0x26aa070	CG::GpuHeap::allocateAlignedLocked	guess	calls	
+0x26aa270	CG::GpuHeap::allocateAligned	guess	calls	
+0x26aa2e0	CG::GpuHeap::free	guess	calls	
+0x26aa5a0	CG::GpuHeap::freeAfterGpu	guess	calls	
+0x26aa6a0	CG::GpuHeap::freeAfterGpuOrBlock	guess	calls	
 0x26aa860	CG::GpuHeap::reclaimRetired	guess	calls	
 0x26adb90	CG::ResourceBinder::uploadConstants	guess	calls	void (void *, CG::ResourceBinder *, CG::DrawState *, const CG::ConstantBuffer *, const void *data)
 0x26addc0	CG::PageAllocator::allocate	guess	calls	
