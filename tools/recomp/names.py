@@ -762,7 +762,8 @@ for _ in range(2):
 
 # 6. Helpers: a function whose callers all belong to one class is that class's, repeated while it
 # reaches further. Calls are direct ones only, so this is a guess at where a function belongs: where a
-# function's source file names a class, only 47 of 207 helpers agree, against 561 of 587 vtable methods.
+# function's source file names a class, only 47 of 207 helpers agree, against 561 of 587 vtable methods;
+# of functions of known class, 43% have callers of one class that agree (54% with two callers or more).
 callers = collections.defaultdict(set)
 for f, targets in callees.items():
     for target in targets:

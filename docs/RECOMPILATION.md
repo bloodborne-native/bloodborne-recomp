@@ -289,7 +289,7 @@ that template. Longer ones have the template inlined in real work, so each kind 
 |---|---:|---|
 | The game's own name | 2,161 | Registered methods, steps, messages, singletons, tables |
 | A known role | 17,606 | Destructors, class getters, `std::function` slots, EzState opcodes, delegates: much is compiler or template code |
-| In a named class or file | 9,009 | Where it belongs, not what it does |
+| In a named class or file | 9,009 | Where it belongs, not what it does; 4,148 of them only by their callers, which about half of known functions agree with |
 | Only an anonymous class | 16,729 | A vtable or object file, no name |
 | Nowhere yet | 14,601 | |
 
