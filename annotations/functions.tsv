@@ -450,15 +450,29 @@
 0x2168ca0	CG::GraphicsContext::setTopology	sure	calls	void (CG::GraphicsContext *, CG::DrawState *, uint32_t topology)
 0x2168cb0	CG::GraphicsContext::setIndexBuffer	sure	calls	void (CG::GraphicsContext *, CG::DrawState *, const CG::Buffer *, uint32_t format, uint32_t offset)
 0x2168cc0	CG::GraphicsContext::setVertexBuffers	sure	calls	void (CG::GraphicsContext *, CG::DrawState *, uint32_t first_slot, uint32_t count, const CG::Buffer *const *buffers, const uint32_t *strides, const uint32_t *offsets)
+0x2168ce0	CG::GraphicsContext::markVertexSlotsDirty	guess	calls	
+0x2168d00	CG::GraphicsContext::setVertexTextures	guess	calls	
+0x2168d90	CG::GraphicsContext::setVertexConstantBuffers	guess	calls	
 0x2168e00	CG::GraphicsContext::setVertexShader	sure	calls	void (CG::GraphicsContext *, CG::DrawState *, const CG::Shader *)
+0x2168e10	CG::GraphicsContext::markHullSlotsDirty	guess	calls	
+0x2168e30	CG::GraphicsContext::setHullTextures	guess	calls	
+0x2168ec0	CG::GraphicsContext::setHullConstantBuffers	guess	calls	
 0x2168f30	CG::GraphicsContext::setHullShader	sure	calls	void (CG::GraphicsContext *, CG::DrawState *, const CG::Shader *)
+0x2168f40	CG::GraphicsContext::markDomainSlotsDirty	guess	calls	
 0x2168f60	CG::GraphicsContext::setDomainTextures	sure	calls	void (CG::GraphicsContext *, CG::DrawState *, uint32_t first_slot, uint32_t count, const CG::Texture *const *)
 0x2168ff0	CG::GraphicsContext::setDomainConstantBuffers	sure	calls	void (CG::GraphicsContext *, CG::DrawState *, uint32_t first_slot, uint32_t count, const CG::ConstantBuffer *const *)
 0x2169060	CG::GraphicsContext::setDomainShader	sure	calls	void (CG::GraphicsContext *, CG::DrawState *, const CG::Shader *)
+0x2169070	CG::GraphicsContext::markGeometrySlotsDirty	guess	calls	
+0x2169090	CG::GraphicsContext::setGeometryTextures	guess	calls	
+0x2169120	CG::GraphicsContext::setGeometryConstantBuffers	guess	calls	
 0x2169190	CG::GraphicsContext::setGeometryShader	sure	calls	void (CG::GraphicsContext *, CG::DrawState *, const CG::Shader *)
+0x21692c0	CG::GraphicsContext::markPixelSlotsDirty	guess	calls	
 0x21692e0	CG::GraphicsContext::setPixelTextures	sure	calls	void (CG::GraphicsContext *, CG::DrawState *, uint32_t first_slot, uint32_t count, const CG::Texture *const *)
 0x2169370	CG::GraphicsContext::setPixelConstantBuffers	sure	calls	void (CG::GraphicsContext *, CG::DrawState *, uint32_t first_slot, uint32_t count, const CG::ConstantBuffer *const *)
 0x21693e0	CG::GraphicsContext::setPixelShader	sure	calls	void (CG::GraphicsContext *, CG::DrawState *, const CG::Shader *)
+0x2169440	CG::GraphicsContext::markComputeSlotsDirty	guess	calls	
+0x2169460	CG::GraphicsContext::setComputeTextures	guess	calls	
+0x21694f0	CG::GraphicsContext::setComputeConstantBuffers	guess	calls	
 0x21695c0	CG::GraphicsContext::dispatch	sure	calls	void (CG::GraphicsContext *, const CG::ComputeState *, uint32_t x, uint32_t y, uint32_t z)
 0x21696c0	CG::GraphicsContext::draw	sure	calls	void (CG::GraphicsContext *, const CG::DrawState *, uint32_t vertex_count, uint32_t base_vertex)
 0x2169780	CG::GraphicsContext::drawIndexed	sure	calls	void (CG::GraphicsContext *, const CG::DrawState *, uint32_t index_count, uint32_t first_index, uint32_t base_vertex)
