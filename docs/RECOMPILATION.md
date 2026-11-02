@@ -276,6 +276,9 @@ read by hand: a singleton passed to a mutex or a container says nothing of what 
 calls required, and a function's own messages winning, none of eight read was clearly wrong, about four
 looked right and four could not be told from the code: small functions rarely show their class.
 
+**What was read first.** The most-called functions give the most per function read. Dantelion2's heaps
+are objects whose vtable allocates at `+0x58` and frees at `+0x70`, which makes much of the code readable.
+
 **Public source as a reference.** Names can come from public source. zlib's `inflate` (1.2.7, and a
 second copy) is known by its messages. The script VM is Havok Script (`hksObject.cpp`, `ksTable`), built
 around Lua and with a `Lua 5.0.2` string, not plain Lua or LuaPlus: 62 of its functions hold messages of

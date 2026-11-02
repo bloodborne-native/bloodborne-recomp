@@ -51,6 +51,8 @@
 0xe57ad0	FD4::Material::end	guess	calls	void (FD4::Material *, void *pass)
 0xec9000	CG::CullVolume::testBox	guess	calls	bool (const CG::CullVolume *, const float (*box)[8])
 0xedca60	FD4::Material::applyInstanceParameters	guess	calls
+0xfaeaf0	FD4::ScopedProfile::begin	guess	calls	
+0xfaebc0	FD4::ScopedProfile::end	guess	calls	
 0xfe68f0	FD4::ResRepository::find	sure	calls	
 0xfe6a70	FD4::ResRepository::insert	guess	calls	
 0x1070960	Gnm::Buffer::initAsConstantBuffer	sure	pm4	void (Gnm::Buffer *, uint64_t address, uint32_t size)
@@ -156,6 +158,8 @@
 0x1d8bef0	TexResCap::acquireHandle	guess	calls	
 0x1d8c0b0	TexResCap::acquireHandleWithLowRes	guess	calls	
 0x2067ac0	zlib::inflate#2	sure	message	
+0x207c4e0	DL::Heap::allocate	sure	calls	
+0x207d7a0	DL::threadContext	guess	calls	
 0x207e780	DL::ConditionSignal::signal	sure	source
 0x207e8f0	DL::ConditionSignal::reset	guess	source
 0x207ee90	DL::LightMutex::lock	sure	source
@@ -169,9 +173,12 @@
 0x207f5c0	DL::ReadWriteLock::unlock#2	guess	source
 0x207f640	DL::ReadWriteLock::readLock	sure	source
 0x207f710	DL::ReadWriteLock::unlock	sure	source
+0x2083fe0	DL::PthreadMutex::init	sure	message	
 0x2084110	DL::PthreadMutex::lock	sure	source
 0x2084290	DL::PthreadMutex::unlock	sure	source
 0x20b55b0	DL::assertFailed	sure	calls	
+0x20b6d00	DL::HeapContainer::construct	guess	calls	
+0x20ede50	DL::sharedMutex	guess	calls	
 0x2109c20	Lua::lua_getinfo	guess	message	
 0x210a0c0	Lua::luaG_aritherror	guess	message	
 0x210a1b0	Lua::luaG_ordererror	guess	message	
@@ -289,6 +296,7 @@
 0x26d3370	CG::RasterizerState::apply	sure	calls	void (CG::RasterizerState *, CG::GraphicsContext *, const CG::DrawState *)
 0x26db1b0	CG::UploadRing::allocate	guess	calls	int (CG::UploadRing *, void **memory, CG::GraphicsContext *, uint32_t size)
 0x26db300	CG::UploadRing::finish	guess	calls	void (CG::UploadRing *, const CG::Buffer **buffer, uint32_t *offset, CG::GraphicsContext *)
+0x27c0e00	DL::WString::fromWideChars	sure	calls	
 0x28ec760	FX::PrimitiveRenderer::draw#1	guess	calls
 0x28efc10	FX::PrimitiveRenderer::draw#2	guess	calls
 0x28f05f0	FX::PrimitiveRenderer::draw#3	guess	calls
@@ -300,4 +308,7 @@
 0x28f89a0	CG::UploadRing::map	guess	calls
 0x28f8a30	CG::UploadRing::draw	guess	calls	void (CG::GraphicsContext *, CG::UploadRing *, uint32_t primitive, uint32_t index_count, uint32_t vertex_count, uint32_t stride, const int32_t *, const int32_t *)
 0x292f510	CG::ShaderProgram::bind	sure	calls	void (const CG::ShaderProgram *, void *draw_state_builder)
+0x2ba7870	DL::SharedWString::copy	sure	calls	
+0x2ba7940	DL::SharedWString::release	sure	calls	
+0x2ba81a0	DL::SharedWString::release#2	sure	calls	
 0x2ba84a0	Lua::luaV_execute	sure	message	void (lua_State *, int)
