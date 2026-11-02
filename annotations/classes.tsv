@@ -161,3 +161,16 @@
 0x53202e0	SprjObjActCtrl_DebugPage	the code that writes this table titles a debug page with the name
 0x532dd40	RagdollIns_DebugPage	the code that writes this table titles a debug page with the name
 0x52f3580	DebugMenuLayout	the code that writes this table titles a debug page with the name
+0x52e9480	GXSubsurfaceScatteringParam	constructor names g_SSSWidth and g_SSSStrength
+0x52e9520	GXTessellationParam	constructor names g_TessellationMode
+0x53b8c50	GXBloodParam	constructor names g_BloodAmount
+0x53b8dd0	GXSpecularParam	constructor names g_SpecularPower
+0x52e8130	GXColorGradingLutParam	constructor builds ColorGradingLut_ names
+0x52e8ba0	GXEnvMapParam	constructor builds EnvMap_ names
+0x5321ec0	MyBloodStainRequest	constructor titles itself
+0x5325cc0	EquipMagicData_DebugPage	constructor titles itself
+0x531b640	SprjAiSoundTargetManager_DebugPage	constructor titles itself
+0x53a08a0	SprjFD4ModelDispEntity	constructor titles itself
+0x53af8a0	DebugCamPad	constructor titles itself
+0x53274d0	WorldSound_DebugPage	constructor titles itself
+0x5327300	WorldBlockPoint_DebugPage	constructor titles itself
