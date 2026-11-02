@@ -372,6 +372,18 @@ for depth in range(8):
     if not found:
         break
 
+# 7. Source files: what has no better name takes its file's, and a Class_ label gives way to it.
+GENERIC_FILES = re.compile(r'^(?:xstring|xmemory|vector|list|map|xtree|new|string|FD4Singleton|FD4DerivedSingleton|DLFormat)\.', re.I)
+for f, source in files.items():
+    if GENERIC_FILES.match(source) or not source.endswith(('.cpp', '.c')):
+        continue
+    stem = tidy(source.rsplit('.', 1)[0])
+    if f not in names:
+        give(f, f'{stem}::fn_{f:x}', 'file')
+    elif names[f].startswith(('Class_', 'shared_')):
+        names[f] = f'{stem}::{names[f].split("::")[-1]}'
+        how[f] = 'file'
+
 tally = collections.Counter(how.values())
 named_target = {f for f in names if modules.get(f, ('', ''))[0] in TARGET}
 big = [f for f, (s, c) in functions.items() if c > 5 and modules.get(f, ('', ''))[0] in TARGET]
