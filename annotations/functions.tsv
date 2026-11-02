@@ -7,6 +7,8 @@
 # (the project's guess for a family of renderers that write their vertices each frame).
 # DL:: is Dantelion2's core library (its DL-prefixed classes); FMOD::, Scaleform:: and hk:: (Havok) are
 # the middleware the game links.
+# Lua:: is the script VM (Havok Script, the game's sources say, built around Lua): the name of Lua 5.0.2's
+# function that holds the same messages, a guess at what the game's does. zlib:: is zlib, in two copies.
 # Class names are the project's unless the evidence is "source".
 # Confidence: sure (what the function does is established) or guess.
 # Evidence: pm4 (a libGnm function, from the packets it writes; bloodborne-runtime's
@@ -18,6 +20,7 @@
 # Types named CG:: are described in annotations/structs.h (CG::DrawState: CgDrawState).
 0x658d0	Scaleform::Mutex::lock	sure	calls
 0x65930	Scaleform::Mutex::unlock	sure	calls
+0x3a7bf0	zlib::inflate	sure	message	
 0x422270	hk::CriticalSection::enter	sure	calls
 0x422340	hk::CriticalSection::leave	sure	source
 0x43b7e0	hk::Matrix4::setTransform	sure	calls	void (const float (*transform)[16], float (*matrix)[16])
@@ -25,6 +28,20 @@
 0x44b9d0	hk::Matrix3::multiply	sure	calls	void (float (*result)[12], const float (*a)[12], const float (*b)[12])
 0x76b150	hk::Cloth::meshDeform	guess	message	void (void *deformer, void *buffers, uint64_t)
 0x9b3a10	hk::AnimatedSkeleton::samplePose	guess	calls	void (float time, void *, void *character, void *animation, const float *reference_pose, void *, void *, int32_t bone_count, int32_t float_count, int32_t, void **pose)
+0x9fafe0	Lua::errorfb	guess	message	
+0xa119d0	Lua::read_long_string	guess	message	
+0xa12670	Lua::read_string	guess	message	
+0xa12b30	Lua::read_numeral	guess	message	
+0xa16e70	Lua::funcargs	guess	message	
+0xa21350	Lua::new_localvar	guess	message	
+0xa3a630	Lua::luaV_settable	guess	message	
+0xa3ad80	Lua::luaV_settable#2	guess	message	
+0xa3b7f0	Lua::luaV_settable#3	guess	message	
+0xa4f6d0	Lua::math_random	guess	message	
+0xa5cde0	Lua::lua_resume	guess	message	
+0xa5d030	Lua::lua_yield	guess	message	
+0xa6c3c0	Lua::getinfo	guess	message	
+0xa724e0	Lua::getfunc	guess	message	
 0xd1acd0	FMOD::CriticalSection::enter	sure	calls
 0xd1acf0	FMOD::CriticalSection::leave	sure	calls
 0xe4b060	FD4::ConstantBuffer::setVectors	sure	calls	void (FD4::ConstantBuffer *, uint32_t first_register, uint32_t count, const float (*)[4])
@@ -124,6 +141,7 @@
 0x1d37400	FD4::ModelInstance::updateBoundsAndSkinning	guess	calls	void (FD4::ModelInstance *, void *)
 0x1d3ae20	FD4::Skeleton::getWorldBoneMatrices	guess	calls	int (const FD4::Skeleton *, float (*matrices)[12], uint32_t count, uint32_t first)
 0x1d6f9d0	FD4::ModelInstance::submit	guess	calls	void (FD4::ModelInstance *, void *, void *render_parameters)
+0x2067ac0	zlib::inflate#2	sure	message	
 0x207e780	DL::ConditionSignal::signal	sure	source
 0x207e8f0	DL::ConditionSignal::reset	guess	source
 0x207ee90	DL::LightMutex::lock	sure	source
@@ -139,6 +157,52 @@
 0x207f710	DL::ReadWriteLock::unlock	sure	source
 0x2084110	DL::PthreadMutex::lock	sure	source
 0x2084290	DL::PthreadMutex::unlock	sure	source
+0x2109c20	Lua::lua_getinfo	guess	message	
+0x210a0c0	Lua::luaG_aritherror	guess	message	
+0x210a1b0	Lua::luaG_ordererror	guess	message	
+0x210b0e0	Lua::luaD_growCI	guess	message	
+0x210b940	Lua::luaD_call	guess	message	
+0x210bcb0	Lua::lua_yield#2	guess	message	
+0x210bd80	Lua::seterrorobj	guess	message	
+0x210bf80	Lua::seterrorobj#2	guess	message	
+0x210efb0	Lua::luaM_realloc	guess	message	
+0x210f1b0	Lua::luaM_realloc#2	guess	message	
+0x210f210	Lua::luaM_realloc#3	guess	message	
+0x210fc70	Lua::luaY_parser	guess	message	
+0x21129f0	Lua::new_localvar#2	guess	message	
+0x2113810	Lua::str_checkname	guess	message	
+0x21144d0	Lua::funcargs#2	guess	message	
+0x2114760	Lua::str_checkname#2	guess	message	
+0x2115a00	Lua::luaH_index	guess	message	
+0x2115b70	Lua::setnodevector	guess	message	
+0x2117d70	Lua::unexpectedEOZ	guess	message	
+0x21180b0	Lua::unexpectedEOZ#2	guess	message	
+0x2118930	Lua::luaG_ordererror#2	guess	message	
+0x2119200	Lua::luaV_concat	guess	message	
+0x211bf60	Lua::Arith	guess	message	
+0x211d2e0	Lua::luaL_checkstack	guess	message	
+0x2120ad0	Lua::luaB_setmetatable	guess	message	
+0x2120d70	Lua::luaB_setfenv	guess	message	
+0x2121480	Lua::luaB_print	guess	message	
+0x2121ea0	Lua::luaB_unpack	guess	message	
+0x2122c80	Lua::pushcomposename	guess	message	
+0x2123520	Lua::luaB_newproxy	guess	message	
+0x21238e0	Lua::auxresume	guess	message	
+0x2123b10	Lua::getfunc#2	guess	message	
+0x2123f60	Lua::getinfo#2	guess	message	
+0x2125420	Lua::errorfb#2	guess	message	
+0x21260b0	Lua::io_date	guess	message	
+0x2126d60	Lua::getfield	guess	message	
+0x21273d0	Lua::io_tmpname	guess	message	
+0x2127e00	Lua::io_popen	guess	message	
+0x2128f10	Lua::g_read	guess	message	
+0x212a1d0	Lua::math_random#2	guess	message	
+0x212b350	Lua::str_dump	guess	message	
+0x212b460	Lua::push_onecapture	guess	message	
+0x212ccb0	Lua::push_onecapture#2	guess	message	
+0x212d390	Lua::str_concat	guess	message	
+0x212e360	Lua::auxsort	guess	message	
+0x21305a0	Lua::luaB_print#2	guess	message	
 0x2168a20	CG::GraphicsContext::updateConstantBuffer	guess	calls
 0x2168ca0	CG::GraphicsContext::setTopology	sure	calls	void (CG::GraphicsContext *, CG::DrawState *, uint32_t topology)
 0x2168cb0	CG::GraphicsContext::setIndexBuffer	sure	calls	void (CG::GraphicsContext *, CG::DrawState *, const CG::Buffer *, uint32_t format, uint32_t offset)
@@ -182,6 +246,8 @@
 0x263af90	DL::Semaphore::tryWait	sure	source
 0x263b050	DL::Semaphore::signal#2	guess	source
 0x263b0d0	DL::Semaphore::signal	sure	source
+0x2688df0	Lua::luaK_code	guess	message	
+0x268a7d0	Lua::read_numeral#2	guess	message	
 0x26adb90	CG::ResourceBinder::uploadConstants	guess	calls	void (void *, CG::ResourceBinder *, CG::DrawState *, const CG::ConstantBuffer *, const void *data)
 0x26b2670	CG::SurfaceOps::copyBuffer	sure	calls
 0x26b2810	CG::SurfaceOps::copyBuffers	sure	calls

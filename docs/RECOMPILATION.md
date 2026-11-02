@@ -64,7 +64,7 @@ reads, and plain accesses to private frames gain nothing. The order of the work:
 | CPU time recompiled, against the translator | `█████████████████░░░` 86% | 344% of one core against 402% (1st Floor Sickroom), 360% against 397% (Iosefka's Clinic, 2026-10-27) |
 | Functions checked call by call (recordings) | `░░░░░░░░░░░░░░░░░░░░` 0.4% | 933 of 241,821 |
 | Functions labelled by library (2026-10-24) | `█████████████░░░░░░░` 62.7% | 151,562 of 241,821 |
-| Functions named (2026-10-28) | `░░░░░░░░░░░░░░░░░░░░` 0.05% | 204 of 241,821 (libGnm's command buffer methods; the engine's draw methods, state setters, mesh, model, material and lighting code; the synchronization primitives; the busiest functions) |
+| Functions named (2026-11-02) | `░░░░░░░░░░░░░░░░░░░░` 0.1% | 268 of 241,821 (libGnm's command buffer methods; the engine's draw methods, state setters, mesh, model, material and lighting code; the synchronization primitives; the busiest functions) |
 
 Every function is generated; the ones left to the translator are the 660 import stubs, the 130
 functions that call `setjmp`, and 53 that the game's patches (51) or the runtime's live switches
@@ -250,6 +250,17 @@ python3 tools/recomp/build_library.py --game "$GAME" --work WORK --toolchain LLV
   are matched by the kit's `COMPATIBLE` list (every commit since `rc.h` last changed).
 
 ## Annotations
+
+**What there is to understand.** Of the executable's 241,821 functions, about 61,800 are licensed
+middleware and need no naming. FromSoftware's own labelled code is 89,279 functions, 57,280 of them
+longer than five instructions. Of the 90,259 not labelled yet, 51,117 are longer than that, and by
+their neighbours about half are FromSoftware's. So the target is about 85,000 functions, an estimate
+because the labels are approximate.
+
+**Public source as a reference.** Names can come from public source. zlib's `inflate` (1.2.7, and a
+second copy) is known by its messages. The script VM is Havok Script (`hksObject.cpp`, `ksTable`), built
+around Lua and with a `Lua 5.0.2` string, not plain Lua or LuaPlus: 62 of its functions hold messages of
+Lua 5.0.2's and take those names as guesses.
 
 The annotations gives the game's functions names, signatures and the layouts of the objects they use, the
 render functions of the engine first: the native renderer's the render boundary takes the engine's draws at that
