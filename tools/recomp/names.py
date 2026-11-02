@@ -1233,7 +1233,8 @@ print('shader passes', shader_passes)
 # 11. Identical code: functions with the same instructions, constants aside, are copies of one template. Where a
 # group's known members mostly agree on a role the others take it (99.3% of 15,664 held-out names), and a group's
 # role can be read once in the code (SHAPE_ROLES). Short bodies say too little.
-SHAPE_ROLES = {0x1d86ba0: 'ResRepository::findByPath', 0x26f4cb0: 'destructor', 0x26f4d00: 'deletingDestructor', 0x26f1910: 'create',
+SHAPE_ROLES = {0x1d86ba0: 'ResRepository::findByPath', 0x1ae12c0: 'Menu::fixedMessageText',
+               0x2905050: 'std::unordered_map::constructor', 0x2904af0: 'std::vector::insertN', 0x26f4cb0: 'destructor', 0x26f4d00: 'deletingDestructor', 0x26f1910: 'create',
                0x2880000: 'deletingDestructor', 0x1dea0: 'deletingDestructorThunk',
                0x2405a00: 'deletingDestructorThunk', 0x2611020: 'std::tree::eraseRange',
                0x13e7880: 'std::vector::insert', 0x21e2490: 'std::unordered_map::insert',
