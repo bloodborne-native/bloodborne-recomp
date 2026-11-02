@@ -64,7 +64,7 @@ reads, and plain accesses to private frames gain nothing. The order of the work:
 | CPU time recompiled, against the translator | `█████████████████░░░` 86% | 344% of one core against 402% (1st Floor Sickroom), 360% against 397% (Iosefka's Clinic, 2026-10-27) |
 | Functions checked call by call (recordings) | `░░░░░░░░░░░░░░░░░░░░` 0.5% | 933 of 179,698 |
 | Functions labelled by library (2026-11-02) | `█████████████████░░░` 82.8% | 148,858 of 179,698 |
-| Functions named (2026-11-02) | `░░░░░░░░░░░░░░░░░░░░` 0.2% | 341 of 179,698 (libGnm's command buffer methods; the engine's draw methods, state setters, mesh, model, material and lighting code; the synchronization primitives; the busiest functions) |
+| Functions named (2026-11-02) | `░░░░░░░░░░░░░░░░░░░░` 0.2% | 345 of 179,698 (libGnm's command buffer methods; the engine's draw methods, state setters, mesh, model, material and lighting code; the synchronization primitives; the busiest functions) |
 
 Every function is generated; the ones left to the translator are the 660 import stubs, the 130
 functions that call `setjmp`, and 53 that the game's patches (51) or the runtime's live switches
@@ -318,7 +318,7 @@ One read example also names a template's copies, which compile to the same bytes
 (vector `push_back`, tree erase), and short functions that test a pointer-to-member's low bit and call it
 are delegates, in FromSoftware's code only: a Havok function of that form is a forwarder.
 
-Two tables of 161 entries are the opcode handlers of EzState's expression evaluator, whose stack of tagged
+Two tables of 162 entries are the opcode handlers of EzState's expression evaluator, whose stack of tagged
 values (integer, float, object) sits at `+0x480`; `EzStateEventImpl` runs each event argument through it.
 
 **Object files.** The executable lists its static initialisers in one table of 18,444. 12,045 of them are

@@ -46,6 +46,7 @@
 0xcedd90	EzMenuDlgObj::getBool	guess	calls	
 0xd1acd0	FMOD::CriticalSection::enter	sure	calls
 0xd1acf0	FMOD::CriticalSection::leave	sure	calls
+0xe48060	DL::Crc64::update	sure	calls	
 0xe4b060	FD4::ConstantBuffer::setVectors	sure	calls	void (FD4::ConstantBuffer *, uint32_t first_register, uint32_t count, const float (*)[4])
 0xe553b0	FD4::MaterialTextures::bind	guess	calls	bool (FD4::MaterialTextures *, void *pass)
 0xe571d0	FD4::Material::begin	guess	calls	void (FD4::Material *, int32_t technique, void *pass)
@@ -156,6 +157,7 @@
 0x1a89070	SprjGaitem::resolveHandle	sure	calls	
 0x1a8bc00	SprjGaitem::releaseRef	sure	message	
 0x1ae8cc0	Menu::messageText	sure	message	
+0x1d213b0	Drawable::submitIfMaskMatches	guess	calls	
 0x1d34880	FD4::Skeleton::getBoneMatrices	guess	calls	uint32_t (const FD4::Skeleton *, float (*matrices)[12], uint32_t count, uint32_t first)
 0x1d37400	FD4::ModelInstance::updateBoundsAndSkinning	guess	calls	void (FD4::ModelInstance *, void *)
 0x1d3ae20	FD4::Skeleton::getWorldBoneMatrices	guess	calls	int (const FD4::Skeleton *, float (*matrices)[12], uint32_t count, uint32_t first)
@@ -203,6 +205,8 @@
 0x2083fe0	DL::PthreadMutex::init	sure	message	
 0x2084110	DL::PthreadMutex::lock	sure	source
 0x2084290	DL::PthreadMutex::unlock	sure	source
+0x2085730	DL::RegularHeap::allocateBlock	sure	calls	
+0x20858a0	DL::RegularHeap::freeBlock	sure	message	
 0x20b55b0	DL::assertFailed	sure	calls	
 0x20b5d80	DL::RuntimeClass::registry	guess	calls	
 0x20b6d00	DLRuntimeClass::construct	sure	calls	
