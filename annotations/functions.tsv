@@ -151,6 +151,7 @@
 0x1070710	Gnm::Buffer::setBaseAddress	guess	calls	
 0x10707c0	Gnm::Buffer::initAsDataBuffer	guess	calls	
 0x1070960	Gnm::Buffer::initAsConstantBuffer	sure	pm4	void (Gnm::Buffer *, uint64_t address, uint32_t size)
+0x10710c0	Gnm::Buffer::setResourceMemoryType	guess	calls	
 0x1071180	Gnm::Buffer::getBaseAddress	guess	calls	
 0x10711a0	Gnm::Buffer::getStride	guess	calls	
 0x10711b0	Gnm::Buffer::getSize	guess	calls	
@@ -283,6 +284,7 @@
 0x108ac90	Gnm::DispatchCommandBuffer::setPointerInUserData	guess	pm4
 0x108b0f0	Gnm::DispatchCommandBuffer::writeReleaseMemEvent	guess	pm4
 0x108b330	Gnm::DispatchCommandBuffer::callCommandBuffer	guess	pm4
+0x1096f60	Gnmx::setupScreenViewport	guess	calls	
 0x109c4e0	sce::GpuAddress::getFlagsForSurfaceType	guess	calls	
 0x109cc60	sce::GpuAddress::adjustTileMode	guess	calls	
 0x109ce10	sce::GpuAddress::computeSurfaceInfo	guess	calls	
@@ -688,6 +690,7 @@
 0x2169c30	CG::DeviceContext::map	guess	calls	
 0x2169eb0	CG::DeviceContext::unmap	guess	calls	
 0x2171d60	CG::Device::allocateTexture2DStorage	guess	calls	
+0x21722c0	CG::Texture::getDesc	guess	calls	
 0x21723a0	CG::Device::allocateTexture3DStorage	guess	calls	
 0x217fba0	CG::Texture3D::create	guess	calls	
 0x217fe60	CG::Texture3D::createShaderView	guess	calls	
@@ -801,6 +804,9 @@
 0x26b5f50	CG::SurfaceOps::clearDepthStencil	guess	calls
 0x26b6810	CG::SurfaceOps::decompressDepth	sure	calls
 0x26b7b60	CG::toGnmPrimitiveType	sure	calls	uint32_t (uint32_t topology)
+0x26b82b0	CG::ResourceSyncContext::setDefaultState	guess	calls	
+0x26b8420	CG::ResourceSyncContext::recordTransition	guess	calls	
+0x26b8c90	CG::ResourceSyncContext::setResourceState	guess	calls	
 0x26b9850	CG::ResourceSyncContext::synchronize	guess	source	void (CG::ResourceSyncContext *, Gnm::DrawCommandBuffer *)
 0x26bad70	CG::isCpuReadable	sure	calls	
 0x26badd0	CG::isGpuReadable	sure	calls	
@@ -817,6 +823,8 @@
 0x26ce1e0	CG::ResourceBinder::bindVertexPixelShaders	guess	calls	
 0x26cfc20	CG::ResourceBinder::endSurfaceOp	guess	calls	
 0x26d0360	CG::ResourceBinder::bindComputeStage	guess	calls	
+0x26d1e30	CG::GnmContext::bindColorTarget	guess	calls	
+0x26d1e70	CG::GnmContext::bindDepthTarget	guess	calls	
 0x26d2230	CG::OutputMergerState::apply	sure	calls	void (CG::OutputMergerState *, CG::GraphicsContext *, const CG::DrawState *)
 0x26d3370	CG::RasterizerState::apply	sure	calls	void (CG::RasterizerState *, CG::GraphicsContext *, const CG::DrawState *)
 0x26d7510	DdsFile::isValid	guess	calls	
@@ -825,6 +833,8 @@
 0x26d7a50	DdsFile::getRowPitch	guess	calls	
 0x26d7ab0	DdsFile::getSlicePitch	guess	calls	
 0x26d7b40	DdsFile::getSurfaceOffset	guess	calls	
+0x26d8230	Tpf::getHeaderFormat	guess	calls	
+0x26d8a20	Tpf::findEntry	guess	calls	
 0x26d9070	TpfFile::createTexture2D	guess	calls	
 0x26d9850	TpfFile::createTexture3D	guess	calls	
 0x26d9fe0	TpfFile::createTexture2DArray	guess	calls	

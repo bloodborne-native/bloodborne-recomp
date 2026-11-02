@@ -1533,6 +1533,9 @@ SLOT_ROLES = [(re.compile(r'FXEvaluatable.*::vf1'), 'evaluate'),
               # Effect drawing: ten setup slots for the effect kinds read their curves, then 32 copies the scene region and 33 draws.
               (re.compile(r'FXRenderMaterial::vf(1[4-9]|2[0-3])'), 'setupEffect'), (re.compile(r'FXRenderMaterial::vf32'), 'copySceneRegion'),
               (re.compile(r'FXRenderMaterial::vf33'), 'draw'), (re.compile(r'FXRenderMaterial::vf34'), 'setMatrices'),
+              # TPF texture containers, one reader per platform (Tpf::findEntry walks entries through these slots).
+              (re.compile(r'TpfEntryReader\w+::vf0'), 'isValid'), (re.compile(r'TpfEntryReader\w+::vf5'), 'getDataOffset'),
+              (re.compile(r'TpfEntryReader\w+::vf6'), 'getExtraBlockCount'), (re.compile(r'TpfEntryReader\w+::vf7'), 'getEntrySize'),
               # Debug menu items: slot 7 edits the value from the pad, slot 8 writes the item's text (two read).
               (re.compile(r'FD4DebugMenuItem_\w+::vf7'), 'onInput'), (re.compile(r'FD4DebugMenuItem_\w+::vf8'), 'writeText'),
               # Fading setting channels (one class per value type): a list of named states, a list of bound targets.
