@@ -1315,6 +1315,17 @@ for f, stores in writers.items():
         how[f] = 'shape'
         built += 1
 print('constructors', built)
+# 13. A short function that calls the debug menu's item makers fills a debug page.
+ITEM_MAKERS = ('addItem', 'addDebugItem', 'addDebugToggle', 'addDebugButton')
+page_fillers = 0
+for f, (size_, count_) in functions.items():
+    if count_ <= 120 and (not role_of(f) or role_of(f).startswith(WEAK_ROLE)) and how.get(f) not in OWN_NAME \
+            and any(role_of(c) in ITEM_MAKERS for c in callees[f]):
+        label = names.get(f, '').split('::')[0]
+        names[f] = f'{label}::fillDebugPage' if label else f'FD4DebugMenu::fillDebugPage_{f:x}'
+        how[f] = 'shape'
+        page_fillers += 1
+print('debug page fillers', page_fillers)
 names.update(hand)
 how.update(dict.fromkeys(hand, 'hand'))
 with open(OUT / 'names.tsv', 'w') as out:
