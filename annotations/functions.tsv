@@ -61,6 +61,10 @@
 0xf8e690	FD4BaseKeyAssign::bind	guess	calls	
 0xf9b740	FD4::DebugMenu::addItem	guess	calls	
 0xf9cd80	FD4DebugMenuItem::addChildItem	guess	calls	
+0xfa2a00	FD4DebugMenuManager::findPage	guess	calls	
+0xfa3260	FD4DebugMenuManager::removePage	guess	calls	
+0xfa33a0	FD4DebugMenuManager::removeObject	guess	calls	
+0xfa33c0	FD4DebugMenuManager::removeItem	guess	calls	
 0xfaeaf0	FD4::ScopedProfile::begin	guess	calls	
 0xfaebc0	FD4::ScopedProfile::end	guess	calls	
 0xfe67d0	FD4ResCapHolder::FD4ResCapHolder	sure	calls	
@@ -372,8 +376,10 @@
 0x261a1b0	memcpy	sure	calls	void *(void *destination, const void *source, size_t size)
 0x261af30	memcpy#blocks	sure	calls	void (void *destination, const void *source, size_t size)
 0x26279a0	DL::WString::assignRange	guess	calls	
+0x26295d0	DL::WString::format#3	sure	calls	
 0x262a310	DL::WString::assign	sure	calls	
 0x262a720	DL::WString::assign#2	sure	calls	
+0x2638fa0	DL::WString::assignSubstring	sure	calls	
 0x2639560	DL::WString::append	sure	calls	
 0x263abe0	DL::Semaphore::destroy#2	guess	source
 0x263ac50	DL::Semaphore::destroy	sure	source

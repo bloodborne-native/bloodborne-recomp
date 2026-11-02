@@ -980,6 +980,12 @@ with open(OUT / 'units.tsv', 'w') as out:
         count = bisect.bisect_left(order, end) - bisect.bisect_left(order, start)
         out.write(f"{start:#x}\t{end:#x}\t{count}\t{' '.join(unit_classes.get(index, ()))}\n")
 
+# 10. What was named by hand (annotations/functions.tsv) comes last and wins.
+for line in (Path(__file__).resolve().parents[2] / 'annotations' / 'functions.tsv').read_text().splitlines():
+    if line and not line.startswith('#'):
+        f = int(line.split('\t')[0], 16)
+        names[f], how[f] = line.split('\t')[1], 'hand'
+
 tally = collections.Counter(how.values())
 named_target = {f for f in names if modules.get(f, ('', ''))[0] in TARGET}
 big = [f for f, (s, c) in functions.items() if c > 5 and modules.get(f, ('', ''))[0] in TARGET and f not in static_inits]
