@@ -136,11 +136,16 @@
 0x11fd320	Gnm::ConstantCommandBuffer::cpRamDump	guess	pm4
 0x12acfa0	Sprj::ParamList::selectActive	guess	calls	void *(void *)
 0x1399bf0	Sprj::EventFlagManager::getFlag	sure	message	bool (void *, uint32_t flag)
+0x1421d40	SprjFile::loadFile	guess	calls	
 0x193ac10	Sprj::World::update	guess	message	void (float frame_time, void *world)
 0x1d34880	FD4::Skeleton::getBoneMatrices	guess	calls	uint32_t (const FD4::Skeleton *, float (*matrices)[12], uint32_t count, uint32_t first)
 0x1d37400	FD4::ModelInstance::updateBoundsAndSkinning	guess	calls	void (FD4::ModelInstance *, void *)
 0x1d3ae20	FD4::Skeleton::getWorldBoneMatrices	guess	calls	int (const FD4::Skeleton *, float (*matrices)[12], uint32_t count, uint32_t first)
 0x1d6f9d0	FD4::ModelInstance::submit	guess	calls	void (FD4::ModelInstance *, void *, void *render_parameters)
+0x1d82910	CSGXTextureCreateFragment::run	guess	calls	
+0x1d82b50	TexRepository::loadDummySystemTextures	guess	message	
+0x1d83340	TexRepository::registerSystemTextures	sure	message	
+0x1d83a30	TexRepository::registerTexture	guess	calls	
 0x2067ac0	zlib::inflate#2	sure	message	
 0x207e780	DL::ConditionSignal::signal	sure	source
 0x207e8f0	DL::ConditionSignal::reset	guess	source
@@ -157,6 +162,7 @@
 0x207f710	DL::ReadWriteLock::unlock	sure	source
 0x2084110	DL::PthreadMutex::lock	sure	source
 0x2084290	DL::PthreadMutex::unlock	sure	source
+0x20b55b0	DL::assertFailed	sure	calls	
 0x2109c20	Lua::lua_getinfo	guess	message	
 0x210a0c0	Lua::luaG_aritherror	guess	message	
 0x210a1b0	Lua::luaG_ordererror	guess	message	

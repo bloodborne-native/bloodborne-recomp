@@ -268,6 +268,11 @@ other classes use. The names it writes stay with the player's copy; what is chec
 1,321 classes. The largest family, 603 classes, stands on a Dantelion2 root object that releases itself
 to its heap.
 
+**Singletons.** FD4's singletons assert on their global and say their class's name, and the function
+called next with that global is one of the class's methods. That ties 157 globals to 141 classes and
+499 functions to 94 of them. Read by hand, the first two checked were right. The call graph carries
+those names on to helpers.
+
 **Public source as a reference.** Names can come from public source. zlib's `inflate` (1.2.7, and a
 second copy) is known by its messages. The script VM is Havok Script (`hksObject.cpp`, `ksTable`), built
 around Lua and with a `Lua 5.0.2` string, not plain Lua or LuaPlus: 62 of its functions hold messages of

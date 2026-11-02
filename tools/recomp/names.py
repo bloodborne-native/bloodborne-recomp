@@ -206,7 +206,7 @@ for table, run in vtables.items():
     class_names[table] = name
     label = name or f'Class_{table:x}'
     for f in ctors:
-        give(f, f'{label}::ctor_or_dtor', 'class' if name else 'vtable')
+        give(f, f'{label}::writes_vtable', 'class' if name else 'vtable')
     for index, f in enumerate(run):
         class_of.setdefault(f, table)
 print('vtables', len(vtables), 'named', sum(1 for n in class_names.values() if n), 'distinct names', len({n for n in class_names.values() if n}),
@@ -285,6 +285,58 @@ for f, count in shared.items():
     if count > 1 and f in class_of:
         give(f, f'shared_{class_of[f]:x}', 'shared')
 
+# 4c. Singletons: FD4Singleton checks a global and says the class's name if it is null. That ties the
+# global to the name, and a function called with that global as its first argument is a method of it.
+singleton_votes = collections.defaultdict(collections.Counter)
+targets_of_text = collections.defaultdict(list)
+for at, where in sites.items():
+    for p_ in loads:
+        if p_[3] <= at < p_[3] + p_[5]:
+            hit = re.compile(rb'[A-Za-z_][A-Za-z0-9_]{3,60}\0').match(image, p_[2] + at - p_[3])
+            if hit:
+                targets_of_text[hit.group(0)[:-1].decode()] = where
+            break
+base_va = text[3]
+LEA = re.compile(rb'[\x48\x4c]\x8d[\x05\x0d\x15\x1d\x25\x2d\x35\x3d](.{4})[\x48\x49]\x8b', re.S)
+ASSERTS = collections.Counter()
+methods = collections.defaultdict(collections.Counter)
+for name, where in targets_of_text.items():
+    if not CLASSY.match(name) or name in GENERIC:
+        continue
+    for site in where:
+        i = site - base_va
+        if code[i:i + 3] != b'\x48\x8d\x0d':  # the name is the assert's fourth argument
+            continue
+        start = max(0, i - 72)
+        loads_here = list(LEA.finditer(code, start, i))
+        if not loads_here:
+            continue
+        m = loads_here[-1]
+        disp, = struct.unpack('<i', m.group(1))
+        singleton_votes[base_va + m.start() + 7 + disp][name] += 1
+        # The assert's call, then the call that follows, with the singleton still the first argument.
+        first = code.find(b'\xe8', i + 7, i + 24)
+        if first < 0:
+            continue
+        after = first + 5
+        call = code.find(b'\xe8', after, after + 56)
+        if call < 0 or re.search(rb'\x48\x8d[\x3d\x7c\x7d\xbd]|\x48\x89[\xc7\xd7\xdf\xcf\xf7\xef]|\x4c\x89[\xc7\xcf\xd7\xdf\xe7\xef\xf7\xff]|\x31\xff', code[after:call]):
+            continue
+        rel, = struct.unpack_from('<i', code, call + 1)
+        target = base_va + call + 5 + rel
+        if target in functions:
+            methods[target][name] += 1
+globals_ = {a: v.most_common(1)[0][0] for a, v in singleton_votes.items() if v.most_common(1)[0][1] * 3 >= sum(v.values()) * 2}
+print('singleton globals', len(globals_), 'names', len(set(globals_.values())))
+found = 0
+for f, votes in methods.items():
+    top, count = votes.most_common(1)[0]
+    if len(votes) == 1 or count >= 4 * sum(votes.values()) // 5:
+        if f in names and how.get(f) != 'message':
+            del names[f]
+        found += give(f, f'{top}::method_{f:x}', 'singleton')
+print('singleton methods', found, 'classes', len({n.split('::')[0] for f, n in names.items() if how.get(f) == 'singleton'}))
+
 # 5. Wrappers: a function of a few instructions with one callee takes the callee's name.
 callees = collections.defaultdict(set)
 for r in rows('calls.tsv'):
@@ -304,7 +356,7 @@ for f, targets in callees.items():
         callers[target].add(f)
 def class_label(f):
     name = names.get(f, '')
-    if '::' in name and name.split('::')[0] and how.get(f) in ('class', 'vtable', 'helper', 'message'):
+    if '::' in name and name.split('::')[0] and how.get(f) in ('class', 'vtable', 'helper', 'message', 'singleton'):
         return name.split('::')[0]
     return None
 for depth in range(8):
