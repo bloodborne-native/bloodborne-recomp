@@ -181,6 +181,7 @@
 0x15556b0	WorldBackRead::update	guess	calls	
 0x1555c00	WorldBackRead::addCollision	guess	calls	
 0x1556040	WorldBackRead::ageCollisions	guess	calls	
+0x1586d10	MapInsUpdateHelper::makeTimestampName	guess	calls	
 0x1587a40	MapIns::applyDrawFlags	guess	calls	
 0x1587dd0	MapIns::setDrawFlag	guess	calls	
 0x1587ed0	MapInsUpdateHelper::requestLevel	sure	calls	
@@ -189,6 +190,7 @@
 0x1588fe0	MapRes::releaseHeldTextures	guess	calls	
 0x15890e0	WorldMapPartsMan::releaseTextures	guess	calls	
 0x1589370	MapRes::TexHolder::releaseIfLoaded	guess	calls	
+0x1589e50	MapTextureSet::insertPath	guess	calls	
 0x158a4e0	MapRes::ModelHolder::release	guess	calls	
 0x158a5c0	MapRes::ModelHolder::load	guess	calls	
 0x158a780	MapRes::ModelHolder::release#2	guess	calls	
@@ -198,6 +200,7 @@
 0x158eab0	FD4Step::setStep	sure	calls	
 0x158f550	FD4Step::update	sure	calls	
 0x1590b10	MapRes::FileHolder::release	guess	calls	
+0x1590c10	MapTextureSet::load	guess	calls	
 0x15910c0	MapRes::FileHolder::release#2	guess	calls	
 0x15911c0	WorldMapPartsMan::releaseFiles	guess	calls	
 0x15934d0	MapInsUpdateHelper::update	sure	calls	
@@ -468,6 +471,8 @@
 0x26ce110	CG::ResourceBinder::endComputePass	guess	calls
 0x26d2230	CG::OutputMergerState::apply	sure	calls	void (CG::OutputMergerState *, CG::GraphicsContext *, const CG::DrawState *)
 0x26d3370	CG::RasterizerState::apply	sure	calls	void (CG::RasterizerState *, CG::GraphicsContext *, const CG::DrawState *)
+0x26d9070	TpfFile::createTexture2D	guess	calls	
+0x26d9850	TpfFile::createTexture3D	guess	calls	
 0x26db1b0	CG::UploadRing::allocate	guess	calls	int (CG::UploadRing *, void **memory, CG::GraphicsContext *, uint32_t size)
 0x26db300	CG::UploadRing::finish	guess	calls	void (CG::UploadRing *, const CG::Buffer **buffer, uint32_t *offset, CG::GraphicsContext *)
 0x273df10	DL::WStringNode::construct	guess	calls	
