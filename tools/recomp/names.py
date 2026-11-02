@@ -1581,6 +1581,17 @@ for f in param_users:
         continue
     param_named += 1
 print('parameter tables', len(param_names), 'functions', param_named)
+# 19. Repository lookups: a short function that names one repository in its singleton check and calls the common
+# find works on that repository's resources (read: FlverRepository, CSEntryfilelistRepository, SprjEvdRepository).
+RES_FIND = 0xfe68f0
+find_callers = {int(r[0], 16) for r in rows('calls.tsv') if int(r[1], 16) == RES_FIND}
+repo_named = 0
+for f in find_callers:
+    repos = {s_ for s_ in by_function.get(f, ()) if s_.endswith('Repository')}
+    if len(repos) == 1 and f in functions and functions[f][1] <= 90 and how.get(f, '') in ('', 'near', 'helper', 'unit', 'vtable', 'class', 'text'):
+        names[f], how[f] = f'{repos.pop()}::findResource_{f:x}', 'shape'
+        repo_named += 1
+print('repository lookups', repo_named)
 # 15. Text: a function no rule placed but that loads wide text says what it deals with. That is a hint, not its
 # role, so the name says only that (Says::), it never replaces another name, and it counts as placed, not identified.
 SAYS = re.compile(rb'(?:[\x20-\x7e]\0){5,60}\0\0')

@@ -202,6 +202,7 @@
 0x13c97a0	WorldChrMan::findChrByEntityId	sure	calls	
 0x13c99e0	WorldObjMan::findObjByEntityId	guess	calls	
 0x1421d40	SprjFile::loadFile	guess	calls	
+0x1422710	ResRepository::findOrCreate	guess	calls	
 0x15486b0	WorldRes::stepWaitBlockLoaded	guess	calls	
 0x1548740	Sprj::World::updateInstances	guess	calls	
 0x154a960	WorldRes::closeFile	guess	calls	
