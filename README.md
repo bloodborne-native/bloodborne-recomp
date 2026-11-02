@@ -127,9 +127,13 @@ All docs: [docs/README.md](docs/README.md).
 ## Build and use
 
 Needs clang, cmake, ninja and Python 3 (on macOS: `xcode-select --install` and
-`brew install cmake ninja`). Zydis (the x86 decoder) is built into `deps/` the first time.
+`brew install cmake ninja`), and [bbcpu](https://github.com/bloodborne-native/bbcpu) beside this
+checkout (`BBCPU`: another path). Zydis (the x86 decoder) is built into `deps/` the first time.
+Inside [bloodborne-runtime](https://github.com/bloodborne-native/bloodborne-runtime), bbcpu is
+already there as `runtime/bbcpu/`.
 
 ```sh
+git clone https://github.com/bloodborne-native/bbcpu.git ../bbcpu
 ./build.sh
 GAME=/path/to/CUSA03173                             # your dump, with the 1.09 update
 python3 tools/recomp/ps4elf.py "$GAME/eboot.bin" out/eboot.elf

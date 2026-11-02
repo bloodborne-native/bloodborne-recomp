@@ -16,8 +16,10 @@ This project is licensed under the **GNU GPL v2 or later** ([LICENSE](../LICENSE
 
 ## Libraries and tools
 
+- [bbcpu](https://github.com/bloodborne-native/bbcpu) (GPL-2.0-or-later): the CPU layer. It was
+  developed in this repository until 2026-11-02, and its authors are in its credits.
 - [Zydis](https://github.com/zyantific/zydis) and Zycore (MIT): the x86-64 decoder, built by
-  `build.sh` into `deps/`.
+  bbcpu's `build.sh` into `deps/`.
 - [Ghidra](https://ghidra-sre.org) (Apache-2.0), optional: `tools/recomp/inspect.sh`.
 - [LLVM](https://llvm.org) (Apache-2.0 with LLVM exception): clang and `ld64.lld` build the
   library without Xcode (`build_library.py`); `tools/recomp/toolchain.sh` trims LLVM's official
