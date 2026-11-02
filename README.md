@@ -3,9 +3,9 @@
 [![Discord](https://img.shields.io/badge/Discord-join%20the%20server-5865F2?logo=discord&logoColor=white)](https://discord.gg/QS6vHz45xA)
 
 A **static recompiler** for Bloodborne (PS4, CUSA03173 1.09): it reads the game's x86-64 executable
-and writes its functions out as C, which a compiler turns into a native arm64 library the game
-loads. In plain words, it rebuilds the PS4 game's code for other machines, so that it runs as native
-code instead of being translated while you play.
+and writes its functions out as C, which a compiler turns into a native library the game loads
+(arm64 today). In plain words, it rebuilds the PS4 game's code so that it stops being PS4 code, and
+runs as native code on the machine in front of you.
 
 **This is the tool, not the game.** It reads your own copy of the game (CUSA03173, update 1.09) on
 your own device. No game code is in this repository, and none is ever published.
@@ -17,13 +17,18 @@ code** in Settings, in about 14 minutes on an M3 Pro.
 
 ## Why
 
-The PS4 runs x86-64 code. A Mac or an iPhone runs arm64, so the game's code cannot run on them as
-it is. The usual answer is to translate that code while the game plays. It works, but the
-translating takes processor time and memory that the game could use, and every layer between the
-game and the machine limits what can be done with it.
+A PS4 game is more than a different processor. Its executable is built for one machine: the PS4's
+system, its libraries, its GPU. Running it anywhere else takes layers that pretend to be a PS4, and
+that is true on every platform:
 
-The goal of this project is to remove those layers one by one, until the game talks directly to the
-platform it runs on, as if it had been made for it.
+- On **arm64** (Apple Silicon, phones), the x86-64 code itself has to be translated.
+- On an **x86-64 PC**, the processor can run the code, but it is still a PS4 executable: it has to be
+  loaded and patched in memory, and it still expects a PS4 underneath.
+
+Every one of those layers costs time and memory, and limits what can be done with the game.
+
+The goal of this project is to remove them one by one, until the game talks directly to the
+platform it runs on, as if it had been made for it. Whatever that platform is.
 
 ## How it works
 
@@ -47,18 +52,19 @@ The same approach is behind N64Recomp and *Unleashed Recompiled*.
 
 ## What it makes possible
 
-The point is a game that is truly native, so it can run anywhere. Once the game's code is C, a
-compiler can build it for any platform, with no translator in between. On the way there:
+The point is a game that is truly native. Once its code is C, it is source a compiler can build for
+any target and optimize like any other program, and it is no longer tied to the PS4's executable:
 
-- **Less overhead.** The processor does the game's work instead of translating it, and memory is
-  not spent keeping the game's code decoded.
-- **Code that can be understood.** Generated functions can be named and described, which is how the
-  engine's rendering was mapped for the native renderer.
-- **Platforms a translator cannot reach.** The
-  [iPhone proof of concept](https://github.com/bloodborne-native/bloodborne-ios) is one example.
-  Normal iOS apps cannot generate and run code on the fly (JIT), which translating a game while it
-  plays depends on, and they have a much tighter memory budget than on a Mac. Recompiled code is
-  already compiled when the game starts, so the game runs there at all.
+- **One way to reach any platform.** The generated C is not written for one processor, so the same
+  approach serves arm64 and x86-64. Today's build scripts target arm64 on Apple's systems; other
+  targets are still to be done.
+- **Less overhead.** The processor does the game's work, not the work of a translator.
+- **A way out of the PS4.** The game's calls to its GPU and system libraries are code that can be
+  found, named and replaced, which is how the engine's rendering was mapped for the native renderer.
+- **Places a translator cannot go.** Some platforms do not allow generating code while running
+  (JIT). iOS is one, and the
+  [iPhone proof of concept](https://github.com/bloodborne-native/bloodborne-ios) runs because the
+  code is already compiled when the game starts.
 
 ## What has been done
 
