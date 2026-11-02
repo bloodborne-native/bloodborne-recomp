@@ -64,7 +64,9 @@ reads, and plain accesses to private frames gain nothing. The order of the work:
 | CPU time recompiled, against the translator | `█████████████████░░░` 86% | 344% of one core against 402% (1st Floor Sickroom), 360% against 397% (Iosefka's Clinic, 2026-10-27) |
 | Functions checked call by call (recordings) | `░░░░░░░░░░░░░░░░░░░░` 0.5% | 933 of 179,698 |
 | Functions labelled by library (2026-11-02) | `█████████████████░░░` 82.8% | 148,858 of 179,698 |
-| Functions named (2026-11-02) | `░░░░░░░░░░░░░░░░░░░░` 0.2% | 357 of 179,698 (libGnm's command buffer methods; the engine's draw methods, state setters, mesh, model, material and lighting code; the synchronization primitives; the busiest functions) |
+| Functions named by hand (2026-11-02) | `░░░░░░░░░░░░░░░░░░░░` 0.2% | 357 of 179,698, 187 sure and 170 guesses (libGnm's command buffer methods; the engine's draw methods, state setters, mesh, model, material and lighting code; the synchronization primitives; the busiest functions; texture repositories) |
+| Functions placed, of those to understand (2026-11-02) | `███████████████░░░░░` 75% | 47,917 of 63,890 longer than five instructions, in FromSoftware's code or not labelled yet |
+| Functions identified, of the target (2026-11-02) | `██████░░░░░░░░░░░░░░` 32% | about 18,100 of about 56,000: 2,161 with the game's own name, 15,927 with a known role, much of that compiler and template code |
 
 Every function is generated; the ones left to the translator are the 660 import stubs, the 130
 functions that call `setjmp`, and 53 that the game's patches (51) or the runtime's live switches
@@ -256,6 +258,19 @@ initialisers, FromSoftware's own labelled code longer than five instructions is 
 the 16,397 not labelled yet about half are FromSoftware's by their neighbours. So the target is about
 56,000 functions, an estimate because the labels are approximate.
 
+**Where it stands (2026-11-02).** Of the non-trivial functions in FromSoftware's code or not labelled yet:
+
+| | Functions | What it says |
+|---|---:|---|
+| The game's own name | 2,161 | Registered methods, steps, messages, singletons, tables |
+| A known role | 15,927 | Destructors, class getters, `std::function` slots, EzState opcodes, delegates: much is compiler or template code |
+| In a named class or file | 13,694 | Where it belongs, not what it does |
+| Only an anonymous class | 16,239 | A vtable or object file, no name |
+| Nowhere yet | 15,973 | |
+
+Text and compiler patterns are nearly used up, so what remains is mostly read by hand, a few functions at a
+time. A public name for a family of functions, or a subsystem that needs one, is what would speed it up.
+
 **What the executable gives by itself.** `tools/recomp/names.py` finds the vtables in the data and
 the functions that write them, which places functions in classes without reading them, and
 spreads to a class's helpers through the call graph. Messages name few functions directly (about 580),
@@ -298,7 +313,7 @@ the code behind them; a step's name says nothing of its callee, so steps do not 
 **Slots that mean the same everywhere.** A class's first slot returns its class object (1,414). A class
 object's slots give its name, label and type tags, destroy an instance and return its size, so the size of
 1,256 classes is known (`EnemyIns` 1,024 bytes, `TexRepositoryImp` 216). A virtual function that writes
-its own vtable to the object is its destructor (4,081, and 1,608 deleting ones); one writing to its second
+its own vtable to the object is its destructor; one writing to its second
 argument is a clone. Of six sampled with that check, the five that could be read were right.
 
 **Assertions.** YEBIS passes its failed text and the function's name to the C library's assert, which gives 673
@@ -308,8 +323,8 @@ exact names (`GPURenderTexture::SetMultisampleBufferMode`). It is middleware, bu
 in wide text (`SprjGraphicsStep::STEP_Update`), which gives 742 exact names.
 
 **Recipes the compiler repeats.** Grouping functions by their bytes, with addresses masked, shows template
-code. A deleting destructor that calls another function names that function the destructor (4,579
-deleting ones now, 5,007 others). 1,018 tables are `std::function` implementations: copy, move, the call,
+code. A deleting destructor that calls another function names that function the destructor, which with the
+rule above gives 5,630 deleting destructors and 5,003 others. 1,018 tables are `std::function` implementations: copy, move, the call,
 the target's type, delete-this. A function that writes a class object's vtable is its getter (819), and
 1,148 functions belong to the method invokers, one template per signature (164). Their slots were read;
 what a `_Do_call` calls is still what says what such a function does.
@@ -382,8 +397,9 @@ call of it, `?` after a guess. The names change comments only: the full library'
 spaces removed, is the same with and without them. `build_library.py` generates the C again when
 the file changes.
 
-So far, 204 functions: libGnm's command buffer methods (83), the engine's render boundary and
-what is above it (73), the synchronization primitives (28) and the busiest functions (20).
+So far, 357 functions: first libGnm's command buffer methods (83), the engine's render boundary and
+what is above it (73), the synchronization primitives (28) and the busiest functions (20), then what the
+mapping below read by hand: hot and much-called functions and the texture repositories.
 
 **The render boundary.** Every draw of CoreGraphics2 goes through seven methods of its graphics
 context: `draw`, `drawInstanced`, `drawIndexed`, `drawIndexedInstanced`, `drawIndirect`,

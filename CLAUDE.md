@@ -17,6 +17,9 @@ library the game loads (`BB_RECOMP_LIB`, in bloodborne-runtime). Plan, milestone
   pointers), `bbrecomp.c` (the generator), `recomp.sh`, `replay.c`/`replay.sh`, `fuzz.sh`,
   `ps4elf.py`, `pointers.py`, `imports.py`, `profile.py`, `label.py`, `inspect.sh` (Ghidra).
 - `annotations/functions.tsv`: the project's names for the game's functions (R4).
+- `tools/recomp/names.py out/recomp`: what the executable says about its functions, in the ignored
+  `out/recomp/names.tsv`, `classes.tsv` and `units.tsv` (game-derived: never committed). Sample a rule by
+  reading code and hold it out against known classes before keeping it.
 - `tests/`: fuzzers and CPU tests. `out/` and `deps/` are not tracked.
 
 ## Build and check
@@ -82,7 +85,7 @@ C changed are compiled again.
 ## Where it stands and what is next
 
 The milestones and progress are in `docs/RECOMPILATION.md` (Milestones, Progress, Annotations);
-the order of work is the app's `docs/ROADMAP.md`. In short (2026-10-28): R0–R4 are done (every
+the order of work is the app's `docs/ROADMAP.md`. In short (2026-11-02): R0–R4 are done (every
 function recompiled, 14% less CPU time than the translator, the library built from the launcher,
 the engine's render code, synchronization and busiest functions named in `annotations/`). Next:
 the CPU work: the runtime's share of the main thread (`rc_call`, host calls, code left to the

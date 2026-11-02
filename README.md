@@ -74,7 +74,7 @@ A layer counts as native only when nothing in it is translated any more. Two of 
 
 | Layer | Native | |
 |---|---|---|
-| [The game's code](docs/layers/game-code.md) | `███████████████████░` 96% | 10,861,735 of 11,268,132 instructions recompiled; opt-in, the translator is the default |
+| [The game's code](docs/layers/game-code.md) | `███████████████████░` 96% | 10,284,725 of 10,691,122 instructions recompiled; opt-in, the translator is the default |
 | [x86 memory ordering](docs/layers/memory-ordering.md) | `░░░░░░░░░░░░░░░░░░░░` 0% | Every load and store keeps x86's order; only arm64 needs this layer |
 
 ### The game's code
@@ -83,9 +83,10 @@ A layer counts as native only when nothing in it is translated any more. Two of 
   14% less CPU time than the translator at the same frame rate. Calls left to the translator went
   from 69,600 a second to 9,400. The launcher builds the library on the player's device, later updates
   compile only what changed, and the library no longer keeps the whole game decoded (peak footprint
-  7.8 GB to 5.7 GB on the Mac). 204 functions are named, with the engine's draw state, models,
+  7.8 GB to 5.7 GB on the Mac). 357 functions are named by hand, with the engine's draw state, models,
   materials and shaders described ([`annotations/`](annotations)), which is what the renderer's work
-  stands on.
+  stands on. About 18,100 of the about 56,000 functions to understand have a name or a known role, and
+  47,917 are placed in a class or a source file ([where it stands](docs/RECOMPILATION.md#annotations)).
 - **Left:** the import stubs and the code rewritten while the game
   runs, and building for other architectures.
 
