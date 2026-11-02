@@ -846,6 +846,26 @@ for f in functions:
         how[f] = 'unit'
         placed_in_unit += 1
 print('placed by object file', placed_in_unit)
+# An object file that names one .cpp is that file, whatever classes it holds. Header paths do not count.
+unit_files = collections.defaultdict(set)
+for f, source in files.items():
+    if f >= unit_starts[0] and f < code_end and source.endswith('.cpp') and not GENERIC_FILES.match(source):
+        unit_files[bisect.bisect_right(unit_starts, f) - 1].add(source)
+placed_by_file = 0
+for f in functions:
+    if f < unit_starts[0] or f >= code_end or f in static_inits:
+        continue
+    found = unit_files.get(bisect.bisect_right(unit_starts, f) - 1)
+    if not found or len(found) != 1:
+        continue
+    stem = tidy(next(iter(found)).rsplit('.', 1)[0])
+    if f not in names:
+        placed_by_file += give(f, f'{stem}::fn_{f:x}', 'unitfile')
+    elif names[f].startswith(('Class_', 'shared_')):
+        names[f] = f'{stem}::{names[f]}'
+        how[f] = 'unitfile'
+        placed_by_file += 1
+print('placed by a file of the object file', placed_by_file)
 with open(OUT / 'units.tsv', 'w') as out:
     out.write('start\tend\tfunctions\tclasses\n')
     for index, start in enumerate(unit_starts):

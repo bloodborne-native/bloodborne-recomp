@@ -43,6 +43,7 @@
 0xa6c3c0	Lua::getinfo	guess	message	
 0xa724e0	Lua::getfunc	guess	message	
 0xcecaf0	EzMenuDialog::findByName	guess	calls	
+0xcedd90	EzMenuDlgObj::getBool	guess	calls	
 0xd1acd0	FMOD::CriticalSection::enter	sure	calls
 0xd1acf0	FMOD::CriticalSection::leave	sure	calls
 0xe4b060	FD4::ConstantBuffer::setVectors	sure	calls	void (FD4::ConstantBuffer *, uint32_t first_register, uint32_t count, const float (*)[4])
@@ -53,7 +54,9 @@
 0xec9000	CG::CullVolume::testBox	guess	calls	bool (const CG::CullVolume *, const float (*box)[8])
 0xedca60	FD4::Material::applyInstanceParameters	guess	calls
 0xf6f340	FD4::IdTable::find	guess	calls	
+0xf8e690	FD4BaseKeyAssign::bind	guess	calls	
 0xf9b740	FD4::DebugMenu::addItem	guess	calls	
+0xf9cd80	FD4DebugMenuItem::addChildItem	guess	calls	
 0xfaeaf0	FD4::ScopedProfile::begin	guess	calls	
 0xfaebc0	FD4::ScopedProfile::end	guess	calls	
 0xfe68f0	FD4::ResRepository::find	sure	calls	
@@ -146,9 +149,11 @@
 0x1335870	SprjLuaEventProxy::DisableHpGauge	sure	binding	
 0x13386d0	SprjLuaEventProxy::SetEventFlagValue	sure	binding	
 0x1399bf0	Sprj::EventFlagManager::getFlag	sure	message	bool (void *, uint32_t flag)
+0x13c97a0	WorldChrMan::findChrByEntityId	sure	calls	
 0x1421d40	SprjFile::loadFile	guess	calls	
 0x193ac10	Sprj::World::update	guess	message	void (float frame_time, void *world)
 0x19c52a0	SprjSaveDataLoadStepForNotTitleFlow::STEP_SelectDefaultStorage_Wait	sure	step	
+0x1a89070	SprjGaitem::resolveHandle	sure	calls	
 0x1a8bc00	SprjGaitem::releaseRef	sure	message	
 0x1ae8cc0	Menu::messageText	sure	message	
 0x1d34880	FD4::Skeleton::getBoneMatrices	guess	calls	uint32_t (const FD4::Skeleton *, float (*matrices)[12], uint32_t count, uint32_t first)

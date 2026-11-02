@@ -64,7 +64,7 @@ reads, and plain accesses to private frames gain nothing. The order of the work:
 | CPU time recompiled, against the translator | `█████████████████░░░` 86% | 344% of one core against 402% (1st Floor Sickroom), 360% against 397% (Iosefka's Clinic, 2026-10-27) |
 | Functions checked call by call (recordings) | `░░░░░░░░░░░░░░░░░░░░` 0.5% | 933 of 179,698 |
 | Functions labelled by library (2026-11-02) | `█████████████████░░░` 82.8% | 148,858 of 179,698 |
-| Functions named (2026-11-02) | `░░░░░░░░░░░░░░░░░░░░` 0.2% | 331 of 179,698 (libGnm's command buffer methods; the engine's draw methods, state setters, mesh, model, material and lighting code; the synchronization primitives; the busiest functions) |
+| Functions named (2026-11-02) | `░░░░░░░░░░░░░░░░░░░░` 0.2% | 336 of 179,698 (libGnm's command buffer methods; the engine's draw methods, state setters, mesh, model, material and lighting code; the synchronization primitives; the busiest functions) |
 
 Every function is generated; the ones left to the translator are the 660 import stubs, the 130
 functions that call `setjmp`, and 53 that the game's patches (51) or the runtime's live switches
@@ -318,7 +318,8 @@ so each set marks an object file and what lies between two sets is one source fi
 that name a `.cpp`, 180 name exactly one. FromSoftware's code with its standard library starts at the
 first set, offset `0xc83ab0`. Where every class-named function of a stretch has one class, the others belong
 with it, which agrees 98.4% when held out and places 8,255 functions; taking the class of most of them
-agrees 91.6% and is not used.
+agrees 91.6% and is not used. A stretch that names one `.cpp` takes that file's name, whatever classes it holds
+(7,242 functions).
 
 **How far placements go.** The tests above measure each rule. Vtable methods agree with a class-named
 source file in 561 of 587 functions. Functions between two of one class agree in about 97% when held
