@@ -68,3 +68,4 @@
 0x52f1840	FD4TaskAddCommand	queued by addTask while the manager runs
 0x52f1810	FD4TaskRemoveCommand	queued by removeTaskDeferred while the manager runs
 0x52fe0b0	FD4TaskGroup	built by the group table with a debug page named TaskGroup
+0x52fe150	FD4TaskRunnerStep	stage object of the task runner: vf2 notifies and commits task changes
