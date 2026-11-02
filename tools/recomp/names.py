@@ -453,9 +453,28 @@ for table, run in vtables.items():
     for index, f in enumerate(run):
         if shared[f] == 1:
             give(f, f'{label}::vf{index}', 'class' if class_names[table] else 'vtable')
+# A slot several classes share is inherited: it belongs to the class they all descend from.
+holders = collections.defaultdict(list)
+for table, run in vtables.items():
+    for index, f in enumerate(run):
+        holders[f].append((table, index))
+def ancestors(table):
+    seen = set()
+    while table in parents and table not in seen:
+        seen.add(table)
+        table = parents[table]
+        yield table
+inherited = 0
 for f, count in shared.items():
     if count > 1 and f in class_of:
-        give(f, f'shared_{class_of[f]:x}', 'shared')
+        tables = {t for t, _ in holders[f]}
+        tops = [t for t in tables if not tables & set(ancestors(t))]
+        if len(tops) == 1 and len(tables) > 1:
+            index = next(i for t, i in holders[f] if t == tops[0])
+            inherited += give(f, f'{class_names[tops[0]] or f"Class_{tops[0]:x}"}::vf{index}', 'class' if class_names[tops[0]] else 'vtable')
+        else:
+            give(f, f'shared_{class_of[f]:x}', 'shared')
+print('inherited slots', inherited)
 
 # 4b2. Slots that mean the same in every class. A virtual function that writes its own class's vtable is
 # its destructor, and it calls operator delete if it is the deleting one. The write must go to the object
