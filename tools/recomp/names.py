@@ -149,6 +149,45 @@ for a in order:
     elif last is not None:
         gap.append(a)
 
+# 4a. DLRuntimeClass: the engine's own type information. Startup code calls a class's getter and stores
+# two text pointers at +0x40 and +0x48 of the object it returns, then links it to its parent's. The
+# getter is also a virtual function of the class, which ties a vtable to its name.
+text0 = loads[0]
+code0 = image[text0[2]:text0[2] + text0[5]]
+RUNTIME = re.compile(rb'[\x48\x4c]\x8d[\x05\x0d\x15\x1d\x25\x2d\x35\x3d](.{4})[\x48\x49\x4c\x4d]\x89[\x40-\x7f]\x40', re.S)
+SECOND = re.compile(rb'[\x48\x4c]\x8d[\x05\x0d\x15\x1d\x25\x2d\x35\x3d](.{4})[\x48\x49\x4c\x4d]\x89[\x40-\x7f]\x48', re.S)
+runtime_getters = {}
+def wide_or_text(address):
+    for p_ in loads:
+        if p_[3] <= address < p_[3] + p_[5]:
+            at = p_[2] + address - p_[3]
+            ascii_ = re.compile(rb'[\x20-\x7e]{2,120}\0').match(image, at)
+            if ascii_:
+                return ascii_.group(0)[:-1].decode()
+            wide = re.compile(rb'(?:[\x20-\x7e]\0){2,120}\0\0').match(image, at)
+            if wide:
+                return wide.group(0)[:-2].decode('utf-16-le')
+    return None
+for m in RUNTIME.finditer(code0):
+    i = m.start()
+    near = SECOND.search(code0, i + 11, i + 40)
+    if not near:
+        continue
+    one, = struct.unpack('<i', m.group(1))
+    two, = struct.unpack('<i', near.group(1))
+    first = wide_or_text(text0[3] + i + 7 + one)
+    second = wide_or_text(text0[3] + near.start() + 7 + two)
+    if not first:
+        continue
+    call = code0.rfind(b'\xe8', max(0, i - 40), i)
+    getter = None
+    if call >= 0:
+        rel, = struct.unpack_from('<i', code0, call + 1)
+        getter = text0[3] + call + 5 + rel
+    runtime_getters[getter or -i] = (first, second)
+print('DLRuntimeClass classes', len(runtime_getters), 'distinct names', len({v[0] for v in runtime_getters.values()}), list(runtime_getters.values())[:14])
+give_runtime = {g: v for g, v in runtime_getters.items()}
+
 # 4b. Classes: a vtable is a run of slots that hold functions; a function that takes its address is
 # one of the class's constructors or destructors. The class takes the name its functions agree on: a
 # source file named as a class, or a class-like name in their messages.
@@ -168,13 +207,29 @@ while i < len(ordered):
     while i < len(ordered) and ordered[i] == start + len(run) * 8 and slots[ordered[i]] in functions:
         run.append(slots[ordered[i]])
         i += 1
-    if len(run) >= 2 and start in sites:
-        vtables[start] = run
+    # Objects hold the table's address past two header slots: `lea table; add 0x10`.
+    if run and (start in sites or (start - 16) in sites):
+        if len(run) >= 2 or (start - 16) in sites:
+            vtables[start] = run
+            sites[start] |= sites.get(start - 16, set())
     if not run:
         i += 1
 CLASSY = re.compile(r'^(?:CS|FD4|DL|Sprj|Fnd|MENU|Ez|GX|CG|Frpg|World|Msg|Rend|[A-Z])[A-Za-z0-9_]{3,}$')
 GENERIC = {'Exception', 'Allocator', 'Unknown', 'Error', 'Failed', 'String', 'Object', 'Default', 'Invalid'}
+# A vtable's slot for its class is a stub of one or two instructions that goes to the getter.
+runtime_stubs = {}
+for run in vtables.values():
+    for f in run:
+        if functions[f][0] <= 16:
+            at = f - text0[3]
+            if code0[at] == 0xe9:
+                rel, = struct.unpack_from('<i', code0, at + 1)
+                got = runtime_getters.get(f + 5 + rel)
+                if got and got[0] == got[1]:
+                    runtime_stubs[f] = got[0]
+print('runtime class stubs', len(runtime_stubs))
 class_of, class_methods = {}, collections.Counter()
+how_named = {}
 class_names = {}
 # A name in the messages of many classes is one they use (a singleton), not what they are.
 spread = collections.defaultdict(set)
@@ -203,12 +258,19 @@ for table, run in vtables.items():
         top, count = votes.most_common(1)[0]
         if count >= 3 and (len(votes) == 1 or count >= 2 * votes.most_common(2)[1][1]):
             name = top
+    for f in run:
+        known = runtime_stubs.get(f)
+        if known:
+            name = known
+            how_named[table] = 'runtime'
+            break
     class_names[table] = name
     label = name or f'Class_{table:x}'
     for f in ctors:
         give(f, f'{label}::writes_vtable', 'class' if name else 'vtable')
     for index, f in enumerate(run):
         class_of.setdefault(f, table)
+print('named by DLRuntimeClass', len(how_named))
 print('vtables', len(vtables), 'named', sum(1 for n in class_names.values() if n), 'distinct names', len({n for n in class_names.values() if n}),
       'functions in them', len(class_of))
 # THIS_CLASS: the function that sets up a class's runtime description says its name and takes the
