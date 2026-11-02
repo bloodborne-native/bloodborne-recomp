@@ -1261,7 +1261,10 @@ SHAPE_ROLES = {0x26f4cb0: 'destructor', 0x26f4d00: 'deletingDestructor', 0x26f19
                0xe59ee0: 'releaseBuffers', 0x101a980: 'forwardToSingleton', 0x1509630: 'releaseRef',
                0x1fc49d0: 'lockedForward', 0xcf3100: 'setName', 0x158a0c0: 'std::tree::eraseNodes',
                0xc8de50: 'lockedForward', 0xc97a20: 'lockedForward', 0x2a84920: 'getMaxValue',
-               0x2a84990: 'getMinValue', 0x2705a90: 'copyFrom', 0x2969f50: 'lockedFree'}
+               0x2a84990: 'getMinValue', 0x2705a90: 'copyFrom', 0x2969f50: 'lockedFree',
+               0x26abb00: 'CG::recordCommand', 0x2708100: 'copyFrom', 0x2708240: 'equals',
+               0x2885ea0: 'forwardToParam', 0x2a5f900: 'clone', 0x2645710: 'setLocked',
+               0xc91d30: 'setLocked', 0x1001390: 'deleteSingleton', 0xff6020: 'removeDebugPage'}
 WEAK_ROLE = ('helper', 'near', 'unit', 'method', 'vf', 'writes_vtable', 'shared', 'fn', '_Do_call')
 role_of = lambda f: re.sub(r'_[0-9a-f]{5,}$', '', names.get(f, '').split('::')[-1])
 objdump = shutil.which('llvm-objdump') or shutil.which('objdump')
