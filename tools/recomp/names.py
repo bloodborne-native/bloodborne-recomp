@@ -195,7 +195,11 @@ for table, run in vtables.items():
             if CLASSY.match(s) and s not in GENERIC and len(s) < 48 and len(spread[s]) <= 2:
                 votes[s] += 1
     name = None
-    if votes:
+    # A constructor that says a name no other class says is naming its own class.
+    own = {s for f in ctors for s in by_function.get(f, ()) if CLASSY.match(s) and s not in GENERIC and len(spread[s]) == 1}
+    if len(own) == 1:
+        name = next(iter(own))
+    elif votes:
         top, count = votes.most_common(1)[0]
         if count >= 3 and (len(votes) == 1 or count >= 2 * votes.most_common(2)[1][1]):
             name = top
