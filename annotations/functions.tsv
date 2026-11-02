@@ -160,6 +160,7 @@
 0x1ae8cc0	Menu::messageText	sure	message	
 0x1d1b360	ModelIns::drawMesh	guess	calls	
 0x1d213b0	Drawable::submitIfMaskMatches	guess	calls	
+0x1d25550	ModelIns::updateSkinnedBounds	guess	calls	
 0x1d25fd0	ModelIns::walkDecalReceiver	guess	calls	
 0x1d34880	FD4::Skeleton::getBoneMatrices	guess	calls	uint32_t (const FD4::Skeleton *, float (*matrices)[12], uint32_t count, uint32_t first)
 0x1d37400	FD4::ModelInstance::updateBoundsAndSkinning	guess	calls	void (FD4::ModelInstance *, void *)
