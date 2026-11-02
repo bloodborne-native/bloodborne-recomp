@@ -742,6 +742,8 @@
 0x21c8c50	CG::SkinningBuffer::update	guess	calls	void (CG::SkinningBuffer *, const float (*current)[12], const float (*previous)[12], uint32_t)
 0x21cfb30	CG::ModelRenderer::drawModel	sure	calls	void (const CG::Model *model, void *materials, void *pass, uint32_t instance_count, void **instances, bool)
 0x21d0640	CG::MeshRenderer::drawMesh	sure	calls	void (const CG::Model *model, void *pass, const CG::Mesh *mesh, const void *, const void *, uint32_t instances)
+0x21d2dd0	PpfxBridge::initialize	guess	calls	
+0x2264d20	Class_5360b30::createCubeTargets	guess	calls	
 0x227e230	FD4::SceneNode::collect	guess	calls	void (FD4::SceneNode *, void *pass)
 0x2289bb0	CG::CommandRing::allocate	guess	calls	
 0x2289db0	RenderCommandList::allocate	guess	calls	
@@ -753,6 +755,7 @@
 0x22bd110	FD4::LightRenderer::drawLightBatches#2	guess	calls
 0x22bdb00	FD4::LightRenderer::drawLightBatches#3	guess	calls
 0x22be4f0	FD4::LightRenderer::drawLightBatches#4	guess	calls
+0x22ec420	Class_53b8ad0::createResources	guess	calls	
 0x2348ca0	GUITextureViewer::setTexture	guess	calls	
 0x2382eb0	FD4::TextRenderer::drawString	guess	calls
 0x23ee1e0	Scaleform::RefCountBaseGC::release	guess	calls	
@@ -821,6 +824,7 @@
 0x26cd5d0	CG::ResourceBinder::commitComputePass	guess	calls
 0x26ce110	CG::ResourceBinder::endComputePass	guess	calls
 0x26ce1e0	CG::ResourceBinder::bindVertexPixelShaders	guess	calls	
+0x26ce5e0	CG::ResourceBinder::commitStageResources	guess	calls	
 0x26cfc20	CG::ResourceBinder::endSurfaceOp	guess	calls	
 0x26d0360	CG::ResourceBinder::bindComputeStage	guess	calls	
 0x26d1e30	CG::GnmContext::bindColorTarget	guess	calls	

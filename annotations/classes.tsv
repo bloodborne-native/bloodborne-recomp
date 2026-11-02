@@ -150,5 +150,4 @@
 0x52c7040	EzStateMachineImpl	vf6 runs transitions until none fires, entering and leaving states
 0x53304c0	SprjWorldStep	a two-slot table whose name spread to the world update steps it sits beside; the label means world update code
 0x52eb7a0	FXRenderMaterial	sets blend tables and draws effects from FX parameter curves; slot 32 copies the scene behind them
-0x52ba220	TpfEntryReaderPc	Tpf::findEntry picks it for platform 0
-0x52ba2e0	TpfEntryReaderPs4	Tpf::findEntry picks it for platform 4
+0x535fe90	PpfxBridge	its initialiser creates the game side resources and calls ppfx::Initialize
