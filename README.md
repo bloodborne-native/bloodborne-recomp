@@ -85,8 +85,8 @@ A layer counts as native only when nothing in it is translated any more. Two of 
   compile only what changed, and the library no longer keeps the whole game decoded (peak footprint
   7.8 GB to 5.7 GB on the Mac). 828 functions are named by hand, with the engine's draw state, models,
   materials and shaders described ([`annotations/`](annotations)), which is what the renderer's work
-  stands on. About 29,600 of the about 58,000 functions to understand have a name or a known role, and
-  48,333 are placed in a class or a source file ([where it stands](docs/RECOMPILATION.md#annotations)).
+  stands on. About 29,700 of the about 58,000 functions to understand have a name or a known role, and
+  48,340 are placed in a class or a source file ([where it stands](docs/RECOMPILATION.md#annotations)).
 - **Left:** the import stubs and the code rewritten while the game
   runs, and building for other architectures.
 

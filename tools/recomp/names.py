@@ -1530,6 +1530,9 @@ SLOT_ROLES = [(re.compile(r'FXEvaluatable.*::vf1'), 'evaluate'),
               # File capsules: slot 7 passes the loaded data on (two read). Location nodes: slot 8 copies a range of 0x30-byte
               # matrices out (one read).
               (re.compile(r'\w+FileCap::vf7'), 'onFileLoaded'), (re.compile(r'SprjFD4LocationNode_\w+::vf8'), 'getMatrices'),
+              # Effect drawing: ten setup slots for the effect kinds read their curves, then 32 copies the scene region and 33 draws.
+              (re.compile(r'FXRenderMaterial::vf(1[4-9]|2[0-3])'), 'setupEffect'), (re.compile(r'FXRenderMaterial::vf32'), 'copySceneRegion'),
+              (re.compile(r'FXRenderMaterial::vf33'), 'draw'), (re.compile(r'FXRenderMaterial::vf34'), 'setMatrices'),
               # Debug menu items: slot 7 edits the value from the pad, slot 8 writes the item's text (two read).
               (re.compile(r'FD4DebugMenuItem_\w+::vf7'), 'onInput'), (re.compile(r'FD4DebugMenuItem_\w+::vf8'), 'writeText'),
               # Fading setting channels (one class per value type): a list of named states, a list of bound targets.
@@ -1550,7 +1553,7 @@ for f, name in list(names.items()):
     if how.get(f) in ('class', 'vtable'):
         for pattern, role in SLOT_ROLES:
             if pattern.fullmatch(name):
-                names[f] = name.rsplit('::', 1)[0] + '::' + role
+                names[f] = name.rsplit('::', 1)[0] + '::' + role + (f'_{f:x}' if role == 'setupEffect' else '')
                 how[f] = 'shape'
                 slot_named += 1
 print('slot roles', slot_named)
