@@ -1741,6 +1741,44 @@ for f, (size, count, *_) in functions.items():
     names[f], how[f] = f'Gnm::DrawCommandBuffer::{label}_{f:x}', 'shape'
     pm4_named[PM4_OPS[op]] += 1
 print('command buffer packets', sum(pm4_named.values()), dict(pm4_named))
+# 25. Unplaced functions. Most have no reference at all: no call, jump, address taken or data pointer, so nothing can
+# reach them (Ghidra agrees on a sample) and they are only counted. The rest go with the one class that calls them, or
+# with the function that takes their address.
+FOREIGN_CLASS = re.compile(r'^(?:|Says|std|shared_\w+|Template|Import|Shaders|DL|staticInit_\w+)$')
+def weak_class(name):
+    return FOREIGN_CLASS.match(name.split('::')[0]) is not None
+callers_of = collections.defaultdict(set)
+for f, targets in callees.items():
+    for target in targets:
+        callers_of[target].add(f)
+ordered = sorted(functions)
+code_start = text0[3]
+address_takers = collections.defaultdict(set)
+for m in re.finditer(rb'[\x48\x4c]\x8d[\x05\x0d\x15\x1d\x25\x2d\x35\x3d]', code0):
+    at = code_start + m.start()
+    target = at + 7 + int.from_bytes(code0[m.start() + 3:m.start() + 7], 'little', signed=True)
+    if target in functions:
+        address_takers[target].add(ordered[bisect.bisect_right(ordered, at) - 1])
+data_pointers = {int(r[1], 16) for r in rows('pointer_slots.tsv')}
+placed_late = collections.Counter()
+WEAK_HOW = ('helper', 'near', 'unit', 'unitfile', 'shared', 'text')
+before = dict(names)
+unused = 0
+for f in functions:
+    if names.get(f) or modules.get(f, ('', ''))[0] not in TARGET or functions[f][1] <= 5:
+        continue
+    if not callers_of[f] and not address_takers[f] and f not in data_pointers:
+        unused += 1
+        continue
+    # Only functions known by more than where they sit count, and none placed here: helpers of helpers ran together (read).
+    # A template used by one class still lands on it, so this says who uses the code, not what it does.
+    users = callers_of[f] | address_takers[f]
+    owners = {before.get(c, '').split('::')[0] for c in users if how.get(c) not in WEAK_HOW} - {''}
+    if len(owners) == 1 and not weak_class(next(iter(owners))) and all(before.get(c) for c in users):
+        kind = 'callback' if not callers_of[f] else 'helper'
+        names[f], how[f] = f'{next(iter(owners))}::{kind}_{f:x}', 'helper'
+        placed_late[kind] += 1
+print('no reference at all', unused, 'placed by their one owner', dict(placed_late))
 # 22. A std::function is built where its table is written: the only writer outside the table's own slots says whose lambda it is.
 WEAK_OWNER = re.compile(r'^(?:Class_|shared_|fn_|Says::|Import::|std::|DL::)|::(?:near_|helper_|unit_|vf\d+$|fn_|writes_vtable)')
 lambdas = collections.Counter()
