@@ -148,7 +148,7 @@ the image, at the offsets the game links them to, so `build_library.py` generate
 executable: 4,759 functions. 4,607 are generated; 5 that jump between stack frames, by name, and their
 147 direct callers stay with the translator. Only 381 of the modules' 2,471 symbols have known names,
 so another such function could be missed: `BB_RECOMP_OFF` turns functions off one by one. In the game
-245,432 of 245,484 functions run recompiled, with the runtime's check of their bytes passing for all
+181,521 of 181,570 functions run recompiled, with the runtime's check of their bytes passing for all
 the modules' generated functions but the 154 import stubs.
 
 ## Other architectures
