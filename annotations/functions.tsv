@@ -191,8 +191,10 @@
 0x1586ff0	MapInsPiece::constructor	guess	calls	
 0x1587a40	MapIns::applyDrawFlags	guess	calls	
 0x1587c30	MapInsPiece::setFlagAndQueue	guess	calls	
+0x1587d00	MapInsPiece::setFlag2AndQueue	guess	calls	
 0x1587dd0	MapIns::setDrawFlag	guess	calls	
 0x1587ed0	MapInsUpdateHelper::requestLevel	sure	calls	
+0x1588080	MapInsPiece::markDirty	guess	calls	
 0x15881a0	MapInsPiece::holdTextures	guess	calls	
 0x1588220	MapRes::clearHolders	guess	calls	
 0x15885f0	MapRes::TexHolder::release	guess	calls	
@@ -205,6 +207,8 @@
 0x158a5c0	MapRes::ModelHolder::load	guess	calls	
 0x158a780	MapRes::ModelHolder::release#2	guess	calls	
 0x158a860	WorldMapPartsMan::releaseFileAndObject	guess	calls	
+0x158be80	MapRes::tickStep	guess	calls	
+0x158c1e0	MapRes::holdStepTextures	guess	calls	
 0x158ce80	MapRes::STEP_HiTex_Init	sure	calls	
 0x158d0e0	MapRes::STEP_HiTex_Release	sure	calls	
 0x158eab0	FD4Step::setStep	sure	calls	
@@ -244,7 +248,11 @@
 0x1a8bc00	SprjGaitem::releaseRef	sure	message	
 0x1a8bed0	SprjGaitem::Handle::assign	guess	calls	
 0x1ac69b0	MapInsWorkList::constructor	guess	calls	
+0x1ac6aa0	MapInsWorkList::destructor	guess	calls	
 0x1ac6ba0	MapInsUpdateHelper::applyQueuedLevels	guess	calls	
+0x1ac6da0	MapInsWorkList::push	guess	calls	
+0x1ac7220	MapInsWorkList::queueFlag10	guess	calls	
+0x1ac73c0	MapName::parse	guess	calls	
 0x1ae8cc0	Menu::messageText	sure	message	
 0x1d1b360	ModelIns::drawMesh	guess	calls	
 0x1d213b0	Drawable::submitIfMaskMatches	guess	calls	
@@ -258,6 +266,7 @@
 0x1d44d80	ModelViewer::setDefaultEnvMaps	guess	calls	
 0x1d69110	FD4::Material::resolveTextures	guess	calls	
 0x1d69b70	FD4::Material::releaseTextures	guess	calls	
+0x1d6a760	MapName::format	guess	calls	
 0x1d6f9d0	FD4::ModelInstance::submit	guess	calls	void (FD4::ModelInstance *, void *, void *render_parameters)
 0x1d82910	CSGXTextureCreateFragment::run	guess	calls	
 0x1d82b50	TexRepository::loadDummySystemTextures	guess	message	
@@ -435,6 +444,7 @@
 0x21ba300	GXGUITexture::createLinearView	guess	calls	
 0x21c0240	TpfResCap::setTextureIndex	guess	calls	
 0x21c02b0	TpfResCap::createTexture	guess	calls	
+0x21c0320	TpfResCap::createDeviceTexture	guess	calls	
 0x21c3f60	FD4::MaterialParameters::begin	guess	calls	void (FD4::MaterialParameters *, void *state_cache, void *pass)
 0x21c41a0	FD4::MaterialParameters::end	guess	calls	void (FD4::MaterialParameters *, void *state_cache, void *pass)
 0x21c8c50	CG::SkinningBuffer::update	guess	calls	void (CG::SkinningBuffer *, const float (*current)[12], const float (*previous)[12], uint32_t)
