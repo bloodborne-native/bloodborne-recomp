@@ -1051,14 +1051,14 @@ for f, targets in callees.items():
         wrappers += 1
 print('wrappers of a system call', wrappers)
 
-# 10. What was named by hand (annotations/functions.tsv) comes last and wins.
+# 10. What was named by hand (annotations/functions.tsv) wins, and is applied again after the last rule.
+hand = {}
 for line in (Path(__file__).resolve().parents[2] / 'annotations' / 'functions.tsv').read_text().splitlines():
     if line and not line.startswith('#'):
         f = int(line.split('\t')[0], 16)
-        names[f], how[f] = line.split('\t')[1], 'hand'
+        hand[f] = line.split('\t')[1]
+        names[f], how[f] = hand[f], 'hand'
 
-tally = collections.Counter(how.values())
-named_target = {f for f in names if modules.get(f, ('', ''))[0] in TARGET}
 big = [f for f, (s, c) in functions.items() if c > 5 and modules.get(f, ('', ''))[0] in TARGET and f not in static_inits]
 # 8c2. Settings: a short function that reads one setting says its dotted name in wide text.
 SETTING = re.compile(rb'(?:[A-Z]\0)(?:[A-Za-z0-9_]\0)+(?:\.\0(?:[A-Za-z0-9_]\0)+)+\0\0')
@@ -1102,7 +1102,8 @@ print('standard library', std_roles)
 
 # 9b. FD4Step is a template, so each step class has its own copy of its update and its debug page, which say
 # the same wide text. They were read by hand; a copy keeps its class, and takes the template's name without one.
-STEP_TEXT = {'State Finished.(No StepMethod is Executing.)': 'stepUpdate', 'StepMethodList': 'stepDebugPage'}
+STEP_TEXT = {'State Finished.(No StepMethod is Executing.)': 'stepUpdate', 'StepMethodList': 'stepDebugPage',
+             '//<※デバッグ強制ステップ遷移実行>(Stepが終了状態のため現在実行不可)': 'stepDebugForceItem'}
 step_text = {}
 for text_, role in STEP_TEXT.items():
     wide = text_.encode('utf-16-le') + b'\0\0'
@@ -1139,6 +1140,36 @@ for r in rows('calls.tsv'):
     how[f] = 'shape'
     step_moves += 1
 print('step moves', step_moves)
+# 9b2. Message texts: a short getter falls back to the wide text ?WeaponName? when the entry is missing.
+msg_text = {}
+for m in re.finditer(rb'\?\0((?:[A-Za-z]\0){3,40})\?\0\0\0', image):
+    for p_ in loads:
+        if p_[2] <= m.start() < p_[2] + p_[5]:
+            msg_text[p_[3] + m.start() - p_[2]] = m.group(1).decode('utf-16-le')
+msg_getters = collections.defaultdict(list)
+for m in re.finditer(rb'[\x48\x4c]\x8d[\x05\x0d\x15\x1d\x25\x2d\x35\x3d](.{4})', code, re.S):
+    stem = msg_text.get(text[3] + m.end() + struct.unpack('<i', m.group(1))[0])
+    f = owner(text[3] + m.start()) if stem else None
+    if f is not None and functions[f][1] <= 60 and how.get(f) != 'hand':
+        msg_getters[stem].append(f)
+for stem, fs in msg_getters.items():
+    for f in fs:
+        names[f] = f'MsgRepository::get{stem[0].upper()}{stem[1:]}' + (f'_{f:x}' if len(fs) > 1 else '')
+        how[f] = 'shape'
+print('message getters', sum(map(len, msg_getters.values())))
+# 9b3. std::vector of pointers: one body, copied for every element type, around the allocator's failure text.
+VECTOR_REALLOCATE = 0x12a5130
+model = code[VECTOR_REALLOCATE - text[3]:VECTOR_REALLOCATE - text[3] + functions[VECTOR_REALLOCATE][0]]
+vectors = 0
+for f, (size_, count_) in functions.items():
+    if count_ != 66 or size_ != len(model) or not text[3] <= f < text[3] + text[5] or how.get(f) == 'hand':
+        continue
+    body = code[f - text[3]:f - text[3] + size_]
+    if body[:8] == model[:8] and sum(x != y for x, y in zip(body, model)) < 30:
+        names[f] = f'std::vector::reallocate_{f:x}'
+        how[f] = 'shape'
+        vectors += 1
+print('vector reallocate', vectors)
 # 9c. Shader passes: a function that loads shader programs by name in wide text sets up that pass. Without a
 # role of its own it takes the name the programs share, or its first.
 PROGRAM = re.compile(rb'(?:[A-Za-z0-9_]\0){3,70}\.\0[a-z]\0p\0o\0\0\0')
@@ -1163,10 +1194,14 @@ for f, stems in programs.items():
     how[f] = 'shape'
     shader_passes += 1
 print('shader passes', shader_passes)
+names.update(hand)
+how.update(dict.fromkeys(hand, 'hand'))
 with open(OUT / 'names.tsv', 'w') as out:
     out.write('address\tname\thow\tlibrary\tsource\n')
     for f in sorted(set(names) | set(files)):
         out.write(f'{f:#x}\t{names.get(f, "")}\t{how.get(f, "")}\t{modules.get(f, ("", ""))[0]}\t{files.get(f, "")}\n')
+tally = collections.Counter(how.values())
+named_target = {f for f in names if modules.get(f, ('', ''))[0] in TARGET}
 print('named', len(names), dict(tally))
 print('named in FromSoftware or unlabelled code', len(named_target), 'of which longer than 5 instructions', len(named_target & set(big)), 'of', len(big))
 print('with a source file', len(files), 'of', len(functions))
