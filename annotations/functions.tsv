@@ -47,9 +47,13 @@
 0xcedd90	EzMenuDlgObj::getBool	guess	calls	
 0xd1acd0	FMOD::CriticalSection::enter	sure	calls
 0xd1acf0	FMOD::CriticalSection::leave	sure	calls
+0xe2e850	CG::TextureCube::release	guess	calls	
+0xe2e9b0	CG::TextureCube::createDepth	guess	calls	
 0xe2f440	CG::VolumeRenderTarget::create	guess	calls	
 0xe2fb10	CG::CubeRenderTarget::create	guess	calls	
 0xe48060	DL::Crc64::update	sure	calls	
+0xe48400	TextureReadback::update	guess	calls	
+0xe49180	TextureReadback::readTile	guess	calls	
 0xe4b060	FD4::ConstantBuffer::setVectors	sure	calls	void (FD4::ConstantBuffer *, uint32_t first_register, uint32_t count, const float (*)[4])
 0xe553b0	FD4::MaterialTextures::bind	guess	calls	bool (FD4::MaterialTextures *, void *pass)
 0xe571d0	FD4::Material::begin	guess	calls	void (FD4::Material *, int32_t technique, void *pass)
@@ -403,6 +407,8 @@
 0x212d390	Lua::str_concat	guess	message	
 0x212e360	Lua::auxsort	guess	message	
 0x21305a0	Lua::luaB_print#2	guess	message	
+0x21650d0	CG::toSrgbFormat	guess	calls	
+0x2165150	CG::Device::checkMapAccess	guess	calls	
 0x2165300	CG::Device::create	guess	calls	
 0x2165c10	CG::Device::createBuffer	sure	calls	
 0x2165f90	CG::Device::createTexture2D	sure	calls	
@@ -414,6 +420,7 @@
 0x2166d00	CG::Device::createVertexShader	guess	calls	
 0x21672d0	CG::Device::createPixelShader	guess	calls	
 0x21673e0	CG::Device::createShaderStage	guess	calls	
+0x2168660	CG::DeviceContext::copyResource	guess	calls	
 0x2168a20	CG::GraphicsContext::updateConstantBuffer	guess	calls
 0x2168ca0	CG::GraphicsContext::setTopology	sure	calls	void (CG::GraphicsContext *, CG::DrawState *, uint32_t topology)
 0x2168cb0	CG::GraphicsContext::setIndexBuffer	sure	calls	void (CG::GraphicsContext *, CG::DrawState *, const CG::Buffer *, uint32_t format, uint32_t offset)
@@ -434,6 +441,8 @@
 0x2169900	CG::GraphicsContext::drawIndexedInstanced	sure	calls	void (CG::GraphicsContext *, const CG::DrawState *, uint32_t index_count, uint32_t instances, uint32_t first_index, uint32_t base_vertex)
 0x21699d0	CG::GraphicsContext::drawIndirect	sure	calls	void (CG::GraphicsContext *, const CG::DrawState *, const CG::Buffer *arguments, uint32_t offset)
 0x2169ab0	CG::GraphicsContext::drawIndexedIndirect	sure	calls	void (CG::GraphicsContext *, const CG::DrawState *, const CG::Buffer *arguments, uint32_t offset)
+0x2169c30	CG::DeviceContext::map	guess	calls	
+0x2169eb0	CG::DeviceContext::unmap	guess	calls	
 0x2171d60	CG::Device::allocateTexture2DStorage	guess	calls	
 0x21723a0	CG::Device::allocateTexture3DStorage	guess	calls	
 0x217fba0	CG::Texture3D::create	guess	calls	
@@ -467,6 +476,7 @@
 0x21b8710	FD4::JobSystem::runAndWait	guess	calls	void (FD4::JobGroup *)
 0x21b9f40	GXGUITexture::GXGUITexture	sure	calls	
 0x21ba300	GXGUITexture::createLinearView	guess	calls	
+0x21bf550	DdsTextureLoader::createTexture	guess	calls	
 0x21c0240	TpfResCap::setTextureIndex	guess	calls	
 0x21c02b0	TpfResCap::createTexture	guess	calls	
 0x21c0320	TpfResCap::createDeviceTexture	guess	calls	
@@ -530,8 +540,15 @@
 0x26ce110	CG::ResourceBinder::endComputePass	guess	calls
 0x26d2230	CG::OutputMergerState::apply	sure	calls	void (CG::OutputMergerState *, CG::GraphicsContext *, const CG::DrawState *)
 0x26d3370	CG::RasterizerState::apply	sure	calls	void (CG::RasterizerState *, CG::GraphicsContext *, const CG::DrawState *)
+0x26d7510	DdsFile::isValid	guess	calls	
+0x26d7530	DdsFile::getDxgiFormat	guess	calls	
+0x26d7a20	DdsFile::getArraySize	guess	calls	
+0x26d7a50	DdsFile::getRowPitch	guess	calls	
+0x26d7ab0	DdsFile::getSlicePitch	guess	calls	
+0x26d7b40	DdsFile::getSurfaceOffset	guess	calls	
 0x26d9070	TpfFile::createTexture2D	guess	calls	
 0x26d9850	TpfFile::createTexture3D	guess	calls	
+0x26d9fe0	TpfFile::createTexture2DArray	guess	calls	
 0x26db1b0	CG::UploadRing::allocate	guess	calls	int (CG::UploadRing *, void **memory, CG::GraphicsContext *, uint32_t size)
 0x26db300	CG::UploadRing::finish	guess	calls	void (CG::UploadRing *, const CG::Buffer **buffer, uint32_t *offset, CG::GraphicsContext *)
 0x273df10	DL::WStringNode::construct	guess	calls	
