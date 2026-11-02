@@ -1231,7 +1231,12 @@ SHAPE_ROLES = {0x26f4cb0: 'destructor', 0x26f4d00: 'deletingDestructor', 0x26f19
                0x13e7880: 'std::vector::insert', 0x21e2490: 'std::unordered_map::insert',
                0x21e21b0: 'std::unordered_map::erase', 0x1f11c80: 'ParamRowRef::find',
                0x1003f00: 'FD4DebugMenu::addItem', 0x1007250: 'FD4DebugMenu::addItem',
-               0x2b38490: 'serialize', 0x2a84710: 'copyTo'}
+               0x2b38490: 'serialize', 0x2a84710: 'copyTo', 0x26f4c40: 'create', 0x2717050: 'std::vector::swap',
+               0x23eef90: 'Scaleform::AS3::thunkGetString', 0x23eee90: 'Scaleform::AS3::thunkGetObject',
+               0x2439370: 'Scaleform::AS3::thunkGetValue', 0x240ef50: 'Scaleform::AS3::ForEachChild_GC',
+               0x240ed90: 'Scaleform::AS3::ForEachChild_GC', 0x29c2150: 'debugDrawLine',
+               0x29c3100: 'debugDrawLine', 0x29c4d40: 'debugDrawLine', 0x1ed6c30: 'DL::tryTransaction',
+               0xd06670: 'NexusRevolution::callById', 0xd1c560: 'NexusRevolution::callById'}
 WEAK_ROLE = ('helper', 'near', 'unit', 'method', 'vf', 'writes_vtable', 'shared', 'fn', '_Do_call')
 role_of = lambda f: re.sub(r'_[0-9a-f]{5,}$', '', names.get(f, '').split('::')[-1])
 objdump = shutil.which('llvm-objdump') or shutil.which('objdump')
