@@ -1227,7 +1227,11 @@ print('shader passes', shader_passes)
 # role can be read once in the code (SHAPE_ROLES). Short bodies say too little.
 SHAPE_ROLES = {0x26f4cb0: 'destructor', 0x26f4d00: 'deletingDestructor', 0x26f1910: 'create',
                0x2880000: 'deletingDestructor', 0x1dea0: 'deletingDestructorThunk',
-               0x2405a00: 'deletingDestructorThunk', 0x2611020: 'std::tree::eraseRange'}
+               0x2405a00: 'deletingDestructorThunk', 0x2611020: 'std::tree::eraseRange',
+               0x13e7880: 'std::vector::insert', 0x21e2490: 'std::unordered_map::insert',
+               0x21e21b0: 'std::unordered_map::erase', 0x1f11c80: 'ParamRowRef::find',
+               0x1003f00: 'FD4DebugMenu::addItem', 0x1007250: 'FD4DebugMenu::addItem',
+               0x2b38490: 'serialize', 0x2a84710: 'copyTo'}
 WEAK_ROLE = ('helper', 'near', 'unit', 'method', 'vf', 'writes_vtable', 'shared', 'fn', '_Do_call')
 role_of = lambda f: re.sub(r'_[0-9a-f]{5,}$', '', names.get(f, '').split('::')[-1])
 objdump = shutil.which('llvm-objdump') or shutil.which('objdump')
