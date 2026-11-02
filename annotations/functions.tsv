@@ -62,6 +62,7 @@
 0xfaebc0	FD4::ScopedProfile::end	guess	calls	
 0xfe68f0	FD4::ResRepository::find	sure	calls	
 0xfe6a70	FD4::ResRepository::insert	guess	calls	
+0x104ac30	FD4HkEzDrawState::reset	guess	calls	
 0x1070960	Gnm::Buffer::initAsConstantBuffer	sure	pm4	void (Gnm::Buffer *, uint64_t address, uint32_t size)
 0x1072ed0	Gnm::DrawCommandBuffer::setScratchSize	sure	pm4
 0x1072fd0	Gnm::DrawCommandBuffer::setRenderTargetMask	sure	pm4
@@ -161,6 +162,7 @@
 0x1d34880	FD4::Skeleton::getBoneMatrices	guess	calls	uint32_t (const FD4::Skeleton *, float (*matrices)[12], uint32_t count, uint32_t first)
 0x1d37400	FD4::ModelInstance::updateBoundsAndSkinning	guess	calls	void (FD4::ModelInstance *, void *)
 0x1d3ae20	FD4::Skeleton::getWorldBoneMatrices	guess	calls	int (const FD4::Skeleton *, float (*matrices)[12], uint32_t count, uint32_t first)
+0x1d3c500	SprjFD4Location::updateTree	guess	calls	
 0x1d69110	FD4::Material::resolveTextures	guess	calls	
 0x1d6f9d0	FD4::ModelInstance::submit	guess	calls	void (FD4::ModelInstance *, void *, void *render_parameters)
 0x1d82910	CSGXTextureCreateFragment::run	guess	calls	
@@ -344,6 +346,7 @@
 0x2744e80	EzStateEventImpl::dispatch	sure	source	
 0x2762d00	DL::WString::format	sure	message	
 0x2773910	EzStateExpression::evaluate	sure	calls	
+0x277cb70	FXCurve::sampleLinear4	sure	calls	
 0x27c0e00	DL::WString::fromWideChars	sure	calls	
 0x28ec760	FX::PrimitiveRenderer::draw#1	guess	calls
 0x28efc10	FX::PrimitiveRenderer::draw#2	guess	calls
