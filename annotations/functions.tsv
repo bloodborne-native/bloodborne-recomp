@@ -75,7 +75,13 @@
 0xe57ad0	FD4::Material::end	guess	calls	void (FD4::Material *, void *pass)
 0xe5d1d0	LensSimuPass::enqueue	guess	calls	
 0xe60a20	LensSimu2Pass::enqueue	guess	calls	
+0xea8d80	GXSsr::loadShaders	guess	calls	
+0xeaad00	GXSss::loadShaders	guess	calls	
+0xeae5f0	GXScreenSpaceShadow::loadShaders	guess	calls	
 0xeb5340	ToneMapPass::enqueue	guess	calls	
+0xebb960	GXWaterInteractionHeightMap::loadShaders	guess	calls	
+0xebe910	GXOceanWave::loadShaders	guess	calls	
+0xec4190	GXOceanWave::loadShaders#2	guess	calls	
 0xec9000	CG::CullVolume::testBox	guess	calls	bool (const CG::CullVolume *, const float (*box)[8])
 0xedb160	FD4::MaterialParameters::applyByName	guess	calls	
 0xedca60	FD4::Material::applyInstanceParameters	guess	calls
@@ -698,8 +704,10 @@
 0x21880a0	Class_535f4f0::updateFadesRange	guess	calls	
 0x2190be0	CG::ImmediateDraw::drawUserPrimitives	sure	calls	void (CG::ImmediateDraw *, uint32_t topology, uint32_t vertex_count, const void *vertices, uint32_t stride)
 0x2190d30	CG::ImmediateDraw::drawIndexedUserPrimitives	sure	calls	void (CG::ImmediateDraw *, uint32_t topology, uint32_t min_index, uint32_t max_index, uint32_t index_count, const void *indices, uint32_t index_format, const void *vertices, uint32_t stride)
+0x21916d0	GXSimple::loadShaders	guess	calls	
 0x2192660	CG::Resource::deferRelease	guess	calls	
 0x2194580	GXGraphics::initialize	guess	calls	
+0x219a170	GXDrawSystem::initialize	guess	calls	
 0x219ef50	CG::DepthTarget::release	sure	calls	
 0x219f130	CG::DepthTarget::create	sure	calls	
 0x21a32f0	CG::RenderTarget::create	sure	calls	
@@ -744,6 +752,7 @@
 0x21d0640	CG::MeshRenderer::drawMesh	sure	calls	void (const CG::Model *model, void *pass, const CG::Mesh *mesh, const void *, const void *, uint32_t instances)
 0x21d2dd0	PpfxBridge::initialize	guess	calls	
 0x2264d20	Class_5360b30::createCubeTargets	guess	calls	
+0x2279cf0	GXWaterInteractionNormalMap::loadShaders	guess	calls	
 0x227e230	FD4::SceneNode::collect	guess	calls	void (FD4::SceneNode *, void *pass)
 0x2289bb0	CG::CommandRing::allocate	guess	calls	
 0x2289db0	RenderCommandList::allocate	guess	calls	
@@ -751,11 +760,13 @@
 0x228e3c0	RenderCommandList::end	guess	calls	
 0x228e430	RenderCommandList::begin	guess	calls	
 0x228e6a0	RenderCommandList::push	guess	calls	
+0x229a680	GXDeferred::loadShaders	guess	calls	
 0x22bc720	FD4::LightRenderer::drawLightBatches	sure	calls
 0x22bd110	FD4::LightRenderer::drawLightBatches#2	guess	calls
 0x22bdb00	FD4::LightRenderer::drawLightBatches#3	guess	calls
 0x22be4f0	FD4::LightRenderer::drawLightBatches#4	guess	calls
 0x22ec420	Class_53b8ad0::createResources	guess	calls	
+0x230f420	GXFfxpointSprite::loadShaders	guess	calls	
 0x2348ca0	GUITextureViewer::setTexture	guess	calls	
 0x2382eb0	FD4::TextRenderer::drawString	guess	calls
 0x23ee1e0	Scaleform::RefCountBaseGC::release	guess	calls	
