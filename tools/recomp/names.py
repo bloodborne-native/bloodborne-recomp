@@ -1514,6 +1514,8 @@ SLOT_ROLES = [(re.compile(r'FXEvaluatable.*::vf1'), 'evaluate'),
               # File capsules: slot 7 passes the loaded data on (two read). Location nodes: slot 8 copies a range of 0x30-byte
               # matrices out (one read).
               (re.compile(r'\w+FileCap::vf7'), 'onFileLoaded'), (re.compile(r'SprjFD4LocationNode_\w+::vf8'), 'getMatrices'),
+              # Menu dialogs: slot 32 takes a control event (2, 6, 8) and a value (two read, same comparisons).
+              (re.compile(r'FrpgMenuDlg\w*::vf32'), 'onControlEvent'),
               # A method invoker calls its member function pointer and stores the result.
               (re.compile(r'DLMethodInvoker_\w+::vf0'), 'invoke')]
 slot_named = 0
