@@ -47,6 +47,7 @@
 0xcedd90	EzMenuDlgObj::getBool	guess	calls	
 0xd1acd0	FMOD::CriticalSection::enter	sure	calls
 0xd1acf0	FMOD::CriticalSection::leave	sure	calls
+0xe2f440	CG::VolumeRenderTarget::create	guess	calls	
 0xe48060	DL::Crc64::update	sure	calls	
 0xe4b060	FD4::ConstantBuffer::setVectors	sure	calls	void (FD4::ConstantBuffer *, uint32_t first_register, uint32_t count, const float (*)[4])
 0xe553b0	FD4::MaterialTextures::bind	guess	calls	bool (FD4::MaterialTextures *, void *pass)
@@ -55,6 +56,9 @@
 0xe57ad0	FD4::Material::end	guess	calls	void (FD4::Material *, void *pass)
 0xec9000	CG::CullVolume::testBox	guess	calls	bool (const CG::CullVolume *, const float (*box)[8])
 0xedca60	FD4::Material::applyInstanceParameters	guess	calls
+0xf2dfe0	Class_52eb030::createVolumeTarget	guess	calls	
+0xf2e160	Class_52eb030::createVolumeView	guess	calls	
+0xf33a00	Class_52eb030::createNoiseTexture	guess	calls	
 0xf5d720	DoubleBuffer::swap	guess	calls	
 0xf6f340	FD4::IdTable::find	guess	calls	
 0xf84700	FD4ResCap::FD4ResCap	sure	calls	
@@ -391,6 +395,8 @@
 0x2169ab0	CG::GraphicsContext::drawIndexedIndirect	sure	calls	void (CG::GraphicsContext *, const CG::DrawState *, const CG::Buffer *arguments, uint32_t offset)
 0x2171d60	CG::Device::allocateTexture2DStorage	guess	calls	
 0x21723a0	CG::Device::allocateTexture3DStorage	guess	calls	
+0x217fba0	CG::Texture3D::create	guess	calls	
+0x217fe60	CG::Texture3D::createShaderView	guess	calls	
 0x217fef0	CG::Texture::createFromSource#2	guess	calls	
 0x2190be0	CG::ImmediateDraw::drawUserPrimitives	sure	calls	void (CG::ImmediateDraw *, uint32_t topology, uint32_t vertex_count, const void *vertices, uint32_t stride)
 0x2190d30	CG::ImmediateDraw::drawIndexedUserPrimitives	sure	calls	void (CG::ImmediateDraw *, uint32_t topology, uint32_t min_index, uint32_t max_index, uint32_t index_count, const void *indices, uint32_t index_format, const void *vertices, uint32_t stride)
@@ -399,11 +405,15 @@
 0x219ef50	CG::DepthTarget::release	sure	calls	
 0x219f130	CG::DepthTarget::create	sure	calls	
 0x21a32f0	CG::RenderTarget::create	sure	calls	
+0x21a3a40	CG::RenderTarget::attachTexture	guess	calls	
 0x21a47e0	CG::ShaderStage::recreate	guess	calls	
 0x21a6a00	CG::TextureRegistry::removeAndRelease	sure	calls	
 0x21a6c00	CG::Texture2D::create	sure	calls	
+0x21a7230	CG::Texture2D::createShaderView	guess	calls	
+0x21a7850	CG::Texture2D::createShaderViewFor	guess	calls	
 0x21a7d70	CG::Texture::createFromSource	guess	calls	
 0x21a7f20	CG::TextureCube::create	sure	calls	
+0x21a8140	CG::TextureCube::createShaderView	guess	calls	
 0x21ac690	CG::ResourceTotals::addTexture2D	sure	calls	
 0x21ac7d0	CG::ResourceTotals::addTextureCube	sure	calls	
 0x21ac900	CG::ResourceTotals::addRenderTarget	sure	calls	
