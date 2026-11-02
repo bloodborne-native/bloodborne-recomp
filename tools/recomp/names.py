@@ -1791,6 +1791,32 @@ for f in functions:
         names[f], how[f] = f'{next(iter(owners))}::{kind}_{f:x}', 'helper'
         placed_late[kind] += 1
 print('no reference at all', unused, 'placed by their one owner', dict(placed_late))
+# 26. Event conditions: slot 5 writes the object's state for a debug page and starts with its name, "Condition:EndFlow".
+# Slot 2 tests the condition, slot 6 raises the event (two read).
+CONDITION_TEXT = re.compile(rb'Condition:'.decode().encode('utf-16-le') + rb'((?:[A-Za-z0-9_]\0)+)\0\0')
+conditions = 0
+for table, run in vtables.items():
+    if len(run) != 7 or run[5] not in functions:
+        continue
+    start = run[5] - text0[3]
+    label = None
+    for m in re.finditer(rb'[\x48\x4c]\x8d[\x05\x0d\x15\x1d\x25\x2d\x35\x3d](.{4})', code0[start:start + functions[run[5]][0]], re.S):
+        target = run[5] + m.end() + int.from_bytes(m.group(1), 'little', signed=True) - text0[3] + text0[2]
+        text = CONDITION_TEXT.match(image, target)
+        if text:
+            label = 'SprjEventCondition_' + text.group(1).decode('utf-16-le')
+            break
+    if not label:
+        continue
+    conditions += 1
+    old = f'Class_{table:x}::'
+    for f, name in list(names.items()):
+        if name.startswith(old) and how.get(f) != 'hand':
+            names[f] = label + '::' + name[len(old):]
+    for index, role in ((2, 'check'), (5, 'describe'), (6, 'raise')):
+        if how.get(run[index]) != 'hand':
+            names[run[index]], how[run[index]] = f'{label}::{role}', 'shape'
+print('event conditions', conditions)
 # 24b. A helper or near label far from everything solid in its class is a template or a shared utility that a class happens
 # to use (two of three read were: a vector assignment, a number parser). Those lose the label: 1 MiB, the width of a large
 # object file, measured against vtable slots, constructors and hand names.
