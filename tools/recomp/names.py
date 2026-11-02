@@ -1537,6 +1537,45 @@ for f, name in list(names.items()):
                 how[f] = 'shape'
                 slot_named += 1
 print('slot roles', slot_named)
+# 18. Parameter tables: SoloParamRepository keeps its tables 72 bytes apart from offset 112, in the order of a table of
+# wide names at 0x5355ad0. A function that reaches one table works with that parameter (read against the names of the
+# code using them: lock cameras, character creation, face data). Short ones are its accessors; on longer unnamed ones
+# the table is only a hint, like rule 15.
+PARAM_TABLE, PARAM_REPOSITORY = 0x5355ad0, 0x5540340
+param_names = []
+while PARAM_TABLE + len(param_names) * 16 in slots:
+    q = slots[PARAM_TABLE + len(param_names) * 16]
+    for p_ in loads:
+        if p_[3] <= q < p_[3] + p_[5]:
+            param_names.append(image[p_[2] + q - p_[3]:p_[2] + q - p_[3] + 80].split(b'\0\0')[0].replace(b'\0', b'').decode('ascii', 'replace'))
+            break
+param_users = set()
+for m in re.finditer(rb'[\x48\x4c][\x8b\x83\x8d][\x05\x0d\x15\x1d\x25\x2d\x35\x3d](.{4})', code, re.S):
+    if PARAM_REPOSITORY in (text[3] + m.end() + struct.unpack('<i', m.group(1))[0], text[3] + m.end() + 1 + struct.unpack('<i', m.group(1))[0]):
+        f = owner(text[3] + m.start())
+        if f is not None:
+            param_users.add(f)
+param_named = 0
+for f in param_users:
+    at = f - text[3]
+    body = code[at:at + functions[f][0]]
+    seen = {struct.unpack('<i', m.group(1))[0] for m in re.finditer(rb'\x83[\xb8-\xbf](.{4})\x00', body, re.S)}
+    seen |= {struct.unpack('<i', m.group(1))[0] - 8 for m in re.finditer(rb'[\x48\x4c]\x8b[\x80-\xbf](.{4})', body, re.S)}
+    seen = [x for x in seen if 112 <= x < 112 + 72 * len(param_names) and (x - 112) % 72 == 0]
+    if len(seen) != 1:
+        continue
+    table = param_names[(seen[0] - 112) // 72]
+    name = names.get(f, '')
+    if name.startswith('SoloParamRepository::'):
+        names[f] = f"SoloParam::{table}::{name.split('::')[1].rsplit('_', 1)[0]}_{f:x}"
+    elif not name and functions[f][1] <= 60:
+        names[f], how[f] = f'SoloParam::{table}::access_{f:x}', 'shape'
+    elif not name:
+        names[f], how[f] = f'Says::{table}_{f:x}', 'text'
+    else:
+        continue
+    param_named += 1
+print('parameter tables', len(param_names), 'functions', param_named)
 # 15. Text: a function no rule placed but that loads wide text says what it deals with. That is a hint, not its
 # role, so the name says only that (Says::), it never replaces another name, and it counts as placed, not identified.
 SAYS = re.compile(rb'(?:[\x20-\x7e]\0){5,60}\0\0')
