@@ -979,6 +979,28 @@ with open(OUT / 'units.tsv', 'w') as out:
 tally = collections.Counter(how.values())
 named_target = {f for f in names if modules.get(f, ('', ''))[0] in TARGET}
 big = [f for f, (s, c) in functions.items() if c > 5 and modules.get(f, ('', ''))[0] in TARGET and f not in static_inits]
+# 8d. The standard library says what it is when it fails, and a short function that says only that is its
+# template. Longer ones have the template inlined in real work (samples read by hand), so each has a limit.
+STD_TEXT = {'vector<T> too long': 'vector::_Xlen', 'deque<T> too long': 'deque::_Xlen', 'string too long': 'string::_Xlen',
+            'invalid vector<T> subscript': 'vector::_Xran', 'invalid string position': 'string::_Xran',
+            'list<T> too long': 'list::insert', 'map/set<T> too long': 'tree::insert',
+            'invalid map/set<T> iterator': 'tree::iterator'}
+STD_LIMIT = {'list::insert': 70, 'tree::insert': 260, 'tree::iterator': 420}
+std_roles = 0
+for f in functions:
+    said = {STD_TEXT[s] for s in by_function.get(f, ()) if s in STD_TEXT}
+    name = names.get(f, '')
+    if len(said) == 1 and (not name or how.get(f) in ('near', 'unit', 'unitfile', 'helper', 'vtable', 'this') or name.startswith(('Class_', 'shared_'))):
+        role = next(iter(said))
+        if functions[f][1] > STD_LIMIT.get(role, 60):
+            continue
+        if role.endswith('_Xlen') and functions[f][1] > 8:
+            role = role.replace('_Xlen', 'grow')
+        names[f] = f'std::{role}_{f:x}'
+        how[f] = 'shape'
+        std_roles += 1
+print('standard library', std_roles)
+
 # 9b. FD4Step is a template, so each step class has its own copy of its update and its debug page, which say
 # the same wide text. They were read by hand; a copy keeps its class, and takes the template's name without one.
 STEP_TEXT = {'State Finished.(No StepMethod is Executing.)': 'stepUpdate', 'StepMethodList': 'stepDebugPage'}
