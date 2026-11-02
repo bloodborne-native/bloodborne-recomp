@@ -328,6 +328,38 @@ for name, where in targets_of_text.items():
             methods[target][name] += 1
 globals_ = {a: v.most_common(1)[0][0] for a, v in singleton_votes.items() if v.most_common(1)[0][1] * 3 >= sum(v.values()) * 2}
 print('singleton globals', len(globals_), 'names', len(set(globals_.values())))
+# Later calls on the same object: a register that holds the global's address stays in the function,
+# and each `mov rdi, [register]` before a call makes the next call one of the class's methods.
+MOV_RDI = {b'\x49\x8b\x3e': 'r14', b'\x49\x8b\x3f': 'r15', b'\x48\x8b\x3b': 'rbx', b'\x49\x8b\x3c\x24': 'r12',
+           b'\x49\x8b\x7d\x00': 'r13', b'\x48\x8b\x38': 'rax', b'\x48\x8b\x39': 'rcx', b'\x48\x8b\x3a': 'rdx'}
+LEA_REG = {(0x4c, 0x35): 'r14', (0x4c, 0x3d): 'r15', (0x48, 0x1d): 'rbx', (0x4c, 0x25): 'r12', (0x4c, 0x2d): 'r13',
+           (0x48, 0x05): 'rax', (0x48, 0x0d): 'rcx', (0x48, 0x15): 'rdx'}
+FIRST = re.compile(rb'\x48\x8d[\x3d\x7c\x7d\xbd]|\x48\x89[\xc7\xd7\xdf\xcf\xf7\xef]|\x4c\x89[\xc7\xcf\xd7\xdf\xe7\xef\xf7\xff]|\x31\xff')
+later = 0
+for address, name in globals_.items():
+    for site in sites.get(address, ()):
+        i = site - base_va
+        register = LEA_REG.get((code[i], code[i + 2]))
+        f = owner(site)
+        if not register or f is None:
+            continue
+        end = f + functions[f][0] - base_va
+        for form, reg in MOV_RDI.items():
+            if reg != register:
+                continue
+            at = code.find(form, i + 7, end)
+            while at >= 0:
+                after = at + len(form)
+                call = code.find(b'\xe8', after, after + 40)
+                # The jump over the assert, a load for the assert's message, then the call itself.
+                if call >= 0 and not FIRST.search(code[after:call]):
+                    rel, = struct.unpack_from('<i', code, call + 1)
+                    target = base_va + call + 5 + rel
+                    if target in functions and target != 0x20b55b0:
+                        methods[target][name] += 1
+                        later += 1
+                at = code.find(form, after, end)
+print('later calls on singletons', later)
 found = 0
 for f, votes in methods.items():
     top, count = votes.most_common(1)[0]
@@ -369,6 +401,48 @@ for depth in range(8):
             give(f, f'{labels.pop()}::helper_{f:x}', 'helper')
             found += 1
     print('helpers, pass', depth + 1, found)
+    if not found:
+        break
+
+# 6b. this: a method keeps its first argument in a register and passes it on, so the function it calls
+# with that register as the first argument is a method of the same class (or a parent's).
+SAVES = {b'\x48\x89\xfb': b'\x48\x89\xdf', b'\x49\x89\xfe': b'\x4c\x89\xf7', b'\x49\x89\xff': b'\x4c\x89\xff',
+         b'\x49\x89\xfc': b'\x4c\x89\xe7', b'\x49\x89\xfd': b'\x4c\x89\xef'}
+THIS_LABEL = ('class', 'vtable', 'helper', 'singleton', 'this', 'file', 'message')
+passes = collections.defaultdict(set)
+for f, (size, _) in functions.items():
+    i = f - base_va
+    end = i + size
+    if end > len(code):
+        continue
+    head = code[i:i + 48]
+    for save, load in SAVES.items():
+        if head.find(save) < 0:
+            continue
+        at = code.find(load, i, end)
+        while at >= 0:
+            after = at + 3
+            call = code.find(b'\xe8', after, after + 28)
+            if call >= 0 and call + 5 <= end and not FIRST.search(code[after:call]):
+                rel, = struct.unpack_from('<i', code, call + 1)
+                target = base_va + call + 5 + rel
+                if target in functions and target != f:
+                    passes[target].add(f)
+            at = code.find(load, after, end)
+print('this passes', sum(len(v) for v in passes.values()), 'to', len(passes))
+for round_ in range(6):
+    found = 0
+    for target, fromf in passes.items():
+        if target in names and not names[target].startswith('shared_'):
+            continue
+        labels = collections.Counter(names[g].split('::')[0] for g in fromf if g in names and how.get(g) in THIS_LABEL and '::' in names[g])
+        if labels:
+            top, count = labels.most_common(1)[0]
+            if count * 4 >= sum(labels.values()) * 3:
+                if target in names:
+                    del names[target]
+                found += give(target, f'{top}::method_{target:x}', 'this')
+    print('this, pass', round_ + 1, found)
     if not found:
         break
 
