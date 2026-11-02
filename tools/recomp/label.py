@@ -13,6 +13,8 @@ the tables of tools/recomp/scan.c and tools/recomp/pointers.py (docs/RECOMPILATI
    or the library of its callers, or of its callees, when all of them have one and it is the same.
    Most functions left after 1 and 2 are small and have no direct caller.
 4. Neighbours again, for the runs 3 left between two functions of one library.
+5. The linker put the middleware first: before the first FromSoftware function no label is theirs
+   (none of about 30,000), so what is left there takes the label before it.
 
 --check hides a tenth of the labelled functions, runs 3 again and prints how many of them it gives
 back and how many of those match: a measure of 3's agreement with 1 and 2, not of its truth.
@@ -210,6 +212,17 @@ def main():
             for a in run:
                 label[a], how[a] = last, 'between'
         last, run = label[address], []
+
+    # The middleware comes first in the image.
+    first = next(a for a, _ in functions if label.get(a) in ('game', 'fd4', 'dantelion2'))
+    last = next((label[a] for a, _ in functions if a in label), None)
+    for address, _ in functions:
+        if address >= first:
+            break
+        if address in label:
+            last = label[address]
+        else:
+            label[address], how[address] = last, 'region'
 
     totals = collections.Counter()
     sizes = collections.Counter()
