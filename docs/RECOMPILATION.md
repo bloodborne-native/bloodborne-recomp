@@ -260,16 +260,17 @@ because the labels are approximate.
 **What the executable gives by itself.** `tools/recomp/names.py` finds the vtables in the data and
 the functions that write them, which places functions in classes without reading them, and
 spreads to a class's helpers through the call graph. Messages name few functions directly (about 580),
-and only 61 classes have a name that holds up: the class names in messages mostly belong to singletons
-other classes use. The names it writes stay with the player's copy; what is checked goes in
+and the class names in messages mostly belong to singletons other classes use. The names it writes stay with the player's copy; what is checked goes in
 `annotations/functions.tsv`.
 
-**DLRuntimeClass.** The engine has its own type information: startup code stores a class's name in an
-object of its own and links it to its parent's, which gives 1,410 class names (`GUIButton`,
-`EzMenuDialog`). Most vtables of that shape belong to these objects, not to the class's instances, so
-tying a name to the vtable objects use is still open: a first attempt linked 12. On this compiler
-objects hold a vtable's address past two header slots, and with those counted there are 12,970 vtables
-holding 80,317 functions.
+**DLRuntimeClass.** The engine has its own type information, which gives 1,410 class names (`GUIButton`,
+`EzMenuDialog`). Each class keeps its class object behind a pointer in a global, and code tests that
+pointer before creating the object, which finds the global for 1,404 of them. The class's vtable reads the
+same global in its first slot, directly or through a getter, and the class object's own vtable in its
+tenth. That names 1,676 instance vtables of 1,112 classes with no conflict, and 1,256 class objects:
+29,696 functions now sit in a class with a real name, and all nine already named by hand agree. On this
+compiler objects hold a vtable's address past two header slots, and with those counted there are 12,970
+vtables holding 80,317 functions.
 
 About 1,170 classes build a heap allocator of their own in place from an early slot (`SprjMemoryHeapAllocator`),
 so a vtable a slot writes is not the class's description.

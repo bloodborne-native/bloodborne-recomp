@@ -176,14 +176,14 @@ for a in order:
     elif last is not None:
         gap.append(a)
 
-# 4a. DLRuntimeClass: the engine's own type information. Startup code calls a class's getter and stores
-# two text pointers at +0x40 and +0x48 of the object it returns, then links it to its parent's. The
-# getter is also a virtual function of the class, which ties a vtable to its name.
+# 4a. DLRuntimeClass: the engine's own type information. A class's object is created once, behind a pointer
+# in a global: code tests the pointer and skips creation if it is set, then stores two text pointers at
+# +0x40 and +0x48 of the object and links it to its parent's. The class's vtable reads the same global in
+# its first slot, and the object's own vtable in its tenth, which ties vtables to names.
 text0 = loads[0]
 code0 = image[text0[2]:text0[2] + text0[5]]
 RUNTIME = re.compile(rb'[\x48\x4c]\x8d[\x05\x0d\x15\x1d\x25\x2d\x35\x3d](.{4})[\x48\x49\x4c\x4d]\x89[\x40-\x7f]\x40', re.S)
 SECOND = re.compile(rb'[\x48\x4c]\x8d[\x05\x0d\x15\x1d\x25\x2d\x35\x3d](.{4})[\x48\x49\x4c\x4d]\x89[\x40-\x7f]\x48', re.S)
-runtime_getters = {}
 def wide_or_text(address):
     for p_ in loads:
         if p_[3] <= address < p_[3] + p_[5]:
@@ -195,25 +195,58 @@ def wide_or_text(address):
             if wide:
                 return wide.group(0)[:-2].decode('utf-16-le')
     return None
+runtime_sites = []
 for m in RUNTIME.finditer(code0):
     i = m.start()
-    near = SECOND.search(code0, i + 11, i + 40)
-    if not near:
-        continue
-    one, = struct.unpack('<i', m.group(1))
-    two, = struct.unpack('<i', near.group(1))
-    first = wide_or_text(text0[3] + i + 7 + one)
-    second = wide_or_text(text0[3] + near.start() + 7 + two)
-    if not first:
-        continue
-    call = code0.rfind(b'\xe8', max(0, i - 40), i)
-    getter = None
-    if call >= 0:
-        rel, = struct.unpack_from('<i', code0, call + 1)
-        getter = text0[3] + call + 5 + rel
-    runtime_getters[getter or -i] = (first, second)
-print('DLRuntimeClass classes', len(runtime_getters), 'distinct names', len({v[0] for v in runtime_getters.values()}), list(runtime_getters.values())[:14])
-give_runtime = {g: v for g, v in runtime_getters.items()}
+    if SECOND.search(code0, i + 11, i + 40):
+        first = wide_or_text(text0[3] + i + 7 + struct.unpack('<i', m.group(1))[0])
+        if first:
+            runtime_sites.append((i, first))
+LOADED = re.compile(rb'[\x48\x4c]\x8d[\x05\x0d\x15\x1d\x25\x2d\x35\x3d](.{4})', re.S)
+def pointer_loaded(low, high):
+    # lea reg, [global]; mov reg, [reg]: the last before the test.
+    best = None
+    for m in LOADED.finditer(code0, low, high):
+        target = m.start() + 7 + struct.unpack('<i', m.group(1))[0] + text0[3]
+        if code0[m.end():m.end() + 2] in (b'\x49\x8b', b'\x48\x8b') and target >= loads[1][3]:
+            best = target
+    return best
+def pointer_tested(site, low):
+    # The first branch to the site tests the pointer, read directly or through a register.
+    for p in range(max(low, site - 0x400), site):
+        if code0[p:p + 2] == b'\x0f\x85' and p + 6 + struct.unpack_from('<i', code0, p + 2)[0] == site:
+            near_jump = p
+        elif code0[p] == 0x75 and p + 2 + struct.unpack_from('<b', code0, p + 1)[0] == site:
+            near_jump = p
+        else:
+            continue
+        q = near_jump - 3
+        if code0[q - 7] in (0x48, 0x4c) and code0[q - 6] == 0x8b and code0[q - 5] & 0xc7 == 5:
+            return q + struct.unpack_from('<i', code0, q - 4)[0] + text0[3]
+        return pointer_loaded(low, near_jump)
+    return None
+runtime_globals = {}
+previous = 0
+for i, name_ in runtime_sites:
+    low = max(order[bisect.bisect_right(order, i + text0[3]) - 1] - text0[3], previous)
+    previous = i
+    pointer = pointer_tested(i, low)
+    if not pointer:
+        # Out of line: the site calls a getter of its own.
+        for c in range(i - 5, max(low, i - 40) - 1, -1):
+            if code0[c] == 0xe8:
+                t = c + 5 + struct.unpack_from('<i', code0, c + 1)[0] + text0[3]
+                if t in functions and functions[t][0] < 400:
+                    pointer = pointer_loaded(t - text0[3], t - text0[3] + functions[t][0])
+                break
+    if pointer:
+        runtime_globals[pointer] = name_
+print('DLRuntimeClass classes', len(runtime_sites), 'with their pointer', len(runtime_globals))
+pointer_readers = collections.defaultdict(set)
+for m in re.finditer(rb'[\x48\x4c][\x8b\x8d][\x05\x0d\x15\x1d\x25\x2d\x35\x3d](.{4})', code0, re.S):
+    target = m.start() + 7 + struct.unpack('<i', m.group(1))[0] + text0[3]
+    if target in runtime_globals:
+        pointer_readers[order[bisect.bisect_right(order, m.start() + text0[3]) - 1]].add(runtime_globals[target])
 
 # 4b. Classes: a vtable is a run of slots that hold functions; a function that takes its address is
 # one of the class's constructors or destructors. The class takes the name its functions agree on: a
@@ -243,18 +276,21 @@ while i < len(ordered):
         i += 1
 CLASSY = re.compile(r'^(?:CS|FD4|DL|Sprj|Fnd|MENU|Ez|GX|CG|Frpg|World|Msg|Rend|[A-Z])[A-Za-z0-9_]{3,}$')
 GENERIC = {'Exception', 'Allocator', 'Unknown', 'Error', 'Failed', 'String', 'Object', 'Default', 'Invalid'}
-# A vtable's slot for its class is a stub of one or two instructions that goes to the getter.
-runtime_stubs = {}
-for run in vtables.values():
-    for f in run:
-        if functions[f][0] <= 16:
-            at = f - text0[3]
-            if code0[at] == 0xe9:
-                rel, = struct.unpack_from('<i', code0, at + 1)
-                got = runtime_getters.get(f + 5 + rel)
-                if got and got[0] == got[1]:
-                    runtime_stubs[f] = got[0]
-print('runtime class stubs', len(runtime_stubs))
+# The first slot reads the pointer, or jumps to a getter that does.
+runtime_tables = {}
+runtime_objects = {}
+for table, run in vtables.items():
+    f = run[0]
+    at = f - text0[3]
+    readers = pointer_readers.get(f, set())
+    if code0[at] == 0xe9:
+        readers = readers | pointer_readers.get(f + 5 + struct.unpack_from('<i', code0, at + 1)[0], set())
+    if len(readers) == 1:
+        runtime_tables[table] = next(iter(readers))
+    if len(run) > 9 and len(pointer_readers.get(run[9], ())) == 1:
+        runtime_objects[table] = next(iter(pointer_readers[run[9]]))
+print('instance vtables named by DLRuntimeClass', len(runtime_tables), 'classes', len(set(runtime_tables.values())),
+      'class objects', len(runtime_objects))
 # Survey: the first slots of the vtables.
 first = collections.Counter()
 sizes = collections.Counter()
@@ -297,12 +333,12 @@ for table, run in vtables.items():
         top, count = votes.most_common(1)[0]
         if count >= 3 and (len(votes) == 1 or count >= 2 * votes.most_common(2)[1][1]):
             name = top
-    for f in run:
-        known = runtime_stubs.get(f)
-        if known:
-            name = known
-            how_named[table] = 'runtime'
-            break
+    if table in runtime_tables:
+        name = runtime_tables[table]
+        how_named[table] = 'runtime'
+    elif table in runtime_objects:
+        name = runtime_objects[table] + '::DLRuntimeClass'
+        how_named[table] = 'runtime'
     class_names[table] = name
     label = name or f'Class_{table:x}'
     # Many functions writing one vtable are its users (objects built in place), not its constructors.
@@ -362,27 +398,6 @@ for f, tables in writers.items():
         parents[table] = next(iter(bases))
         by_ctor += 1
 print('parents from constructors', by_ctor)
-# The vtables named above are often those of a class's DLRuntimeClass object (their first slot goes to
-# DLRuntimeClass's). Such an object's slots create the class, so they write the class's real vtable.
-linked = 0
-for table in list(vtables):
-    name = class_names.get(table)
-    if not name or vtables[table][0] != 0x20b5a60 and functions[vtables[table][0]][1] > 1:
-        continue
-    made = set()
-    for f in set(vtables[table]):
-        for w in writers.get(f, ()):
-            made.add(w)
-        for callee in direct[f]:
-            for w in writers.get(callee, ()):
-                made.add(w)
-    made -= {table}
-    made = {m for m in made if not class_names.get(m)}
-    if 1 <= len(made) <= 2:
-        for m in made:
-            class_names[m] = name
-            linked += 1
-print('instance vtables named through their DLRuntimeClass', linked)
 children = collections.Counter(parents.values())
 roots = collections.Counter()
 for table in vtables:
@@ -393,7 +408,7 @@ for table in vtables:
     roots[node] += 1
 print('inheritance', len(parents), 'classes with a parent;', len(roots), 'families; the largest',
       [(class_names.get(r) or hex(r), n, len(vtables[r])) for r, n in roots.most_common(10)])
-print('named after THIS_CLASS', sum(1 for n in class_names.values() if n))
+print('classes named', sum(1 for n in class_names.values() if n))
 with open(OUT / 'classes.tsv', 'w') as out:
     out.write('vtable\tname\tslots\tparent\tchildren\n')
     for table, run in sorted(vtables.items()):
