@@ -78,6 +78,7 @@
 0x1001720	FD4DebugMenuItem::detach	guess	calls	
 0x103ee10	DL::LockedDeque::tryPop	sure	calls	
 0x104ac30	FD4HkEzDrawState::reset	guess	calls	
+0x10707c0	Gnm::Buffer::initAsDataBuffer	guess	calls	
 0x1070960	Gnm::Buffer::initAsConstantBuffer	sure	pm4	void (Gnm::Buffer *, uint64_t address, uint32_t size)
 0x1072ed0	Gnm::DrawCommandBuffer::setScratchSize	sure	pm4
 0x1072fd0	Gnm::DrawCommandBuffer::setRenderTargetMask	sure	pm4
@@ -116,6 +117,8 @@
 0x1075270	Gnm::DrawCommandBuffer::setIndexSize	sure	pm4
 0x10752c0	Gnm::DrawCommandBuffer::setIndexBuffer	sure	pm4
 0x1075370	Gnm::DrawCommandBuffer::setNumInstances	sure	pm4
+0x10753c0	Gnm::DrawCommandBuffer::setPsShader	sure	calls	
+0x1075480	Gnm::DrawCommandBuffer::setVsShader	sure	calls	
 0x1075960	Gnm::DrawCommandBuffer::setVgtControl	sure	pm4
 0x1075da0	Gnm::DrawCommandBuffer::triggerEvent	sure	pm4
 0x1075e10	Gnm::DrawCommandBuffer::flushShaderCachesAndWait	guess	pm4
@@ -125,6 +128,7 @@
 0x1076240	Gnm::DrawCommandBuffer::setTsharpInUserData	sure	pm4
 0x10762f0	Gnm::DrawCommandBuffer::setSsharpInUserData	sure	pm4
 0x1076390	Gnm::DrawCommandBuffer::setPointerInUserData	sure	pm4
+0x1076420	Gnm::DrawCommandBuffer::setUserData	guess	calls	
 0x1076560	Gnm::DrawCommandBuffer::setVertexQuantization	sure	pm4
 0x10765e0	Gnm::DrawCommandBuffer::setViewport	sure	pm4
 0x10766d0	Gnm::DrawCommandBuffer::setViewportScissor	sure	pm4	void (Gnm::DrawCommandBuffer *, uint32_t viewport, int32_t left, int32_t top, int32_t right, int32_t bottom, uint32_t window_offset_disable)
@@ -446,6 +450,8 @@
 0x26b6810	CG::SurfaceOps::decompressDepth	sure	calls
 0x26b7b60	CG::toGnmPrimitiveType	sure	calls	uint32_t (uint32_t topology)
 0x26b9850	CG::ResourceSyncContext::synchronize	guess	source	void (CG::ResourceSyncContext *, Gnm::DrawCommandBuffer *)
+0x26bad70	CG::isCpuReadable	sure	calls	
+0x26badd0	CG::isGpuReadable	sure	calls	
 0x26bba30	CG::InputAssemblyState::apply	sure	calls	void (CG::InputAssemblyState *, CG::GraphicsContext *, const CG::DrawState *, bool indexed)
 0x26bc2e0	CG::ResourceBinder::beforeDraw	guess	calls	void (CG::ResourceBinder *, CG::GraphicsContext *, const CG::DrawState *)
 0x26bc320	CG::ResourceBinder::commitGraphics	guess	calls	void (CG::ResourceBinder *, CG::GraphicsContext *, const CG::DrawState *)
