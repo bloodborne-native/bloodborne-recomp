@@ -412,7 +412,7 @@ for table, run in vtables.items():
 # said by one class only, and the only page its destructor removes (one that removes several owns them as a
 # group). Not constructors: what adds a page also builds small menu callbacks that are
 # not the class (a sample read by hand).
-DEBUG_MENU = {0xfa3260, 0xfa33c0}
+DEBUG_MENU = {0xfa3260, 0xfa33a0, 0xfa33c0}
 ANY_LABEL = re.compile(rb'(?:[\x20-\x7e]\0){3,60}\0\0')
 PAGE_LABEL = re.compile(rb'(?:[A-Z]\0)(?:[a-z]\0)(?:[A-Za-z0-9]\0){6,48}\0\0')
 page_callers = {int(r[0], 16) for r in rows('calls.tsv') if int(r[1], 16) in DEBUG_MENU}
