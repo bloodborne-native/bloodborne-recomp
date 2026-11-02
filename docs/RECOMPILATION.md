@@ -320,6 +320,8 @@ are delegates, in FromSoftware's code only: a Havok function of that form is a f
 
 Two tables of 162 entries are the opcode handlers of EzState's expression evaluator, whose stack of tagged
 values (integer, float, object) sits at `+0x480`; `EzStateEventImpl` runs each event argument through it.
+Opcodes 0 to 127 push their number less 64, in all 256 handlers, and those from 128 are constants of
+other sizes, arithmetic and comparisons. One table also writes each value out as text.
 
 **Object files.** The executable lists its static initialisers in one table of 18,444. 12,045 of them are
 the three standard error categories, initialised again in each of 4,015 source files that include them,

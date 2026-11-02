@@ -603,12 +603,19 @@ for table, run in vtables.items():
     if table in invoker_tables or table - 16 in invoker_tables:
         for index, f in enumerate(run):
             rename(f, f'DLMethodInvoker_{table:x}::{INVOKER_SLOTS.get(index, f"vf{index}")}')
+pushes = 0
+EZSTATE_OPS = {128: 'pushFloat', 129: 'pushDouble', 130: 'pushInt32', 141: 'negate', 146: 'greater', 150: 'notEqual',
+               155: 'lessThanZero', 160: 'notZero'}
 # EzState's expression evaluator: two tables of opcode handlers, on a stack of tagged values (int, float,
 # object) at +0x480. EzStateEventImpl runs each event argument through it.
 for table in (0x52c8e60, 0x52c8880):
     for index, f in enumerate(vtables.get(table, ())):
-        rename(f, f'EzStateExpression_{table:x}::op{index}')
-print('slots with a meaning', meaning, 'std::function implementations', function_tables)
+        # Opcodes 0 to 127 push their value less 64. The value is the last immediate store in the handler.
+        stored = re.findall(rb'\xc7[\x00-\x07](.{4})', code0[f - text0[3]:f - text0[3] + min(functions[f][0], 260)], re.S)
+        small = index < 128 and any(struct.unpack('<i', v)[0] == index - 64 for v in stored)
+        pushes += small
+        rename(f, f'EzStateExpression_{table:x}::' + (f'pushInt{index - 64}' if small else EZSTATE_OPS.get(index, f'op{index}')))
+print('slots with a meaning', meaning, 'std::function implementations', function_tables, 'EzState pushes', pushes)
 instance_sizes = {}
 for table, name_ in runtime_objects.items():
     at = vtables[table][10] - text0[3]
