@@ -266,13 +266,16 @@ a page also builds small menu callbacks, and samples read by hand got those wron
 **Step templates.** `FD4Step` is a template, so each step class has its own copy of its update and of its debug
 page. Both say the same wide text, which names 121 copies at once.
 
+**Shader passes.** A function that loads shader programs by name in wide text sets up that pass, and takes the
+name the programs share: 53 functions.
+
 **Where it stands (2026-11-02).** Of the non-trivial functions in FromSoftware's code or not labelled yet:
 
 | | Functions | What it says |
 |---|---:|---|
 | The game's own name | 2,161 | Registered methods, steps, messages, singletons, tables |
-| A known role | 16,048 | Destructors, class getters, `std::function` slots, EzState opcodes, delegates: much is compiler or template code |
-| In a named class or file | 14,345 | Where it belongs, not what it does |
+| A known role | 16,101 | Destructors, class getters, `std::function` slots, EzState opcodes, delegates: much is compiler or template code |
+| In a named class or file | 14,292 | Where it belongs, not what it does |
 | Only an anonymous class | 15,683 | A vtable or object file, no name |
 | Nowhere yet | 15,653 | |
 

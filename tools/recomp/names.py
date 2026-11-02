@@ -6,6 +6,7 @@ file): game-derived, so it stays with the player's copy. annotations/functions.t
 holds only what was checked. Prints what each step gave and how much of the target is covered."""
 import bisect
 import collections
+import os
 import re
 import struct
 import sys
@@ -983,6 +984,30 @@ for m in re.finditer(rb'[\x48\x4c]\x8d[\x05\x0d\x15\x1d\x25\x2d\x35\x3d](.{4})',
     how[f] = 'shape'
     step_roles += 1
 print('step templates', step_roles)
+# 9c. Shader passes: a function that loads shader programs by name in wide text sets up that pass. Without a
+# role of its own it takes the name the programs share, or its first.
+PROGRAM = re.compile(rb'(?:[A-Za-z0-9_]\0){3,70}\.\0[a-z]\0p\0o\0\0\0')
+programs = collections.defaultdict(set)
+for m in re.finditer(rb'[\x48\x4c]\x8d[\x05\x0d\x15\x1d\x25\x2d\x35\x3d](.{4})', code, re.S):
+    target = text[3] + m.end() + struct.unpack('<i', m.group(1))[0]
+    f = owner(text[3] + m.start())
+    if f is None:
+        continue
+    for p_ in loads:
+        if p_[3] <= target < p_[3] + p_[5]:
+            hit = PROGRAM.match(image, p_[2] + target - p_[3])
+            if hit:
+                programs[f].add(hit.group(0)[:-2].decode('utf-16-le').rsplit('.', 1)[0])
+            break
+shader_passes = 0
+for f, stems in programs.items():
+    if how.get(f, '') in ('step', 'class', 'static', 'message') and not names[f].endswith('writes_vtable'):
+        continue
+    shared = os.path.commonprefix(sorted(stems)).rstrip('_')
+    names[f] = f'Shaders::{shared if len(shared) >= 5 else min(stems)}_{f:x}'
+    how[f] = 'shape'
+    shader_passes += 1
+print('shader passes', shader_passes)
 with open(OUT / 'names.tsv', 'w') as out:
     out.write('address\tname\thow\tlibrary\tsource\n')
     for f in sorted(set(names) | set(files)):
