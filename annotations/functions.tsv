@@ -286,6 +286,8 @@
 0x21667a0	CG::Device::createRenderTargetView	sure	calls	
 0x21669a0	CG::Device::createShaderResourceView	sure	calls	
 0x2166b60	CG::Device::createUnorderedAccessView	sure	calls	
+0x2166d00	CG::Device::createVertexShader	guess	calls	
+0x21672d0	CG::Device::createPixelShader	guess	calls	
 0x21673e0	CG::Device::createShaderStage	guess	calls	
 0x2168a20	CG::GraphicsContext::updateConstantBuffer	guess	calls
 0x2168ca0	CG::GraphicsContext::setTopology	sure	calls	void (CG::GraphicsContext *, CG::DrawState *, uint32_t topology)
