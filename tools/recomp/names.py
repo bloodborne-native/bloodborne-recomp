@@ -942,6 +942,9 @@ unit_classes = collections.defaultdict(collections.Counter)
 for f, name in names.items():
     if how[f] in ('class', 'binding', 'step') and not name.startswith('Class_') and f >= unit_starts[0]:
         unit_classes[bisect.bisect_right(unit_starts, f) - 1][name.split('::')[0]] += 1
+# A class that is the only one in five or more object files is a base they share (read by hand: code of
+# other systems), not what they hold.
+class_spread = collections.Counter(c for classes in unit_classes.values() for c in classes)
 placed_in_unit = 0
 for f in functions:
     if f < unit_starts[0] or f >= code_end or f in static_inits:
@@ -951,6 +954,8 @@ for f in functions:
     if not found or len(found) != 1 or unit_sizes[unit] > HUGE_UNIT:
         continue
     only = next(iter(found))
+    if class_spread[only] >= 5:
+        continue
     if f not in names:
         placed_in_unit += give(f, f'{only}::unit_{f:x}', 'unit')
     elif names[f].startswith(('Class_', 'shared_')):

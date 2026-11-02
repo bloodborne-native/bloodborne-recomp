@@ -65,7 +65,7 @@ reads, and plain accesses to private frames gain nothing. The order of the work:
 | Functions checked call by call (recordings) | `░░░░░░░░░░░░░░░░░░░░` 0.5% | 933 of 179,698 |
 | Functions labelled by library (2026-11-02) | `█████████████████░░░` 82.8% | 148,858 of 179,698 |
 | Functions named by hand (2026-11-02) | `░░░░░░░░░░░░░░░░░░░░` 0.2% | 423 of 179,698, 223 sure and 200 guesses (libGnm's command buffer methods; the engine's draw methods, state setters, mesh, model, material and lighting code; the synchronization primitives; the busiest functions; texture repositories) |
-| Functions placed, of those to understand (2026-11-02) | `███████████████░░░░░` 76% | 46,179 of 60,106 longer than five instructions, in FromSoftware's code or not labelled yet |
+| Functions placed, of those to understand (2026-11-02) | `███████████████░░░░░` 75% | 45,505 of 60,106 longer than five instructions, in FromSoftware's code or not labelled yet |
 | Functions identified, of the target (2026-11-02) | `██████░░░░░░░░░░░░░░` 34% | about 19,800 of about 58,000: 2,161 with the game's own name, 17,606 with a known role, much of that compiler and template code |
 
 Every function is generated; the ones left to the translator are the 660 import stubs, the 130
@@ -259,7 +259,8 @@ the 3,738 not labelled yet about half are FromSoftware's by their neighbours. So
 58,000 functions, an estimate because the labels are approximate.
 
 **Object files.** Stretches between markers are object files only when short: the median is 17 functions, and one of
-13,874 once named FromSoftware's debug menu code after a Havok file. Stretches of more than 500 are not used.
+13,874 once named FromSoftware's debug menu code after a Havok file. Stretches of more than 500 are not used, and a class that is the only one in five or more stretches is a base they share, not
+what they hold.
 
 **Debug pages.** A class's destructor removes its debug page or object entry by a label in wide text, which names 63 classes
 (`MapItemMan`, `FrpgPhysWorld`, `WorldBackRead`). The label must be the only page that destructor removes, as
@@ -288,9 +289,9 @@ that template. Longer ones have the template inlined in real work, so each kind 
 |---|---:|---|
 | The game's own name | 2,161 | Registered methods, steps, messages, singletons, tables |
 | A known role | 17,606 | Destructors, class getters, `std::function` slots, EzState opcodes, delegates: much is compiler or template code |
-| In a named class or file | 10,260 | Where it belongs, not what it does |
-| Only an anonymous class | 16,152 | A vtable or object file, no name |
-| Nowhere yet | 13,927 | |
+| In a named class or file | 9,009 | Where it belongs, not what it does |
+| Only an anonymous class | 16,729 | A vtable or object file, no name |
+| Nowhere yet | 14,601 | |
 
 Text and compiler patterns are nearly used up, so what remains is mostly read by hand, a few functions at a
 time. A public name for a family of functions, or a subsystem that needs one, is what would speed it up.
