@@ -1274,6 +1274,7 @@ elf = OUT / 'eboot_ghidra.elf'
 shapes = collections.defaultdict(list)
 writers = {}
 vtable_stores = collections.Counter()
+stored_tables = collections.defaultdict(list)
 first_stores = set()
 lock_calls = collections.defaultdict(lambda: [0, 0, 0, 0])
 if objdump and elf.exists():
@@ -1290,7 +1291,7 @@ if objdump and elf.exists():
             if current is not None and functions[current][1] >= 8:
                 shapes[digest.digest()].append(current)
             current, digest = at, hashlib.blake2b(digest_size=8)
-            this_regs, new_regs, table_regs, stores = {'%rdi'}, set(), set(), set()
+            this_regs, new_regs, table_regs, stores = {'%rdi'}, set(), {}, set()
         if current is not None and at < current + functions[current][0] and \
                 re.search(r'writes_vtable$|::vf\d+$', names.get(current, '')):
             # Who the vtable is stored into: the first argument, a new object or a local.
@@ -1302,12 +1303,16 @@ if objdump and elf.exists():
             elif copy and copy.group(1) == '%rax':
                 new_regs.add(copy.group(2))
             if load:
-                (table_regs.add if int(load.group(2), 16) in vtables else table_regs.discard)(load.group(1))
+                table_regs.pop(load.group(1), None)
+                if int(load.group(2), 16) in vtables:
+                    table_regs[load.group(1)] = int(load.group(2), 16)
             if store and store.group(1) in table_regs:
                 stores.add('this' if store.group(2) in this_regs else
                            'new' if store.group(2) in new_regs | {'%rax'} else 'other')
                 writers[current] = stores
                 vtable_stores[current] += 1
+                if store.group(2) in this_regs:
+                    stored_tables[current].append(table_regs[store.group(1)])
                 if store.group(2) in this_regs and at < current + 48:
                     first_stores.add(current)
         code_text = hit.group(2).split('#')[0].split('<')[0].strip()
@@ -1353,6 +1358,22 @@ for f, stores in writers.items():
             virtual_destructors += 1
         continue
     if not names.get(f, '').endswith('writes_vtable'):
+        continue
+    # Constructors end on their own class's vtable; destructors start on it and end on the base's, or free the
+    # object. One that only opens with its vtable was a constructor in every sample.
+    label = names[f].rsplit('::', 1)[0]
+    own = lambda table: label in (class_names[table], f'Class_{table:x}')
+    tables = stored_tables[f]
+    if 'this' in stores and f in first_stores:
+        if direct[f] & OPERATOR_DELETE:
+            names[f], how[f] = f'{label}::deletingDestructor', 'shape'
+            built += 1
+        elif len(set(tables)) > 1 and own(tables[0]) and not own(tables[-1]):
+            names[f], how[f] = f'{label}::destructor', 'shape'
+            built += 1
+        else:
+            names[f], how[f] = f'{label}::constructor', 'shape'
+            built += 1
         continue
     if 'this' in stores or ('new' in stores and vtable_stores[f] == 1 and functions[f][1] <= 120):
         names[f] = names[f].rsplit('::', 1)[0] + ('::constructor' if 'this' in stores else '::create')
