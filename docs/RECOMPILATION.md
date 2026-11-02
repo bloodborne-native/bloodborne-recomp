@@ -45,7 +45,7 @@ is translated any more. This repository owns two:
 
 | Layer | Native | Where it stands | Next |
 |---|---|---|---|
-| [The game's code](layers/game-code.md) | 96% `███████████████████░` | Recompiled and built on the player's device; opt-in, the translator is the default | Making the library the default; the runtime's share of the game's main thread (about 11% of its busy time in Iosefka's Clinic: `rc_call` 5%, host calls 3.5%, code left to the translator 2.5%) |
+| [The game's code](layers/game-code.md) | 96% `███████████████████░` | Recompiled and built on the player's device; opt-in, the translator is the default | The runtime's share of the game's main thread (about 11% of its busy time in Iosefka's Clinic: `rc_call` 5%, host calls 3.5%, code left to the translator 2.5%) |
 | [x86 memory ordering](layers/memory-ordering.md) | 0% `░░░░░░░░░░░░░░░░░░░░` | Kept on every access | Only around the engine's synchronization, with the maintainer's conditions: the generator's analysis, a safety case and a long play session |
 
 Measured with little or no gain ("Where the CPU time goes"): clang already drops the flags nothing
@@ -138,6 +138,16 @@ translator); and every call the runtime ran in the translator once returned to t
 so after a `longjmp` the innermost stopped where an outer one should have. Recordings of the 933
 busiest functions match on every call for 911; the other 22 also fail when the original runs (they
 read the time stamp counter or memory other threads change).
+
+## The game's modules
+
+`tools/recomp/modules.py` adds `sce_module/libc.prx` and `libSceFios2.prx` to the recompiler's view of
+the image, at the offsets the game links them to, so `build_library.py` generates them with the
+executable: 4,759 functions. 4,607 are generated; 5 that jump between stack frames, by name, and their
+147 direct callers stay with the translator. Only 381 of the modules' 2,471 symbols have known names,
+so another such function could be missed: `BB_RECOMP_OFF` turns functions off one by one. In the game
+245,432 of 245,484 functions run recompiled, with the runtime's check of their bytes passing for all
+the modules' generated functions but the 154 import stubs.
 
 ## Other architectures
 

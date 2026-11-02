@@ -86,7 +86,7 @@ A layer counts as native only when nothing in it is translated any more. Two of 
   7.8 GB to 5.7 GB on the Mac). 204 functions are named, with the engine's draw state, models,
   materials and shaders described ([`annotations/`](annotations)), which is what the renderer's work
   stands on.
-- **Left:** making the library the default, the import stubs and the code rewritten while the game
+- **Left:** the import stubs and the code rewritten while the game
   runs, and building for other architectures.
 
 ### x86 memory ordering

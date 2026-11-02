@@ -28,7 +28,7 @@ The library is opt-in: a player who has not built it runs on the translator.
 
 ## What is left
 
-- Making the library the default.
+- Real gains for players: the library stays opt-in until it has them.
 - The import stubs, and the code rewritten while the game runs.
 - Playing on other architectures: the recompiler builds for x86-64, tested under Rosetta, and the
   runtime is what is left. The launcher's toolchain is macOS arm64.

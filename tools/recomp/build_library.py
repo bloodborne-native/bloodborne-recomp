@@ -135,9 +135,13 @@ def prepare(kit, game, build, key):
     offsets = [line.split('\t', 1)[0] for line in functions.read_text().splitlines()[1:] if line.strip()]
     emit('step', step='scan', task='imports', functions=len(offsets))
     run(py + [tools / 'imports.py', game / 'eboot.bin', build / 'scan'], 'Naming imports')
+    emit('step', step='scan', task='modules')
+    modules = run(py + [tools / 'modules.py', game, build / 'eboot.elf', build / 'scan', build / 'image.elf'],
+                  'Reading the modules', env={**os.environ, 'BB_SCAN': str(kit.bin / 'scan')})
+    offsets += modules.stdout.split()
     (build / 'scan' / 'all.txt').write_text('\n'.join(offsets) + '\n')
     emit('step', step='generate', functions=len(offsets))
-    run([kit.bin / 'bbrecomp', build / 'eboot.elf', functions, build / 'gen' / 'recomp.c', '@' + str(build / 'scan' / 'all.txt')],
+    run([kit.bin / 'bbrecomp', build / 'image.elf', functions, build / 'gen' / 'recomp.c', '@' + str(build / 'scan' / 'all.txt')],
         'Generating C', env={**os.environ, 'BB_JIT': '0', 'BB_RECOMP_ANNOTATIONS': str(kit.annotations)})
     stamp.write_text(json.dumps(key))
 
@@ -249,7 +253,7 @@ def main():
     if not args.keep:  # the objects and their fingerprints stay for the next build
         for sub in ('gen', 'scan'):
             shutil.rmtree(build / sub, ignore_errors=True)
-        for leftover in ('eboot.elf', 'prepared.json'):
+        for leftover in ('eboot.elf', 'image.elf', 'prepared.json'):
             (build / leftover).unlink(missing_ok=True)
     emit('done', library=str(library), **manifest)
 
