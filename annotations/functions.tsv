@@ -70,6 +70,8 @@
 0xfe6c30	FD4ResCapHolder::addHold	sure	calls	
 0xfe6c40	FD4ResCapHolder::releaseHold	sure	calls	
 0xfe8200	FD4ResRep::FD4ResRep	sure	calls	
+0x10015d0	FD4DebugMenuItem::construct	guess	calls	
+0x1001720	FD4DebugMenuItem::detach	guess	calls	
 0x103ee10	DL::LockedDeque::tryPop	sure	calls	
 0x104ac30	FD4HkEzDrawState::reset	guess	calls	
 0x1070960	Gnm::Buffer::initAsConstantBuffer	sure	pm4	void (Gnm::Buffer *, uint64_t address, uint32_t size)
@@ -227,6 +229,8 @@
 0x207d7a0	DL::threadContext	guess	calls	
 0x207e780	DL::ConditionSignal::signal	sure	source
 0x207e8f0	DL::ConditionSignal::reset	guess	source
+0x207ebe0	DL::atomicIncrement	sure	calls	
+0x207ec00	DL::atomicDecrement	sure	calls	
 0x207edc0	DL::PthreadMutex::destroy	sure	message	
 0x207ee40	DL::LightMutex::init	sure	calls	
 0x207ee90	DL::LightMutex::lock	sure	source
@@ -367,6 +371,7 @@
 0x23f6da0	Scaleform::RefCountBaseGC::release#2	guess	calls	
 0x261a1b0	memcpy	sure	calls	void *(void *destination, const void *source, size_t size)
 0x261af30	memcpy#blocks	sure	calls	void (void *destination, const void *source, size_t size)
+0x26279a0	DL::WString::assignRange	guess	calls	
 0x262a310	DL::WString::assign	sure	calls	
 0x262a720	DL::WString::assign#2	sure	calls	
 0x2639560	DL::WString::append	sure	calls	
