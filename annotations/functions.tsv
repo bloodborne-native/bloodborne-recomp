@@ -212,8 +212,10 @@
 0x188a570	WorldHitMan::reloadsReady	guess	calls	
 0x188abc0	WorldHitMan::applyReloads	guess	calls	
 0x18bcd40	ChrIns::setHp	guess	calls	
+0x18bd320	ChrIns::updateBackreadState	guess	calls	
 0x19192a0	WorldChrMan::updateBackread	guess	calls	
 0x191a080	WorldChrMan::applyReloads	guess	calls	
+0x191a1b0	WorldChrMan::waitForBlockChange	guess	calls	
 0x193ac10	Sprj::World::update	guess	message	void (float frame_time, void *world)
 0x19c52a0	SprjSaveDataLoadStepForNotTitleFlow::STEP_SelectDefaultStorage_Wait	sure	step	
 0x19e8190	WorldGroups::update	guess	calls	
