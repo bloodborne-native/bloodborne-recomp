@@ -292,13 +292,16 @@ scripts call, 995 of them, each with its class (`SprjLuaEventProxy::SetEventFlag
 `SprjAiFunc::IsApparentDeath`). The name is the game's, so these are the most reliable names the
 executable gives.
 
+A thin method's one real callee does what the method's name says (of three read, all did), which names
+the code behind them; a step's name says nothing of its callee, so steps do not count.
+
 **Slots that mean the same everywhere.** A class's first slot returns its class object (1,414). A class
 object's slots give its name, label and type tags, destroy an instance and return its size, so the size of
 1,256 classes is known (`EnemyIns` 1,024 bytes, `TexRepositoryImp` 216). A virtual function that writes
 its own vtable to the object is its destructor (4,081, and 1,608 deleting ones); one writing to its second
 argument is a clone. Of six sampled with that check, the five that could be read were right.
 
-**Assertions.** YEBIS passes its failed text and the function's name to the C library's assert, which gives 642
+**Assertions.** YEBIS passes its failed text and the function's name to the C library's assert, which gives 673
 exact names (`GPURenderTexture::SetMultisampleBufferMode`). It is middleware, but it runs the post-effects.
 
 **Step tables.** FD4's state machines fill a table in code with each step's function and its whole name

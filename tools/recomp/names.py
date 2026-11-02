@@ -171,13 +171,16 @@ print('object files', len(unit_starts))
 # 3a. Assertions: YEBIS passes the failed text, with its file, and the function's name to the C library's
 # assert, so a function that asserts says what it is.
 ASSERT_AT = {int(a, 16) for a, name in rows('imports.tsv') if name == '_Assert'}
-ASSERTION = re.compile(rb'\x48\x8d\x3d(.{4})\x48\x8d\x35(.{4})\xe8(.{4})', re.S)
 TEXT_AT = re.compile(rb'[\x20-\x7e]{1,300}\0')
+ARGUMENT = re.compile(rb'\x48\x8d([\x3d\x35])(.{4})', re.S)
 asserted = collections.defaultdict(collections.Counter)
-for m in ASSERTION.finditer(code_, 0, code_end - code_text[3]):
-    if m.start(3) + 4 + struct.unpack('<i', m.group(3))[0] + code_text[3] not in ASSERT_AT:
+for m in re.finditer(rb'\xe8(.{4})', code_[:code_end - code_text[3]], re.S):
+    if m.start(1) + 4 + struct.unpack('<i', m.group(1))[0] + code_text[3] not in ASSERT_AT:
         continue
-    where, what = (TEXT_AT.match(code_, m.start(n) + 4 + struct.unpack('<i', m.group(n))[0]) for n in (1, 2))
+    texts = {}
+    for argument in ARGUMENT.finditer(code_, max(0, m.start() - 48), m.start()):
+        texts[argument.group(1)] = TEXT_AT.match(code_, argument.start(2) + 4 + struct.unpack('<i', argument.group(2))[0])
+    where, what = texts.get(b'\x3d'), texts.get(b'\x35')
     f = owner(m.start() + code_text[3])
     if f is not None and where and what:
         file_ = re.search(rb'([A-Za-z0-9_]+)\.(?:cpp|h)\(', where.group(0))
@@ -844,6 +847,24 @@ for f, (size, count) in functions.items():
         how[f] = 'shape'
         shaped[what] += 1
 print('shapes', dict(shaped))
+
+# 8c. Thin callers: a registered method of a few instructions with one real callee, which no other method
+# calls, is that callee's front: the callee does what the name says. Not steps, whose callees are generic.
+fronts = collections.defaultdict(list)
+for f in functions:
+    if how.get(f) == 'binding' and functions[f][1] <= 40:
+        real = [c for c in direct[f] if c in functions and functions[c][1] > 3 and c not in ASSERT_AT and c != 0x20b55b0 and c < code_end]
+        if len(real) == 1:
+            fronts[real[0]].append(f)
+behind = 0
+for callee, callers_ in fronts.items():
+    if len(callers_) == 1 and how.get(callee) not in ('binding', 'step', 'message', 'table', 'singleton', 'static', 'shape', 'assert'):
+        name = names.get(callee, '')
+        if not name or re.search(r'::(?:helper_|near_|unit_|fn_|method_|vf\d+$)', name) or name.startswith(('Class_', 'shared_')):
+            names[callee] = f'{names[callers_[0]]}#impl'
+            how[callee] = 'front'
+            behind += 1
+print('behind a named front', behind)
 
 # 9. Object files: in one where every class-named function has one class, the rest belong with it. Holding
 # out functions of known class this agrees 98.4%, against 91.6% for taking the class of most of them.
