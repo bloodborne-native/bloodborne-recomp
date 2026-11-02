@@ -65,8 +65,8 @@ reads, and plain accesses to private frames gain nothing. The order of the work:
 | Functions checked call by call (recordings) | `░░░░░░░░░░░░░░░░░░░░` 0.5% | 933 of 179,698 |
 | Functions labelled by library (2026-11-02) | `█████████████████░░░` 82.8% | 148,858 of 179,698 |
 | Functions named by hand (2026-11-02) | `░░░░░░░░░░░░░░░░░░░░` 0.2% | 477 of 179,698, 228 sure and 249 guesses (libGnm's command buffer methods; the engine's draw methods, state setters, mesh, model, material and lighting code; the synchronization primitives; the busiest functions; texture repositories) |
-| Functions placed, of those to understand (2026-11-02) | `███████████████░░░░░` 77% | 46,717 of 60,106 longer than five instructions, in FromSoftware's code or not labelled yet |
-| Functions identified, of the target (2026-11-02) | `███████░░░░░░░░░░░░░` 35% | about 20,300 of about 58,000: 2,164 with the game's own name, 18,170 with a known role, much of that compiler and template code |
+| Functions placed, of those to understand (2026-11-02) | `███████████████░░░░░` 77% | 46,727 of 60,106 longer than five instructions, in FromSoftware's code or not labelled yet |
+| Functions identified, of the target (2026-11-02) | `███████░░░░░░░░░░░░░` 37% | about 21,600 of about 58,000: 2,164 with the game's own name, 19,458 with a known role, much of that compiler and template code |
 
 Every function is generated; the ones left to the translator are the 660 import stubs, the 130
 functions that call `setjmp`, and 53 that the game's patches (51) or the runtime's live switches
@@ -274,7 +274,7 @@ one that removes several owns them as a group, and said by one class only. Const
 a page also builds small menu callbacks, and samples read by hand got those wrong.
 
 **Step templates.** `FD4Step` is a template, so each step class has its own copy of its update and of its debug
-page. Both say the same wide text, which names 121 copies at once. Its small `setStep` and `nextStep` share the failure "destination step undefined": 110 more. The same way, 270 copies of `std::vector`'s reallocation are one body compared byte by byte, and 63 message getters fall back to a wide text such as `?WeaponName?`.
+page. Both say the same wide text, which names 121 copies at once. Its small `setStep` and `nextStep` share the failure "destination step undefined": 110 more. The same way, 270 copies of `std::vector`'s reallocation are one body compared byte by byte, and 63 message getters fall back to a wide text such as `?WeaponName?`, and 1,288 are bodies of one template: method invokers' argument types (folded into one copy, so they carried other classes' names) and the debug menu's page and item helpers.
 
 **Shader passes.** A function that loads shader programs by name in wide text sets up that pass, and takes the
 name the programs share: 53 functions.
@@ -296,10 +296,10 @@ that template. Longer ones have the template inlined in real work, so each kind 
 | | Functions | What it says |
 |---|---:|---|
 | The game's own name | 2,164 | Registered methods, steps, messages, singletons, tables |
-| A known role | 18,170 | Destructors, class getters, `std::function` slots, EzState opcodes, delegates: much is compiler or template code |
-| In a named class or file | 10,556 | Where it belongs, not what it does; 3,703 of them only by their callers, which about half of known functions agree with |
-| Only an anonymous class | 15,827 | A vtable or object file, no name |
-| Nowhere yet | 13,389 | |
+| A known role | 19,458 | Destructors, class getters, `std::function` slots, EzState opcodes, delegates: much is compiler or template code |
+| In a named class or file | 9,731 | Where it belongs, not what it does; 3,703 of them only by their callers, which about half of known functions agree with |
+| Only an anonymous class | 15,374 | A vtable or object file, no name |
+| Nowhere yet | 13,379 | |
 
 Text and compiler patterns are nearly used up, so what remains is mostly read by hand, a few functions at a
 time. A public name for a family of functions, or a subsystem that needs one, is what would speed it up.

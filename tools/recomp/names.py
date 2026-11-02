@@ -1140,6 +1140,31 @@ for r in rows('calls.tsv'):
     how[f] = 'shape'
     step_moves += 1
 print('step moves', step_moves)
+# 9b1. Three more templates of one body. A method invoker's argument types (the slot rule names those it finds
+# in a table of its own; identical bodies are folded into one, so the others carry another class's name): a run
+# of cleared slots, then the object stored after them. And a debug menu's: drop a page, make and add an item.
+INVOKER_END = b'\x48\x89\x7e\x78\x31\xc0\xc3'
+MENU_DETACH, MENU_ITEM = 0x1001720, 0x1001750
+OWN_NAME = ('hand', 'message', 'table', 'step', 'binding', 'singleton', 'assert')
+template_bodies = 0
+for f, (size_, count_) in functions.items():
+    if how.get(f) in OWN_NAME or not text[3] <= f < text[3] + text[5]:
+        continue
+    label = names.get(f, '').split('::')[0]
+    if 18 <= count_ <= 23 and INVOKER_END in code[f - text[3]:f - text[3] + size_]:
+        name = f'DLMethodInvoker::argumentTypes_{f:x}'
+    elif count_ == 14 and callees[f] == {MENU_DETACH}:
+        name = f'{label or "FD4DebugMenu"}::detachDebugPage' + ('' if label else f'_{f:x}')
+    elif count_ == 47 and MENU_ITEM in callees[f]:
+        name = f'FD4DebugMenu::addItem_{f:x}'
+    else:
+        continue
+    if names.get(f, '').endswith('::argumentTypes'):
+        continue
+    names[f] = name
+    how[f] = 'shape'
+    template_bodies += 1
+print('template bodies', template_bodies)
 # 9b2. Message texts: a short getter falls back to the wide text ?WeaponName? when the entry is missing.
 msg_text = {}
 for m in re.finditer(rb'\?\0((?:[A-Za-z]\0){3,40})\?\0\0\0', image):
