@@ -458,6 +458,28 @@ for f, source in files.items():
         names[f] = f'{stem}::{names[f].split("::")[-1]}'
         how[f] = 'file'
 
+# 8. Neighbours: the linker keeps a source file's functions together, so what lies in a short run
+# between two functions of one class is that class's.
+ordered_functions = sorted(functions)
+def group(f):
+    name = names.get(f, '')
+    return name.split('::')[0] if '::' in name and how.get(f) != 'shared' else None
+for round_ in range(3):
+    found = 0
+    last_index, last_group = None, None
+    for index, f in enumerate(ordered_functions):
+        label = group(f)
+        if label is None:
+            continue
+        if last_group == label and 1 < index - last_index <= 8:
+            for g in ordered_functions[last_index + 1:index]:
+                if g not in names:
+                    found += give(g, f'{label}::near_{g:x}', 'near')
+        last_index, last_group = index, label
+    print('neighbours, pass', round_ + 1, found)
+    if not found:
+        break
+
 tally = collections.Counter(how.values())
 named_target = {f for f in names if modules.get(f, ('', ''))[0] in TARGET}
 big = [f for f, (s, c) in functions.items() if c > 5 and modules.get(f, ('', ''))[0] in TARGET]
