@@ -207,6 +207,70 @@ for table, run in vtables.items():
         class_of.setdefault(f, table)
 print('vtables', len(vtables), 'named', sum(1 for n in class_names.values() if n), 'distinct names', len({n for n in class_names.values() if n}),
       'functions in them', len(class_of))
+# THIS_CLASS: the function that sets up a class's runtime description says its name and takes the
+# address of the vtable it uses.
+for f, texts in by_function.items():
+    for s in texts:
+        m = re.match(r'([A-Za-z_]\w+)::THIS_CLASS$', s)
+        if m:
+            near = [table for table in vtables if any(owner(x) == f for x in sites[table])]
+            if len(near) == 1 and not class_names.get(near[0]):
+                class_names[near[0]] = m.group(1)
+# Inheritance: a class overrides some of its parent's slots and keeps the others, so two vtables that
+# share slots at the same index are relatives. The parent is the shorter, or the one more share with.
+slot_users = collections.defaultdict(set)
+for table, run in vtables.items():
+    for index, f in enumerate(run):
+        slot_users[(index, f)].add(table)
+parents = {}
+for table, run in vtables.items():
+    scores = collections.Counter()
+    for index, f in enumerate(run):
+        users = slot_users[(index, f)]
+        if len(users) < 64:
+            for other in users:
+                if other != table and len(vtables[other]) <= len(run):
+                    scores[other] += 1
+    if scores:
+        best, count = scores.most_common(1)[0]
+        if count >= 2 and count * 2 >= len(vtables[best]):
+            parents[table] = best
+# A constructor calls its parent's constructor (the function that writes the parent's vtable).
+writers = collections.defaultdict(set)
+for table in vtables:
+    for s in sites[table]:
+        f = owner(s)
+        if f is not None:
+            writers[f].add(table)
+direct = collections.defaultdict(set)
+for r in rows('calls.tsv'):
+    direct[int(r[0], 16)].add(int(r[1], 16))
+by_ctor = 0
+for f, tables in writers.items():
+    if len(tables) != 1:
+        continue
+    table = next(iter(tables))
+    bases = {b for callee in direct[f] for b in writers.get(callee, ()) if b != table}
+    if len(bases) == 1 and table not in parents:
+        parents[table] = next(iter(bases))
+        by_ctor += 1
+print('parents from constructors', by_ctor)
+children = collections.Counter(parents.values())
+roots = collections.Counter()
+for table in vtables:
+    seen, node = set(), table
+    while node in parents and node not in seen:
+        seen.add(node)
+        node = parents[node]
+    roots[node] += 1
+print('inheritance', len(parents), 'classes with a parent;', len(roots), 'families; the largest',
+      [(class_names.get(r) or hex(r), n, len(vtables[r])) for r, n in roots.most_common(10)])
+print('named after THIS_CLASS', sum(1 for n in class_names.values() if n))
+with open(OUT / 'classes.tsv', 'w') as out:
+    out.write('vtable\tname\tslots\tparent\tchildren\n')
+    for table, run in sorted(vtables.items()):
+        out.write(f"{table:#x}\t{class_names.get(table) or ''}\t{len(run)}\t{parents.get(table, 0):#x}\t{children[table]}\n")
+
 shared = collections.Counter(f for run in vtables.values() for f in set(run))
 for table, run in vtables.items():
     label = class_names[table] or f'Class_{table:x}'
