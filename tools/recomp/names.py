@@ -1273,6 +1273,7 @@ shapes = collections.defaultdict(list)
 writers = {}
 vtable_stores = collections.Counter()
 first_stores = set()
+lock_calls = collections.defaultdict(lambda: [0, 0, 0, 0])
 if objdump and elf.exists():
     current, digest = None, None
     constants = re.compile(r'-?0x[0-9a-f]+|\b\d+\b')
@@ -1308,6 +1309,12 @@ if objdump and elf.exists():
                 if store.group(2) in this_regs and at < current + 48:
                     first_stores.add(current)
         code_text = hit.group(2).split('#')[0].split('<')[0].strip()
+        if current is not None and functions[current][1] <= 30 and at < current + functions[current][0]:
+            lock_seen = lock_calls[current]
+            lock_seen[0] += '$0xffffffff, %esi' in code_text
+            lock_seen[1] += bool(re.match(r'(callq|jmpq)\s+\*0x18\(%r', code_text))
+            lock_seen[2] += bool(re.match(r'(callq|jmpq)\s+\*0x28\(%r', code_text))
+            lock_seen[3] += bool(re.match(r'(callq|jmpq)\s+\*', code_text))
         if current is not None and not code_text.startswith('nop'):
             digest.update(constants.sub('#', code_text).encode())
 identical = 0
@@ -1361,6 +1368,16 @@ for f, (size_, count_) in functions.items():
         how[f] = 'shape'
         page_fillers += 1
 print('debug page fillers', page_fillers)
+# 14. A short function that takes a mutex (slot 3, waiting forever), does one thing and releases it (slot 5): a
+# getter, a setter or a forward under the lock.
+locked = 0
+for f, seen in lock_calls.items():
+    if seen[0] and seen[1:] == [1, 1, 2] and how.get(f) not in OWN_NAME and (not role_of(f) or role_of(f).startswith(WEAK_ROLE)):
+        label = names.get(f, '').split('::')[0]
+        names[f] = f'{label}::lockedAccessor' + ('' if '::' in names.get(f, '') else f'_{f:x}') if label else f'Locked::accessor_{f:x}'
+        how[f] = 'shape'
+        locked += 1
+print('locked accessors', locked)
 names.update(hand)
 how.update(dict.fromkeys(hand, 'hand'))
 with open(OUT / 'names.tsv', 'w') as out:
