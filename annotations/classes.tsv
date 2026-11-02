@@ -151,3 +151,13 @@
 0x53304c0	SprjWorldStep	a two-slot table whose name spread to the world update steps it sits beside; the label means world update code
 0x52eb7a0	FXRenderMaterial	sets blend tables and draws effects from FX parameter curves; slot 32 copies the scene behind them
 0x535fe90	PpfxBridge	its initialiser creates the game side resources and calls ppfx::Initialize
+0x53251c0	EquipInventoryData_DebugPage	the code that writes this table titles a debug page with the name
+0x5325130	EquipGameData_DebugPage	the code that writes this table titles a debug page with the name
+0x5325890	GameData_DebugPage	the code that writes this table titles a debug page with the name
+0x532bb60	MenuManDbg	the code that writes this table titles a debug page with the name
+0x52e4ad0	LightScattering_DebugPage	the code that writes this table titles a debug page with the name
+0x52fb9d0	FD4LogCategoryTreeNode	the code that writes this table titles a debug page with the name
+0x531c880	SprjWorldBlockAi_DebugPage	the code that writes this table titles a debug page with the name
+0x53202e0	SprjObjActCtrl_DebugPage	the code that writes this table titles a debug page with the name
+0x532dd40	RagdollIns_DebugPage	the code that writes this table titles a debug page with the name
+0x52f3580	DebugMenuLayout	the code that writes this table titles a debug page with the name
