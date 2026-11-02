@@ -28,6 +28,7 @@ import hashlib
 import json
 import os
 import pathlib
+import platform
 import re
 import shutil
 import subprocess
@@ -42,7 +43,8 @@ ALLOWED_UNDEFINED = ['_memcpy', '_memset', '_memmove', '___divti3', '___udivti3'
 # The generator's flags (recomp.sh), without an SDK: clang's own headers, stand-ins for the four the
 # runtime's headers include, and built-ins kept on (-ffreestanding turns them off: 32% more code,
 # frames 60% slower).
-CFLAGS = ['--target=arm64-apple-macos15', '-O2', '-std=gnu11', '-ffp-contract=off', '-fno-strict-aliasing',
+TARGET = f"--target={os.environ.get('BB_ARCH', platform.machine())}-apple-macos15"
+CFLAGS = [TARGET, '-O2', '-std=gnu11', '-ffp-contract=off', '-fno-strict-aliasing',
           '-fvisibility=hidden', '-fno-stack-protector', '-nostdinc', '-w']
 
 
@@ -202,7 +204,7 @@ def link(clang, objects, out):
     emit('step', step='link')
     partial = out.with_suffix('.dylib-partial')
     allowed = [arg for symbol in ALLOWED_UNDEFINED for arg in ('-Wl,-U,' + symbol,)]
-    run([clang, '--target=arm64-apple-macos15', '-dynamiclib', '-fuse-ld=lld', '-nostdlib', '-Wl,-undefined,error',
+    run([clang, TARGET, '-dynamiclib', '-fuse-ld=lld', '-nostdlib', '-Wl,-undefined,error',
          *allowed, '-install_name', '@rpath/librecomp.dylib', *objects, '-o', partial], 'Linking')
     partial.rename(out)
 

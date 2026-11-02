@@ -1,16 +1,17 @@
 #!/usr/bin/env bash
 # tools/recomp/recomp.sh OFFSET... | --file LIST: recompiles game functions (image offsets) from out/eboot.elf
-# into out/recomp/librecomp.dylib (docs/RECOMPILATION.md): tools/recomp/bbrecomp.c writes the C
+# into out/recomp/librecomp.$lib (docs/RECOMPILATION.md): tools/recomp/bbrecomp.c writes the C
 # (out/recomp/gen/recomp*.c), clang compiles the files in parallel. The game loads it with
 # BB_RECOMP_LIB; replay.sh --recomp checks it. Needs out/recomp/functions.tsv (tools/recomp/scan.c).
 set -euo pipefail
 cd -- "$(dirname -- "$0")/../.."
+source tools/recomp/host.sh
 D=${BB_DEPS:-deps}
 G=out/recomp/gen
 mkdir -p "$G"
 offsets=("$@")
 if [[ ${1:-} == --file ]]; then offsets=("@$2"); fi
-clang -arch arm64 -O1 -g -std=gnu11 -Wall -I$D/include tools/recomp/bbrecomp.c src/cpu/cpu.c \
+clang "${arch[@]}" -O1 -g -std=gnu11 -Wall -I$D/include tools/recomp/bbrecomp.c src/cpu/cpu.c \
     src/cpu/decode.c src/cpu/interp.c src/cpu/interp_vec.c src/cpu/interp_x87.c src/cpu/jit_arm64.c \
     src/cpu/record.c src/cpu/native.c src/cpu/recomp.c src/cpu/hostcall.S $D/lib/libZydis.a \
     $D/lib/libZycore.a -o out/recomp/bbrecomp
@@ -27,9 +28,9 @@ for f in "$G"/new/recomp*.c; do
 done
 echo "${#changed[@]} files to compile"
 # Floating point as on x86: no fused multiply-add.
-printf '%s\n' "${changed[@]}" | grep . | xargs -P "$(sysctl -n hw.ncpu)" -I{} clang -arch arm64 -O${OPT:-2} -g -std=gnu11 \
+printf '%s\n' "${changed[@]}" | grep . | xargs -P "$jobs" -I{} clang "${arch[@]}" -O${OPT:-2} -g -std=gnu11 \
     -Wall -Wno-unused-label -Wno-unused-variable -ffp-contract=off -fno-strict-aliasing -fvisibility=hidden \
     -I$D/include -Isrc -c {} -o {}.o || true
 for f in "${changed[@]}"; do [[ -e $f.o && $f.o -nt $f ]] || { echo "failed: $f"; exit 1; }; done
-clang -arch arm64 -dynamiclib "$G"/recomp*.o -o out/recomp/librecomp.dylib
-echo "out/recomp/librecomp.dylib"
+clang "${arch[@]}" "${shared[@]}" "$G"/recomp*.o -o out/recomp/librecomp.$lib
+echo "out/recomp/librecomp.$lib"

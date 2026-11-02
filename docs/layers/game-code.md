@@ -30,6 +30,7 @@ The library is opt-in: a player who has not built it runs on the translator.
 
 - Making the library the default.
 - The import stubs, and the code rewritten while the game runs.
-- Building for other architectures: the build scripts target arm64 today.
+- Playing on other architectures: the recompiler builds for x86-64, tested under Rosetta, and the
+  runtime is what is left. The launcher's toolchain is macOS arm64.
 
 Details: [Recompilation](https://github.com/bloodborne-native/bloodborne-recomp/blob/main/docs/RECOMPILATION.md).

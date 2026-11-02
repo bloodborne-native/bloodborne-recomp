@@ -1,4 +1,4 @@
-/* tests/fuzz_recomp.c (arm64): differential fuzzing of the recompiler's C (tools/recomp/bbrecomp.c)
+/* tests/fuzz_recomp.c: differential fuzzing of the recompiler's C (tools/recomp/bbrecomp.c)
  * against the interpreter, one instruction at a time, as tests/fuzz_jit.c does for the JIT.
  * Input: instructions (hex bytes per line: tools/cpu/encodings.c) and the library bbrecomp
  * --snippets made of them (a function per line it translates natively). Each runs from random

@@ -139,6 +139,15 @@ so after a `longjmp` the innermost stopped where an outer one should have. Recor
 busiest functions match on every call for 911; the other 22 also fail when the original runs (they
 read the time stamp counter or memory other threads change).
 
+## Other architectures
+
+`tools/recomp/host.sh` gives the scripts this machine's flags and library names; `BB_ARCH=x86_64` builds
+for x86-64 on Apple Silicon, where it runs under Rosetta. Over 6,571 instruction forms the fuzz test
+finds no crash, and no failure on arm64. On x86-64, 36 forms differ, all floating point (`vdpps`,
+`vaddss`, `vmulss`), and in all of them both results are NaN: x86 keeps its first operand's NaN, and
+the compiler may swap the operands. Ordinary numbers do not differ. Translated code is arm64 only: an
+x86-64 host runs what is not recompiled in the interpreter.
+
 ## Tools
 
 All write to `out/recomp/`.
@@ -202,7 +211,7 @@ python3 tools/recomp/build_library.py --game "$GAME" --work WORK --toolchain LLV
   of it (clang, `ld64.lld`, clang's headers, and LLVM's licence: Apache-2.0 with LLVM exception),
   packed as a 70 MB archive. It is published as an asset of this repository's
   `toolchain-llvm-23.1.4` release, and the launcher checks it against the SHA-256 it pins.
-- **The flags:** `--target=arm64-apple-macos15 -O2`, the generator's own (`-ffp-contract=off
+- **The flags:** `--target=<arm64 or x86_64>-apple-macos15 -O2` (`BB_ARCH`, by default this machine), the generator's own (`-ffp-contract=off
   -fno-strict-aliasing -fvisibility=hidden`), `-fno-stack-protector`, and `-nostdinc` with clang's
   headers and four stand-ins for the system headers the runtime's headers include
   (`tools/recomp/sdkless/`). Linked by `ld64.lld` with `-nostdlib`, `-undefined error` and only

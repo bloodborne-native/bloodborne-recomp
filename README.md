@@ -3,8 +3,8 @@
 [![Discord](https://img.shields.io/badge/Discord-join%20the%20server-5865F2?logo=discord&logoColor=white)](https://discord.gg/QS6vHz45xA)
 
 A **static recompiler** for Bloodborne (PS4, CUSA03173 1.09): it reads the game's x86-64 executable
-and writes its functions out as C, which a compiler turns into a native library the game loads
-(arm64 today). In plain words, it rebuilds the PS4 game's code so that it stops being PS4 code, and
+and writes its functions out as C, which a compiler turns into a native library the game loads.
+In plain words, it rebuilds the PS4 game's code so that it stops being PS4 code, and
 runs as native code on the machine in front of you.
 
 **This is the tool, not the game.** It reads your own copy of the game (CUSA03173, update 1.09) on
@@ -55,9 +55,10 @@ The same approach is behind N64Recomp and *Unleashed Recompiled*.
 The point is a game that is truly native. Once its code is C, it is source a compiler can build for
 any target and optimize like any other program, and it is no longer tied to the PS4's executable:
 
-- **One way to reach any platform.** The generated C is not written for one processor, so the same
-  approach serves arm64 and x86-64. Today's build scripts target arm64 on Apple's systems; other
-  targets are still to be done.
+- **One way to reach any platform.** The generated C is not written for one processor. The
+  recompiler builds for arm64 and x86-64 (`BB_ARCH=x86_64` on Apple Silicon, which runs it under
+  Rosetta): the fuzz test passes on arm64, and on x86-64 it differs only in which NaN a floating-point
+  result keeps. The game itself still needs the runtime on each platform.
 - **Less overhead.** The processor does the game's work, not the work of a translator.
 - **A way out of the PS4.** The game's calls to its GPU and system libraries are code that can be
   found, named and replaced, which is how the engine's rendering was mapped for the native renderer.

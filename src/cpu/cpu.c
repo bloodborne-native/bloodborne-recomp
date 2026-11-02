@@ -50,6 +50,7 @@ void bbcpu_set_thread_pointer(uintptr_t tcb) {
     if (tls_cpu) apply_thread_pointer(tls_cpu);
 }
 
+#if defined(__aarch64__)
 /* FEAT_AFP: FPCR.FIZ flushes denormal inputs on its own (Apple M3 and later; not M1/M2). */
 static int host_has_afp(void) {
     static int afp = -1;
@@ -65,6 +66,7 @@ static int host_has_afp(void) {
     }
     return afp;
 }
+#endif
 
 /* Guest MXCSR FTZ (bit 15, flush denormal results) and DAZ (bit 6, denormal inputs read as zero)
  * -> this host thread's FPCR, so the native float code the translator emits flushes denormals
@@ -98,6 +100,13 @@ void bbcpu_apply_host_fp(uint32_t mxcsr) {
     if ((ftz && daz) || (mode == 2 && (ftz || (daz && !host_has_afp())))) want |= FZ;
     else if (daz && host_has_afp()) want |= FIZ;
     if (want != fpcr) __asm__ volatile("msr fpcr, %0" : : "r"(want));
+#elif defined(__x86_64__)
+    /* The same bits exist here: the thread flushes exactly as the guest asked. */
+    enum { DAZ = 1u << 6, FTZ = 1u << 15 };
+    uint32_t host;
+    __asm__ volatile("stmxcsr %0" : "=m"(host));
+    const uint32_t want = (host & ~(uint32_t)(DAZ | FTZ)) | (mxcsr & (DAZ | FTZ));
+    if (want != host) __asm__ volatile("ldmxcsr %0" : : "m"(want));
 #else
     (void)mxcsr;
 #endif

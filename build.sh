@@ -7,8 +7,7 @@ cd -- "$(dirname -- "$0")"
 D=${BB_DEPS:-deps}
 ZYDIS_VERSION=v4.1.1
 CC=${CC:-clang}
-arch=()
-[[ $(uname -s) == Darwin ]] && arch=(-arch "$(uname -m)")
+source tools/recomp/host.sh
 
 # cmake and ninja are only needed for Zydis; check before cloning it, not halfway through.
 missing=
@@ -27,6 +26,7 @@ if [[ ! -f $D/lib/libZydis.a ]]; then
     mkdir -p "$work"
     [[ -d $work/zydis ]] || git -c advice.detachedHead=false clone -q --recursive --depth 1 -b "$ZYDIS_VERSION" https://github.com/zyantific/zydis.git "$work/zydis"
     common=(-G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$prefix" -DBUILD_SHARED_LIBS=OFF)
+    [[ ${#arch[@]} == 0 ]] || common+=(-DCMAKE_OSX_ARCHITECTURES="${arch[1]}")
     # Zydis and Zycore ask for CMake < 3.10, which CMake 4 deprecates; 3.10 policies keep them building.
     common+=(-DCMAKE_POLICY_VERSION_MINIMUM=3.10)
     # Zydis builds its bundled Zycore without install rules: Zycore first, then Zydis on it.
