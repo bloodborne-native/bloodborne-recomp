@@ -318,6 +318,9 @@ One read example also names a template's copies, which compile to the same bytes
 (vector `push_back`, tree erase), and short functions that test a pointer-to-member's low bit and call it
 are delegates, in FromSoftware's code only: a Havok function of that form is a forwarder.
 
+Two anonymous tables of 161 entries are the opcode handlers of a small bytecode machine, whose stack of tagged
+values (integer, float, object) sits at `+0x480`; which language it runs is not known yet.
+
 **Object files.** The executable lists its static initialisers in one table of 18,444. 12,045 of them are
 the three standard error categories, initialised again in each of 4,015 source files that include them,
 so each set marks an object file and what lies between two sets is one source file: of 195 stretches
