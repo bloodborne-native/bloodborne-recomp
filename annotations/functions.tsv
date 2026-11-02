@@ -223,8 +223,10 @@
 0x1d8c510	TexResCap::debugViewerInput	guess	calls	
 0x1d8d4c0	TpfRepositoryImp::findOrCreate	guess	calls	
 0x1d8e180	TpfResCap::~TpfResCap	sure	calls	
+0x1d969f0	SprjGraphics::createGraphics	guess	calls	
 0x1d9b340	SprjGraphicsStep::STEP_Update	sure	step	
 0x1f29aa0	EquipParamWeapon::findWithReinforcement	guess	calls	
+0x1fc0e60	SprjMemory::initialize	sure	calls	
 0x2067ac0	zlib::inflate#2	sure	message	
 0x207b720	DL::Heap::ofPointer	sure	calls	
 0x207c460	DL::free	sure	message	
@@ -343,6 +345,7 @@
 0x2190be0	CG::ImmediateDraw::drawUserPrimitives	sure	calls	void (CG::ImmediateDraw *, uint32_t topology, uint32_t vertex_count, const void *vertices, uint32_t stride)
 0x2190d30	CG::ImmediateDraw::drawIndexedUserPrimitives	sure	calls	void (CG::ImmediateDraw *, uint32_t topology, uint32_t min_index, uint32_t max_index, uint32_t index_count, const void *indices, uint32_t index_format, const void *vertices, uint32_t stride)
 0x2192660	CG::Resource::deferRelease	guess	calls	
+0x2194580	GXGraphics::initialize	guess	calls	
 0x219ef50	CG::DepthTarget::release	sure	calls	
 0x219f130	CG::DepthTarget::create	sure	calls	
 0x21a32f0	CG::RenderTarget::create	sure	calls	
@@ -355,7 +358,9 @@
 0x21ac7d0	CG::ResourceTotals::addTextureCube	sure	calls	
 0x21ac900	CG::ResourceTotals::addRenderTarget	sure	calls	
 0x21aca50	CG::ResourceTotals::addDepthTarget	sure	calls	
+0x21b6620	CG::DeviceThread::start	guess	calls	
 0x21b6910	CG::DeviceThread::run	guess	calls	
+0x21b6be0	CG::DeviceThread::create	guess	calls	
 0x21b8710	FD4::JobSystem::runAndWait	guess	calls	void (FD4::JobGroup *)
 0x21b9f40	GXGUITexture::GXGUITexture	sure	calls	
 0x21ba300	GXGUITexture::createLinearView	guess	calls	
