@@ -66,7 +66,7 @@ reads, and plain accesses to private frames gain nothing. The order of the work:
 | Functions labelled by library (2026-11-02) | `███████████████████░` 95.5% | 171,706 of 179,698 |
 | Functions named by hand (2026-11-02) | `░░░░░░░░░░░░░░░░░░░░` 0.2% | 477 of 179,698, 228 sure and 249 guesses (libGnm's command buffer methods; the engine's draw methods, state setters, mesh, model, material and lighting code; the synchronization primitives; the busiest functions; texture repositories) |
 | Functions placed, of those to understand (2026-11-02) | `███████████████░░░░░` 78% | 47,016 of 59,867 longer than five instructions, in FromSoftware's code or not labelled yet |
-| Functions identified, of the target (2026-11-02) | `████████░░░░░░░░░░░░` 40% | about 23,300 of about 58,000: 2,164 with the game's own name, 21,113 with a known role, much of that compiler and template code |
+| Functions identified, of the target (2026-11-02) | `████████░░░░░░░░░░░░` 43% | about 25,000 of about 58,000: 2,164 with the game's own name, 22,874 with a known role, much of that compiler and template code |
 
 Every function is generated; the ones left to the translator are the 660 import stubs, the 130
 functions that call `setjmp`, and 53 that the game's patches (51) or the runtime's live switches
@@ -274,7 +274,7 @@ one that removes several owns them as a group, and said by one class only. Const
 a page also builds small menu callbacks, and samples read by hand got those wrong.
 
 **Step templates.** `FD4Step` is a template, so each step class has its own copy of its update and of its debug
-page. Both say the same wide text, which names 121 copies at once. Its small `setStep` and `nextStep` share the failure "destination step undefined": 110 more. The same way, 270 copies of `std::vector`'s reallocation are one body compared byte by byte, and 63 message getters fall back to a wide text such as `?WeaponName?`, and 1,288 are bodies of one template: method invokers' argument types (folded into one copy, so they carried other classes' names) and the debug menu's page and item helpers. Functions with the same instructions, constants aside, are copies of one template: a group's known names give the others theirs, which held for 99.3% of 15,664 names hidden from the rule, and a group's role read once names it all.
+page. Both say the same wide text, which names 121 copies at once. Its small `setStep` and `nextStep` share the failure "destination step undefined": 110 more. The same way, 270 copies of `std::vector`'s reallocation are one body compared byte by byte, and 63 message getters fall back to a wide text such as `?WeaponName?`, and 1,288 are bodies of one template: method invokers' argument types (folded into one copy, so they carried other classes' names) and the debug menu's page and item helpers. Functions with the same instructions, constants aside, are copies of one template: a group's known names give the others theirs, which held for 99.3% of 15,664 names hidden from the rule, and a group's role read once names it all. A function that stores its class's vtable and is no slot of it is a constructor when the store is into its first argument, and a factory when it is a short function with one store into what it allocated.
 
 **Shader passes.** A function that loads shader programs by name in wide text sets up that pass, and takes the
 name the programs share: 53 functions.
@@ -296,9 +296,9 @@ that template. Longer ones have the template inlined in real work, so each kind 
 | | Functions | What it says |
 |---|---:|---|
 | The game's own name | 2,164 | Registered methods, steps, messages, singletons, tables |
-| A known role | 21,113 | Destructors, class getters, `std::function` slots, EzState opcodes, delegates: much is compiler or template code |
-| In a named class or file | 9,074 | Where it belongs, not what it does; 3,703 of them only by their callers, which about half of known functions agree with |
-| Only an anonymous class | 14,665 | A vtable or object file, no name |
+| A known role | 22,874 | Destructors, class getters, `std::function` slots, EzState opcodes, delegates: much is compiler or template code |
+| In a named class or file | 8,447 | Where it belongs, not what it does; 3,703 of them only by their callers, which about half of known functions agree with |
+| Only an anonymous class | 13,531 | A vtable or object file, no name |
 | Nowhere yet | 12,851 | |
 
 Text and compiler patterns are nearly used up, so what remains is mostly read by hand, a few functions at a

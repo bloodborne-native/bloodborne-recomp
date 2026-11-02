@@ -1247,6 +1247,8 @@ role_of = lambda f: re.sub(r'_[0-9a-f]{5,}$', '', names.get(f, '').split('::')[-
 objdump = shutil.which('llvm-objdump') or shutil.which('objdump')
 elf = OUT / 'eboot_ghidra.elf'
 shapes = collections.defaultdict(list)
+writers = {}
+vtable_stores = collections.Counter()
 if objdump and elf.exists():
     current, digest = None, None
     constants = re.compile(r'-?0x[0-9a-f]+|\b\d+\b')
@@ -1261,6 +1263,23 @@ if objdump and elf.exists():
             if current is not None and functions[current][1] >= 8:
                 shapes[digest.digest()].append(current)
             current, digest = at, hashlib.blake2b(digest_size=8)
+            this_regs, new_regs, table_regs, stores = {'%rdi'}, set(), set(), set()
+        if current is not None and names.get(current, '').endswith('writes_vtable'):
+            # Who the vtable is stored into: the first argument, a new object or a local.
+            copy = re.match(r'movq\s+(%\w+), (%\w+)$', hit.group(2).strip())
+            load = re.match(r'leaq\s+\S+\(%rip\), (%\w+)\s+# (0x[0-9a-f]+)', hit.group(2))
+            store = re.match(r'movq\s+(%\w+), \((%\w+)\)$', hit.group(2).strip())
+            if copy and copy.group(1) == '%rdi':
+                this_regs.add(copy.group(2))
+            elif copy and copy.group(1) == '%rax':
+                new_regs.add(copy.group(2))
+            if load:
+                (table_regs.add if int(load.group(2), 16) in vtables else table_regs.discard)(load.group(1))
+            if store and store.group(1) in table_regs:
+                stores.add('this' if store.group(2) in this_regs else
+                           'new' if store.group(2) in new_regs | {'%rax'} else 'other')
+                writers[current] = stores
+                vtable_stores[current] += 1
         code_text = hit.group(2).split('#')[0].split('<')[0].strip()
         if current is not None and not code_text.startswith('nop'):
             digest.update(constants.sub('#', code_text).encode())
@@ -1283,6 +1302,17 @@ for group in shapes.values():
         how[f] = 'shape'
         identical += 1
 print('identical code', identical)
+# 12. A function that stores its class's vtable and is no slot of it builds an object: its first argument
+# (a constructor) or, when short with one store, what it allocated (a factory: longer ones build debug pages).
+built = 0
+for f, stores in writers.items():
+    if how.get(f) in OWN_NAME or not names.get(f, '').endswith('writes_vtable'):
+        continue
+    if 'this' in stores or ('new' in stores and vtable_stores[f] == 1 and functions[f][1] <= 120):
+        names[f] = names[f].rsplit('::', 1)[0] + ('::constructor' if 'this' in stores else '::create')
+        how[f] = 'shape'
+        built += 1
+print('constructors', built)
 names.update(hand)
 how.update(dict.fromkeys(hand, 'hand'))
 with open(OUT / 'names.tsv', 'w') as out:
