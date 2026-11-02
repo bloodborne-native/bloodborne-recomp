@@ -361,9 +361,15 @@ for address, name in globals_.items():
                 at = code.find(form, after, end)
 print('later calls on singletons', later)
 found = 0
+# One call proves little: a singleton is passed to mutexes and containers too (a sample read by hand
+# was mostly wrong). Two calls are asked for, from callers of one class, and a function whose own
+# messages name a source file belongs to that file.
+FOREIGN = re.compile(r'[\\\\/]([A-Za-z0-9_]+)\.(?:cpp|c|h|inl)$')
+def foreign_file(f):
+    return any(FOREIGN.search(s) and 'Singleton' not in s for s in by_function.get(f, ()))
 for f, votes in methods.items():
     top, count = votes.most_common(1)[0]
-    if len(votes) == 1 or count >= 4 * sum(votes.values()) // 5:
+    if count >= 2 and count * 5 >= sum(votes.values()) * 4 and not foreign_file(f):
         if f in names and how.get(f) != 'message':
             del names[f]
         found += give(f, f'{top}::method_{f:x}', 'singleton')
@@ -438,7 +444,7 @@ for round_ in range(6):
         labels = collections.Counter(names[g].split('::')[0] for g in fromf if g in names and how.get(g) in THIS_LABEL and '::' in names[g])
         if labels:
             top, count = labels.most_common(1)[0]
-            if count * 4 >= sum(labels.values()) * 3:
+            if count >= 2 and count * 4 >= sum(labels.values()) * 3 and not foreign_file(target):
                 if target in names:
                     del names[target]
                 found += give(target, f'{top}::method_{target:x}', 'this')
