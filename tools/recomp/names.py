@@ -1497,7 +1497,11 @@ for slot, target in slots.items():
 print('natives in tables', tabled)
 # 17. Slot roles: a family of classes shares what a virtual slot does, read once in the code. An evaluatable's slot 1
 # evaluates: the operators call slot 1 of both operands and combine the results.
-SLOT_ROLES = [(re.compile(r'FXEvaluatable.*::vf1'), 'evaluate')]
+SLOT_ROLES = [(re.compile(r'FXEvaluatable.*::vf1'), 'evaluate'),
+              # Menu dialogs: slot 24 binds named parts to child classes, slot 27 takes a message id and a value (three read each).
+              (re.compile(r'FrpgMenuDlg\w*::vf24'), 'attachChildren'), (re.compile(r'FrpgMenuDlg\w*::vf27'), 'onMessage'),
+              # A method invoker calls its member function pointer and stores the result.
+              (re.compile(r'DLMethodInvoker_\w+::vf0'), 'invoke')]
 slot_named = 0
 for f, name in list(names.items()):
     if how.get(f) in ('class', 'vtable'):

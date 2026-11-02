@@ -66,7 +66,7 @@ reads, and plain accesses to private frames gain nothing. The order of the work:
 | Functions labelled by library (2026-11-02) | `███████████████████░` 95.5% | 171,706 of 179,698 |
 | Functions named by hand (2026-11-02) | `░░░░░░░░░░░░░░░░░░░░` 0.2% | 617 of 179,698, 228 sure and 389 guesses (libGnm's command buffer methods; the engine's draw methods, state setters, mesh, model, material and lighting code; the synchronization primitives; the busiest functions; texture repositories) |
 | Functions placed, of those to understand (2026-11-02) | `████████████████░░░░` 80% | 48,062 of 59,867 longer than five instructions, in FromSoftware's code or not labelled yet |
-| Functions identified, of the target (2026-11-02) | `█████████░░░░░░░░░░░` 48% | about 28,000 of about 58,000: 2,300 with the game's own name, 25,652 with a known role, much of that compiler and template code |
+| Functions identified, of the target (2026-11-02) | `█████████░░░░░░░░░░░` 48% | about 28,300 of about 58,000: 2,300 with the game's own name, 25,951 with a known role, much of that compiler and template code |
 
 Every function is generated; the ones left to the translator are the 660 import stubs, the 130
 functions that call `setjmp`, and 53 that the game's patches (51) or the runtime's live switches
@@ -297,8 +297,8 @@ that template. Longer ones have the template inlined in real work, so each kind 
 | | Functions | What it says |
 |---|---:|---|
 | The game's own name | 2,300 | Registered methods, steps, messages, singletons, tables |
-| A known role | 25,652 | Destructors, class getters, `std::function` slots, EzState opcodes, delegates: much is compiler or template code |
-| In a named class or file | 8,055 | Where it belongs, not what it does; 3,703 of them only by their callers, which about half of known functions agree with |
+| A known role | 25,951 | Destructors, class getters, `std::function` slots, EzState opcodes, delegates: much is compiler or template code |
+| In a named class or file | 7,756 | Where it belongs, not what it does; 3,703 of them only by their callers, which about half of known functions agree with |
 | Only an anonymous class | 12,055 | A vtable or object file, no name |
 | Nowhere yet | 11,805 | |
 
