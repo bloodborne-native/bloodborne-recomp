@@ -1449,6 +1449,29 @@ for m in re.finditer(rb'[\x48\x4c]\x8d[\x05\x0d\x15\x1d\x25\x2d\x35\x3d](.{4})',
                 last_text = (m.start(), word) if BOUND_NAME.fullmatch(word) or word.endswith('[push enter]') else None
             break
 print('bound methods', bound)
+# 16b. Script natives: Havok's Lua callbacks and ActionScript's natives are registered with their names in plain
+# text beside the code pointer, in either order (hkbFireEvent read by hand).
+NATIVE_TEXT = re.compile(rb'(?:hkb[A-Z][A-Za-z0-9]+|[a-z]+[A-Z][A-Za-z0-9]+|[a-z]{6,})\0')
+leas = [(m.start(), text[3] + m.end() + struct.unpack('<i', m.group(1))[0]) for m in re.finditer(rb'[\x48\x4c]\x8d[\x05\x0d\x15\x1d\x25\x2d\x35\x3d](.{4})', code, re.S)]
+natives = 0
+for i, (at_, target) in enumerate(leas):
+    if target not in functions or functions[target][1] < 5 or how.get(target, '') not in BOUND_WEAK:
+        continue
+    for j in (i - 1, i + 1):
+        if not 0 <= j < len(leas) or abs(leas[j][0] - at_) >= 48 or leas[j][1] in functions:
+            continue
+        hit = None
+        for p_ in loads:
+            if p_[3] <= leas[j][1] < p_[3] + p_[5]:
+                hit = NATIVE_TEXT.match(image, p_[2] + leas[j][1] - p_[3])
+                break
+        if hit:
+            word = hit.group(0)[:-1].decode()
+            names[target] = f'hkbScript::{word}_{target:x}' if word.startswith('hkb') else f'Native::{word}_{target:x}'
+            how[target] = 'shape'
+            natives += 1
+            break
+print('script natives', natives)
 # 15. Text: a function no rule placed but that loads wide text says what it deals with. That is a hint, not its
 # role, so the name says only that (Says::), it never replaces another name, and it counts as placed, not identified.
 SAYS = re.compile(rb'(?:[\x20-\x7e]\0){5,60}\0\0')
