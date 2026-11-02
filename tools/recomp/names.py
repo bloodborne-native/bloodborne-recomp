@@ -1256,7 +1256,10 @@ SHAPE_ROLES = {0x26f4cb0: 'destructor', 0x26f4d00: 'deletingDestructor', 0x26f19
                0xc96820: 'deletingDestructorThunk', 0x27221f0: 'std::vector::tryReserve',
                0x1003b80: 'FD4DebugMenu::addItem', 0x1833db0: 'FD4DeleyDeleteManager::request',
                0x1eae7a0: 'std::tree::eraseNodes', 0x2172880: 'freeBuffers', 0x2afabc0: 'forwardToParam',
-               0x2afad00: 'forwardToParam', 0x2911b10: 'syncSelection'}
+               0x2afad00: 'forwardToParam', 0x2911b10: 'syncSelection', 0xc96e80: 'getLocked',
+               0xcda980: 'std::vector::free', 0xf29e00: 'deleteMember', 0xf5d810: 'lockedForward',
+               0xe59ee0: 'releaseBuffers', 0x101a980: 'forwardToSingleton', 0x1509630: 'releaseRef',
+               0x1fc49d0: 'lockedForward', 0xcf3100: 'setName'}
 WEAK_ROLE = ('helper', 'near', 'unit', 'method', 'vf', 'writes_vtable', 'shared', 'fn', '_Do_call')
 role_of = lambda f: re.sub(r'_[0-9a-f]{5,}$', '', names.get(f, '').split('::')[-1])
 objdump = shutil.which('llvm-objdump') or shutil.which('objdump')
