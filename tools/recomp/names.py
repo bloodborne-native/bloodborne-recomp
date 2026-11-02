@@ -1236,7 +1236,12 @@ SHAPE_ROLES = {0x26f4cb0: 'destructor', 0x26f4d00: 'deletingDestructor', 0x26f19
                0x2439370: 'Scaleform::AS3::thunkGetValue', 0x240ef50: 'Scaleform::AS3::ForEachChild_GC',
                0x240ed90: 'Scaleform::AS3::ForEachChild_GC', 0x29c2150: 'debugDrawLine',
                0x29c3100: 'debugDrawLine', 0x29c4d40: 'debugDrawLine', 0x1ed6c30: 'DL::tryTransaction',
-               0xd06670: 'NexusRevolution::callById', 0xd1c560: 'NexusRevolution::callById'}
+               0xd06670: 'NexusRevolution::callById', 0xd1c560: 'NexusRevolution::callById',
+               0x1048540: 'std::wstring::clear', 0x1448c90: 'DL::deleteObject', 0x290ab00: 'destructor',
+               0x1df5fb0: 'std::tree::eraseNodes', 0x1ce80a0: 'create', 0x19cca60: 'constructor',
+               0x13ec240: 'std::vector::reallocate', 0x268f8c0: 'std::vector::tryReserve',
+               0x272e7c0: 'std::vector::moveAssign', 0x2717330: 'std::vector::insertRange',
+               0x2ae91c0: 'release', 0x2aedf60: 'evaluate'}
 WEAK_ROLE = ('helper', 'near', 'unit', 'method', 'vf', 'writes_vtable', 'shared', 'fn', '_Do_call')
 role_of = lambda f: re.sub(r'_[0-9a-f]{5,}$', '', names.get(f, '').split('::')[-1])
 objdump = shutil.which('llvm-objdump') or shutil.which('objdump')
