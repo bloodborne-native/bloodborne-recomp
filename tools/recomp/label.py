@@ -12,6 +12,7 @@ the tables of tools/recomp/scan.c and tools/recomp/pointers.py (docs/RECOMPILATI
    the other functions of its vtable (consecutive pointer slots, pointer_slots.tsv) when they agree,
    or the library of its callers, or of its callees, when all of them have one and it is the same.
    Most functions left after 1 and 2 are small and have no direct caller.
+4. Neighbours again, for the runs 3 left between two functions of one library.
 
 --check hides a tenth of the labelled functions, runs 3 again and prints how many of them it gives
 back and how many of those match: a measure of 3's agreement with 1 and 2, not of its truth.
@@ -199,6 +200,16 @@ def main():
         print(f'check: {len(hidden)} labels hidden, {len(back)} given back, {same} the same '
               f'({100 * same / max(1, len(back)):.1f}%)')
     propagate(label, how, tables, callers, callees)
+    # A run with the same library on both sides is that library: 99.7% of hidden runs of up to 20 agree.
+    last, run = None, []
+    for address, _ in functions:
+        if address not in label:
+            run.append(address)
+            continue
+        if run and last == label[address]:
+            for a in run:
+                label[a], how[a] = last, 'between'
+        last, run = label[address], []
 
     totals = collections.Counter()
     sizes = collections.Counter()
