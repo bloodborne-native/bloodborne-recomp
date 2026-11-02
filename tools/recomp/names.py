@@ -951,7 +951,8 @@ unit_sizes = collections.Counter(bisect.bisect_right(unit_starts, f) - 1 for f i
 HUGE_UNIT = 500
 unit_classes = collections.defaultdict(collections.Counter)
 for f, name in names.items():
-    if how[f] in ('class', 'binding', 'step') and not name.startswith('Class_') and f >= unit_starts[0]:
+    # The channels' builder sits in another file: that file is the bank's, not a channel's.
+    if how[f] in ('class', 'binding', 'step') and not name.startswith(('Class_', 'GraphicsParamChannel_')) and f >= unit_starts[0]:
         unit_classes[bisect.bisect_right(unit_starts, f) - 1][name.split('::')[0]] += 1
 # A class that is the only one in five or more object files is a base they share (read by hand: code of
 # other systems), not what they hold.
@@ -1525,6 +1526,11 @@ SLOT_ROLES = [(re.compile(r'FXEvaluatable.*::vf1'), 'evaluate'),
               # File capsules: slot 7 passes the loaded data on (two read). Location nodes: slot 8 copies a range of 0x30-byte
               # matrices out (one read).
               (re.compile(r'\w+FileCap::vf7'), 'onFileLoaded'), (re.compile(r'SprjFD4LocationNode_\w+::vf8'), 'getMatrices'),
+              # Fading setting channels (one class per value type): a list of named states, a list of bound targets.
+              # Read in one class: the slots do the same in the rest, only the value's size differs.
+              *[(re.compile(r'GraphicsParamChannel_\w+::vf%d' % slot), role) for slot, role in
+                ((2, 'addTarget'), (4, 'fadeTargetsIn'), (5, 'fadeTargetsOut'), (6, 'setTargetsScaled'), (7, 'update'),
+                 (8, 'updateTargets'), (9, 'fadeIn'), (10, 'fadeOut'), (11, 'setScaled'), (12, 'hasState'))],
               # Menu dialogs: slot 32 takes a control event (2, 6, 8) and a value (two read, same comparisons).
               (re.compile(r'FrpgMenuDlg\w*::vf32'), 'onControlEvent'),
               # FX constant parameters: slot 9 gives the size of the stored value, slot 10 describes it (one read each); a parent

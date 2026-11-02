@@ -69,3 +69,19 @@
 0x52f1810	FD4TaskRemoveCommand	queued by removeTaskDeferred while the manager runs
 0x52fe0b0	FD4TaskGroup	built by the group table with a debug page named TaskGroup
 0x52fe150	FD4TaskRunnerStep	stage object of the task runner: vf2 notifies and commits task changes
+0x52e63a0	GraphicsParamChannel_52e63a0	built by the graphics setting groups; fades a typed setting between named states
+0x52e6460	GraphicsParamChannel_52e6460	built by the graphics setting groups; fades a typed setting between named states
+0x52e6520	GraphicsParamChannel_52e6520	built by the graphics setting groups; fades a typed setting between named states
+0x52e65e0	GraphicsParamChannel_52e65e0	built by the graphics setting groups; fades a typed setting between named states
+0x52e66a0	GraphicsParamChannel_52e66a0	built by the graphics setting groups; fades a typed setting between named states
+0x52e6760	GraphicsParamChannel_52e6760	built by the graphics setting groups; fades a typed setting between named states
+0x52e6820	GraphicsParamChannel_52e6820	built by the graphics setting groups; fades a typed setting between named states
+0x52e68e0	GraphicsParamChannel_52e68e0	built by the graphics setting groups; fades a typed setting between named states
+0x52e69a0	GraphicsParamChannel_52e69a0	built by the graphics setting groups; fades a typed setting between named states
+0x52e6a60	GraphicsParamChannel_52e6a60	built by the graphics setting groups; fades a typed setting between named states
+0x52e6b20	GraphicsParamChannel_52e6b20	built by the graphics setting groups; fades a typed setting between named states
+0x52e6be0	GraphicsParamChannel_52e6be0	built by the graphics setting groups; fades a typed setting between named states
+0x52e6ca0	GraphicsParamChannel_52e6ca0	built by the graphics setting groups; fades a typed setting between named states
+0x52e6d60	GraphicsParamChannel_52e6d60	built by the graphics setting groups; fades a typed setting between named states
+0x52e6e20	GraphicsParamChannel_52e6e20	built by the graphics setting groups; fades a typed setting between named states
+0x52e6ee0	GraphicsParamChannel_52e6ee0	built by the graphics setting groups; fades a typed setting between named states

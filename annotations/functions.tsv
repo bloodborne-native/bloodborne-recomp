@@ -63,6 +63,7 @@
 0xe2e9b0	CG::TextureCube::createDepth	guess	calls	
 0xe2f440	CG::VolumeRenderTarget::create	guess	calls	
 0xe2fb10	CG::CubeRenderTarget::create	guess	calls	
+0xe3ec00	GraphicsParamBank::constructor	guess	calls	
 0xe48060	DL::Crc64::update	sure	calls	
 0xe48400	TextureReadback::update	guess	calls	
 0xe49180	TextureReadback::readTile	guess	calls	
