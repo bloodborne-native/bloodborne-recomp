@@ -872,7 +872,9 @@ EXAMPLES = {0x12a5050: 'push_back', 0x12b7550: 'treeErase', 0x12afa40: 'destroyI
             0x144e810: 'addDebugButton', 0x142ebe0: 'removeDebugPage', 0x122ef60: 'addDebugItem', 0x12dfa60: 'addDebugItem',
             0x1470f60: 'removeDebugPage', 0xfce990: 'eraseAndDelete', 0xff6f90: 'removeDebugEntry', 0x2007a70: 'setLogField',
             0x2008570: 'setLogField', 0x13c3d70: 'treeEraseRange', 0x12b75b0: 'treeEraseRange', 0x20ed680: 'treeFindString',
-            0x1d445b0: 'findResourceByName', 0xfce860: 'findResource'}
+            0x1d445b0: 'findResourceByName', 0xfce860: 'findResource', 0x20088a0: 'setLogField', 0x20093c0: 'setLogField',
+            0x2009260: 'setLogField', 0x2008740: 'setLogField', 0x1ac8640: 'makeResourcePath', 0x1ac8730: 'makeResourcePath',
+            0x1fb2e60: 'callRemote', 0x1fb2be0: 'callRemote', 0x1fb3880: 'callRemote'}
 def wide_text_of(f):
     at = f - text0[3]
     for m in re.finditer(rb'[\x48\x4c]\x8d[\x05\x0d\x15\x1d\x25\x2d\x35\x3d](.{4})', code0[at:at + functions[f][0]], re.S):
@@ -902,11 +904,11 @@ for f, (size, count) in functions.items():
         what = example_shapes.get(body_shape(f))
     if what:
         owner_name = name.split('::')[0] if '::' in name and not name.startswith(('Class_', 'shared_')) else 'Template'
-        said = wide_text_of(f) if what in ('removeDebugEntry', 'setLogField') else None
+        said = wide_text_of(f) if what in ('removeDebugEntry', 'setLogField', 'makeResourcePath', 'callRemote') else None
         if said and what == 'removeDebugEntry':  # the label is the class's name, as in a destructor
             owner_name = said
         elif said:
-            what = f'setLogField_{said}'
+            what = f"{what}_{re.sub(r'[^A-Za-z0-9]+', '_', said).strip('_')}"
         names[f] = f'{owner_name}::{what}_{f:x}'
         how[f] = 'shape'
         shaped[what] += 1
