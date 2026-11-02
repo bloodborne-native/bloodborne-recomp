@@ -1420,6 +1420,35 @@ for f, seen in lock_calls.items():
 print('locked accessors', locked)
 names.update(hand)
 how.update(dict.fromkeys(hand, 'hand'))
+# 16. Bound methods: scripts and debug menus register a method with its name in wide text, the text loaded just
+# before the code pointer (samples read by hand: setters, getters and flags that fit their names).
+BOUND_TEXT = re.compile(rb'(?:[\x20-\x7e]\0){3,80}\0\0')
+BOUND_NAME = re.compile(r'(?:[A-Z]\w+::)?(?:Set|Get|Is|Has|Can|Send|On|Add|Remove|Start|Stop|Reset|Clear|Load|Save|Update|Create|Delete|Enable|Disable|Check|Find|Request)[A-Z]\w*')
+BOUND_WEAK = ('', 'vtable', 'near', 'helper', 'unit', 'unitfile', 'this')
+bound, last_text = 0, None
+for m in re.finditer(rb'[\x48\x4c]\x8d[\x05\x0d\x15\x1d\x25\x2d\x35\x3d](.{4})', code, re.S):
+    target = text[3] + m.end() + struct.unpack('<i', m.group(1))[0]
+    if target in functions:
+        if last_text and m.start() - last_text[0] < 48 and how.get(target, '') in BOUND_WEAK and modules.get(target, ('', ''))[0] in TARGET:
+            word = last_text[1]
+            owner_name = names.get(target, '').split('::')[0]
+            if word.endswith('[push enter]'):
+                names[target] = 'DebugAction::' + re.sub(r'\W+', '_', word[:-12]).strip('_') + f'_{target:x}'
+            elif '::' in word or not owner_name or owner_name.startswith(('Class_', 'shared_', 'Says')):
+                names[target] = word if '::' in word else f'Bound::{word}_{target:x}'
+            else:
+                names[target] = f'{owner_name}::{word}_{target:x}'
+            how[target] = 'shape'
+            bound += 1
+        continue
+    for p_ in loads:
+        if p_[3] <= target < p_[3] + p_[5]:
+            hit = BOUND_TEXT.match(image, p_[2] + target - p_[3])
+            if hit:
+                word = hit.group(0)[:-2].decode('utf-16-le')
+                last_text = (m.start(), word) if BOUND_NAME.fullmatch(word) or word.endswith('[push enter]') else None
+            break
+print('bound methods', bound)
 # 15. Text: a function no rule placed but that loads wide text says what it deals with. That is a hint, not its
 # role, so the name says only that (Says::), it never replaces another name, and it counts as placed, not identified.
 SAYS = re.compile(rb'(?:[\x20-\x7e]\0){5,60}\0\0')

@@ -31,3 +31,6 @@
 0x53afc10	SprjModelViewerPad	its constructor or destructor says this name, no other class does
 0x53b1c80	SprjTalkAction	its constructor or destructor says this name, no other class does
 0x53b2540	SprjMenuViewerPad	its constructor or destructor says this name, no other class does
+0x531b990	SprjAiUpdateTimeSchedular	its methods say this name, no other class does
+0x532dc40	FrpgHavokPerf	its methods say this name, no other class does
+0x533e0a0	ChrMake_SkinColorSelect	its methods say this name, no other class does
