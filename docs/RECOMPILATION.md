@@ -64,7 +64,7 @@ reads, and plain accesses to private frames gain nothing. The order of the work:
 | CPU time recompiled, against the translator | `█████████████████░░░` 86% | 344% of one core against 402% (1st Floor Sickroom), 360% against 397% (Iosefka's Clinic, 2026-10-27) |
 | Functions checked call by call (recordings) | `░░░░░░░░░░░░░░░░░░░░` 0.5% | 933 of 179,698 |
 | Functions labelled by library (2026-11-02) | `█████████████████░░░` 82.8% | 148,858 of 179,698 |
-| Functions named by hand (2026-11-02) | `░░░░░░░░░░░░░░░░░░░░` 0.2% | 365 of 179,698, 195 sure and 170 guesses (libGnm's command buffer methods; the engine's draw methods, state setters, mesh, model, material and lighting code; the synchronization primitives; the busiest functions; texture repositories) |
+| Functions named by hand (2026-11-02) | `░░░░░░░░░░░░░░░░░░░░` 0.2% | 366 of 179,698, 196 sure and 170 guesses (libGnm's command buffer methods; the engine's draw methods, state setters, mesh, model, material and lighting code; the synchronization primitives; the busiest functions; texture repositories) |
 | Functions placed, of those to understand (2026-11-02) | `███████████████░░░░░` 75% | 47,917 of 63,890 longer than five instructions, in FromSoftware's code or not labelled yet |
 | Functions identified, of the target (2026-11-02) | `██████░░░░░░░░░░░░░░` 32% | about 18,100 of about 56,000: 2,161 with the game's own name, 15,927 with a known role, much of that compiler and template code |
 
@@ -397,7 +397,7 @@ call of it, `?` after a guess. The names change comments only: the full library'
 spaces removed, is the same with and without them. `build_library.py` generates the C again when
 the file changes.
 
-So far, 365 functions: first libGnm's command buffer methods (83), the engine's render boundary and
+So far, 366 functions: first libGnm's command buffer methods (83), the engine's render boundary and
 what is above it (73), the synchronization primitives (28) and the busiest functions (20), then what the
 mapping below read by hand: hot and much-called functions and the texture repositories.
 

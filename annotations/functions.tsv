@@ -186,6 +186,7 @@
 0x1d85ca0	TexResCap::setTexture	sure	calls	
 0x1d86770	TexRepositoryImp::TexRepositoryImp	sure	calls	
 0x1d87300	TexRepository::createFromTpfEntry	guess	calls	
+0x1d874a0	TexRepository::createBatch	sure	calls	
 0x1d88600	TexRepository::releaseTexture	sure	calls	
 0x1d88680	TexRepository::addHold	sure	calls	
 0x1d88690	TexRepository::findOrCreate	guess	calls	
