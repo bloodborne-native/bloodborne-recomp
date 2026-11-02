@@ -869,7 +869,18 @@ MEMBER_CALL = re.compile(rb'(?:\xf6[\xc0-\xc3]\x01|\xa8\x01)\x74.(?:[\x48\x49]\x
 MASK = re.compile(rb'\xe8.{4}|\xe9.{4}|[\x48\x4c\x49\x4d]?[\x8b\x8d\x89\x83\xc7\x3b\x39][\x05\x0d\x15\x1d\x25\x2d\x35\x3d].{4}', re.S)
 EXAMPLES = {0x12a5050: 'push_back', 0x12b7550: 'treeErase', 0x12afa40: 'destroyInstance', 0x12f1c70: 'treeErase',
             0x12b7f20: 'treeInsertNode', 0xf85d60: 'getClassObject', 0x12226b0: 'addDebugItem', 0x144ea40: 'addDebugToggle',
-            0x144e810: 'addDebugButton', 0x142ebe0: 'removeDebugPage'}
+            0x144e810: 'addDebugButton', 0x142ebe0: 'removeDebugPage', 0x122ef60: 'addDebugItem', 0x12dfa60: 'addDebugItem',
+            0x1470f60: 'removeDebugPage', 0xfce990: 'eraseAndDelete', 0xff6f90: 'removeDebugEntry', 0x2007a70: 'setLogField'}
+def wide_text_of(f):
+    at = f - text0[3]
+    for m in re.finditer(rb'[\x48\x4c]\x8d[\x05\x0d\x15\x1d\x25\x2d\x35\x3d](.{4})', code0[at:at + functions[f][0]], re.S):
+        target = f + m.end() + struct.unpack('<i', m.group(1))[0]
+        for p_ in loads:
+            if p_[3] <= target < p_[3] + p_[5]:
+                hit = re.compile(rb'(?:[\x20-\x7e]\0){3,80}\0\0').match(image, p_[2] + target - p_[3])
+                if hit:
+                    return hit.group(0)[:-2].decode('utf-16-le')
+    return None
 def body_shape(f):
     body = code0[f - text0[3]:f - text0[3] + functions[f][0]]
     return MASK.sub(lambda m: m.group(0)[:-4] + b'\0\0\0\0', body)
@@ -889,6 +900,11 @@ for f, (size, count) in functions.items():
         what = example_shapes.get(body_shape(f))
     if what:
         owner_name = name.split('::')[0] if '::' in name and not name.startswith(('Class_', 'shared_')) else 'Template'
+        said = wide_text_of(f) if what in ('removeDebugEntry', 'setLogField') else None
+        if said and what == 'removeDebugEntry':  # the label is the class's name, as in a destructor
+            owner_name = said
+        elif said:
+            what = f'setLogField_{said}'
         names[f] = f'{owner_name}::{what}_{f:x}'
         how[f] = 'shape'
         shaped[what] += 1
