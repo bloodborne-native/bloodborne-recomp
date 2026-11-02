@@ -279,6 +279,7 @@
 0x212d390	Lua::str_concat	guess	message	
 0x212e360	Lua::auxsort	guess	message	
 0x21305a0	Lua::luaB_print#2	guess	message	
+0x21673e0	CG::Device::createBuffer	guess	calls	
 0x2168a20	CG::GraphicsContext::updateConstantBuffer	guess	calls
 0x2168ca0	CG::GraphicsContext::setTopology	sure	calls	void (CG::GraphicsContext *, CG::DrawState *, uint32_t topology)
 0x2168cb0	CG::GraphicsContext::setIndexBuffer	sure	calls	void (CG::GraphicsContext *, CG::DrawState *, const CG::Buffer *, uint32_t format, uint32_t offset)
@@ -304,6 +305,7 @@
 0x2190d30	CG::ImmediateDraw::drawIndexedUserPrimitives	sure	calls	void (CG::ImmediateDraw *, uint32_t topology, uint32_t min_index, uint32_t max_index, uint32_t index_count, const void *indices, uint32_t index_format, const void *vertices, uint32_t stride)
 0x2192660	CG::Resource::deferRelease	guess	calls	
 0x219ef50	CG::TextureRegistry::removeMippedAndRelease	guess	calls	
+0x21a47e0	CG::Buffer::recreate	guess	calls	
 0x21a6a00	CG::TextureRegistry::removeAndRelease	sure	calls	
 0x21a7d70	CG::Texture::createFromSource	guess	calls	
 0x21b8710	FD4::JobSystem::runAndWait	guess	calls	void (FD4::JobGroup *)
