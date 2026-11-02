@@ -1821,6 +1821,17 @@ for table, run in vtables.items():
         if how.get(run[index]) != 'hand':
             names[run[index]], how[run[index]] = f'{label}::{role}', 'shape'
 print('event conditions', conditions)
+# 27. Typed values of the serialised data trees: 17-slot tables sharing one slot 2. Slot 4 copies, 11 reads from a stream
+# (aligned to 8, swapping bytes when asked), 14 writes (one of each read, and the 8-byte vector kind only).
+typed_base = vtables.get(0x52bea10, [None] * 3)[2]
+typed_tables = 0
+for table, run in vtables.items():
+    if len(run) == 17 and run[2] == typed_base and not class_names.get(table):
+        typed_tables += 1
+        for index, role in ((4, 'copyFrom'), (11, 'readBinary'), (14, 'writeBinary')):
+            if how.get(run[index]) != 'hand':
+                names[run[index]], how[run[index]] = f'DLTypedValue_{table:x}::{role}', 'shape'
+print('typed values', typed_tables)
 # 24b. A helper or near label far from everything solid in its class is a template or a shared utility that a class happens
 # to use (two of three read were: a vector assignment, a number parser). Those lose the label: 1 MiB, the width of a large
 # object file, measured against vtable slots, constructors and hand names.
