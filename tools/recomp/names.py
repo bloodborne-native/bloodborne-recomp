@@ -159,6 +159,26 @@ for name, fs in pairs.items():
         bound += give(next(iter(fs)), name, 'binding')
 print('script bindings', bound)
 
+# 3c. Step tables: state machines fill a table of a function, a zero and its name in wide text, the whole
+# Class::STEP_name, in code. The pair of loads stores into the table.
+WIDE = re.compile(rb'(?:[A-Za-z0-9_:<> ]\0){4,120}\0\0')
+wide_names = {m.start(): m.group(0)[:-2].decode('utf-16-le') for m in WIDE.finditer(code_) if b':\0:\0' in m.group(0)}
+STORE = re.compile(rb'[\x48\x4c]\x8d[\x05\x0d\x15\x1d\x25\x2d\x35\x3d](.{4})[\x48\x49\x4c\x4d]\x89', re.S)
+last_store = None
+steps = collections.defaultdict(set)
+for m in STORE.finditer(code_):
+    target = m.start() + 7 + struct.unpack('<i', m.group(1))[0]
+    if target in wide_names and last_store and m.start() - last_store[0] < 40:
+        fn_at = last_store[1] + code_text[3]
+        if fn_at in functions and fn_at < code_end:
+            steps[wide_names[target]].add(fn_at)
+    last_store = (m.start(), target)
+named_steps = 0
+for name, fs in steps.items():
+    if len(fs) == 1 and not name.endswith('::THIS_CLASS'):
+        named_steps += give(next(iter(fs)), name, 'step')
+print('step tables', named_steps)
+
 # 4. Source files: the file a function's messages name, spread only over short runs between two
 # functions of the same file (a file's functions stay together; a longer run can be anything).
 files = {}

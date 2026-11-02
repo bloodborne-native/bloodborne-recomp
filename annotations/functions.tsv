@@ -147,6 +147,7 @@
 0x1399bf0	Sprj::EventFlagManager::getFlag	sure	message	bool (void *, uint32_t flag)
 0x1421d40	SprjFile::loadFile	guess	calls	
 0x193ac10	Sprj::World::update	guess	message	void (float frame_time, void *world)
+0x19c52a0	SprjSaveDataLoadStepForNotTitleFlow::STEP_SelectDefaultStorage_Wait	sure	step	
 0x1a8bc00	SprjGaitem::releaseRef	sure	message	
 0x1d34880	FD4::Skeleton::getBoneMatrices	guess	calls	uint32_t (const FD4::Skeleton *, float (*matrices)[12], uint32_t count, uint32_t first)
 0x1d37400	FD4::ModelInstance::updateBoundsAndSkinning	guess	calls	void (FD4::ModelInstance *, void *)
@@ -165,6 +166,7 @@
 0x1d8ba40	TexResCap::addDebugMenuItems	guess	calls	
 0x1d8bef0	TexResCap::acquireHandle	guess	calls	
 0x1d8c0b0	TexResCap::acquireHandleWithLowRes	guess	calls	
+0x1d9b340	SprjGraphicsStep::STEP_Update	sure	step	
 0x2067ac0	zlib::inflate#2	sure	message	
 0x207c460	DL::free	sure	message	
 0x207c4e0	DL::Heap::allocate	sure	calls	
