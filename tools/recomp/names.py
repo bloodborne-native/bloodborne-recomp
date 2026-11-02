@@ -546,14 +546,15 @@ for _ in range(2):
                 give(f, names[target] + '#wrapper', 'wrapper')
 
 # 6. Helpers: a function whose callers all belong to one class is that class's, repeated while it
-# reaches further. Calls are direct ones only, so this is a guess at where a function belongs.
+# reaches further. Calls are direct ones only, so this is a guess at where a function belongs: where a
+# function's source file names a class, only 47 of 207 helpers agree, against 561 of 587 vtable methods.
 callers = collections.defaultdict(set)
 for f, targets in callees.items():
     for target in targets:
         callers[target].add(f)
 def class_label(f):
     name = names.get(f, '')
-    if '::' in name and name.split('::')[0] and how.get(f) in ('class', 'vtable', 'helper', 'message', 'singleton'):
+    if '::' in name and name.split('::')[0] and how.get(f) in ('class', 'vtable', 'helper', 'message', 'singleton', 'step'):
         return name.split('::')[0]
     return None
 for depth in range(8):
@@ -623,8 +624,9 @@ for f, source in files.items():
         names[f] = f'{stem}::{names[f].split("::")[-1]}'
         how[f] = 'file'
 
-# 8. Neighbours: the linker keeps a source file's functions together, so what lies in a short run
-# between two functions of one class is that class's.
+# 8. Neighbours: the linker keeps a source file's functions together, so what lies in a run between two
+# functions of one class is that class's. Holding out functions of known class, 97% of runs of 9 to 64
+# agree.
 ordered_functions = sorted(functions)
 def group(f):
     name = names.get(f, '')
@@ -636,7 +638,7 @@ for round_ in range(3):
         label = group(f)
         if label is None:
             continue
-        if last_group == label and 1 < index - last_index <= 8:
+        if last_group == label and 1 < index - last_index <= 64:
             for g in ordered_functions[last_index + 1:index]:
                 if g not in names:
                     found += give(g, f'{label}::near_{g:x}', 'near')

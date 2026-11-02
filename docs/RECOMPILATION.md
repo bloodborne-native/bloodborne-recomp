@@ -294,6 +294,12 @@ most reliable names the executable gives.
 **Step tables.** FD4's state machines fill a table in code with each step's function and its whole name
 in wide text (`SprjGraphicsStep::STEP_Update`), which gives 742 exact names.
 
+**How far placements go.** The tests above measure each rule. Vtable methods agree with a class-named
+source file in 561 of 587 functions. Functions between two of one class agree in about 97% when held
+out, for runs of up to 64. A function placed with its callers is the weakest: 47 of 207 agree, though a
+file can hold several classes. So being placed is not being identified, and only the first kind says
+what a function is.
+
 **What was read first.** The most-called functions give the most per function read. Dantelion2's heaps
 are objects whose vtable allocates at `+0x58` and frees at `+0x70`, which makes much of the code readable.
 
