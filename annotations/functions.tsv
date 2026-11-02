@@ -143,11 +143,16 @@
 0x1d34880	FD4::Skeleton::getBoneMatrices	guess	calls	uint32_t (const FD4::Skeleton *, float (*matrices)[12], uint32_t count, uint32_t first)
 0x1d37400	FD4::ModelInstance::updateBoundsAndSkinning	guess	calls	void (FD4::ModelInstance *, void *)
 0x1d3ae20	FD4::Skeleton::getWorldBoneMatrices	guess	calls	int (const FD4::Skeleton *, float (*matrices)[12], uint32_t count, uint32_t first)
+0x1d69110	FD4::Material::resolveTextures	guess	calls	
 0x1d6f9d0	FD4::ModelInstance::submit	guess	calls	void (FD4::ModelInstance *, void *, void *render_parameters)
 0x1d82910	CSGXTextureCreateFragment::run	guess	calls	
 0x1d82b50	TexRepository::loadDummySystemTextures	guess	message	
 0x1d83340	TexRepository::registerSystemTextures	sure	message	
 0x1d83a30	TexRepository::getOrCreateTexture	sure	calls	
+0x1d84220	TexHandle::setTexture	sure	calls	
+0x1d85ca0	TexResCap::setTexture	sure	calls	
+0x1d88690	TexRepository::findOrCreate	guess	calls	
+0x1d8b980	TexResCap::releaseHandles	sure	calls	
 0x1d8bef0	TexResCap::acquireHandle	guess	calls	
 0x1d8c0b0	TexResCap::acquireHandleWithLowRes	guess	calls	
 0x2067ac0	zlib::inflate#2	sure	message	
