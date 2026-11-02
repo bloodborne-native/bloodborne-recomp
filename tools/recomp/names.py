@@ -1595,6 +1595,13 @@ for m in re.finditer(rb'[\x48\x4c]\x8d[\x05\x0d\x15\x1d\x25\x2d\x35\x3d](.{4})',
                 if word and word.group(0) not in SAYS_GENERIC:
                     said[f].add(word.group(0))
             break
+# The same for plain text: most often a singleton's name in its inlined check. The rarest word says the most.
+said_plain = collections.Counter(s_ for f in by_function for s_ in set(by_function[f]) if re.fullmatch(r'[A-Z][A-Za-z0-9_]{4,}', s_))
+for f, texts in by_function.items():
+    if f not in names and f not in said and f not in static_inits and modules.get(f, ('', ''))[0] in TARGET:
+        words = [s_ for s_ in texts if s_ in said_plain and not s_.startswith('Text_')]
+        if words:
+            said[f].add(min(words, key=lambda s_: (said_plain[s_], s_)))
 for f, words in said.items():
     names[f] = 'Says::' + re.sub(r'\W+', '_', max(sorted(words), key=len))[:40].strip('_') + f'_{f:x}'
     how[f] = 'text'
