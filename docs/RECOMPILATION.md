@@ -257,6 +257,13 @@ longer than five instructions. Of the 90,259 not labelled yet, 51,117 are longer
 their neighbours about half are FromSoftware's. So the target is about 85,000 functions, an estimate
 because the labels are approximate.
 
+**What the executable gives by itself.** `tools/recomp/names.py` finds 5,944 vtables in the data and
+the functions that write them, which places 43,481 functions in classes without reading them, and
+spreads to a class's helpers through the call graph. Messages name few functions directly (about 580),
+and only 61 classes have a name that holds up: the class names in messages mostly belong to singletons
+other classes use. The names it writes stay with the player's copy; what is checked goes in
+`annotations/functions.tsv`.
+
 **Public source as a reference.** Names can come from public source. zlib's `inflate` (1.2.7, and a
 second copy) is known by its messages. The script VM is Havok Script (`hksObject.cpp`, `ksTable`), built
 around Lua and with a `Lua 5.0.2` string, not plain Lua or LuaPlus: 62 of its functions hold messages of
