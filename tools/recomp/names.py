@@ -604,7 +604,9 @@ for table, run in vtables.items():
         for index, f in enumerate(run):
             rename(f, f'DLMethodInvoker_{table:x}::{INVOKER_SLOTS.get(index, f"vf{index}")}')
 pushes = 0
-EZSTATE_OPS = {128: 'pushFloat', 129: 'pushDouble', 130: 'pushInt32', 140: 'add', 141: 'negate', 142: 'subtract',
+EZSTATE_OPS = {128: 'pushFloat', 129: 'pushDouble', 130: 'pushInt32', 131: 'loadVariable', 132: 'callFunction0',
+               133: 'callFunction1', 134: 'callFunction2', 135: 'callFunction3', 136: 'callFunction4', 137: 'callFunction5',
+               138: 'callFunction6', 139: 'callFunction7', 140: 'add', 141: 'negate', 142: 'subtract',
                143: 'multiply', 144: 'divide', 146: 'greater', 149: 'equal', 150: 'notEqual', 155: 'lessThanZero', 160: 'notZero'}
 # EzState's expression evaluator: two tables of opcode handlers, on a stack of tagged values (int, float,
 # object) at +0x480. EzStateEventImpl runs each event argument through it.

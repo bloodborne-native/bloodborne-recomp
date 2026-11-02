@@ -351,6 +351,7 @@
 0x273df10	DL::WStringNode::construct	guess	calls	
 0x2744e80	EzStateEventImpl::dispatch	sure	source	
 0x2762d00	DL::WString::format	sure	message	
+0x2763430	EzStateExpression::callFunction0	sure	calls	
 0x2773910	EzStateExpression::evaluate	sure	calls	
 0x277cb70	FXCurve::sampleLinear4	sure	calls	
 0x27c0e00	DL::WString::fromWideChars	sure	calls	

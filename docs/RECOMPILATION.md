@@ -64,7 +64,7 @@ reads, and plain accesses to private frames gain nothing. The order of the work:
 | CPU time recompiled, against the translator | `█████████████████░░░` 86% | 344% of one core against 402% (1st Floor Sickroom), 360% against 397% (Iosefka's Clinic, 2026-10-27) |
 | Functions checked call by call (recordings) | `░░░░░░░░░░░░░░░░░░░░` 0.5% | 933 of 179,698 |
 | Functions labelled by library (2026-11-02) | `█████████████████░░░` 82.8% | 148,858 of 179,698 |
-| Functions named (2026-11-02) | `░░░░░░░░░░░░░░░░░░░░` 0.2% | 354 of 179,698 (libGnm's command buffer methods; the engine's draw methods, state setters, mesh, model, material and lighting code; the synchronization primitives; the busiest functions) |
+| Functions named (2026-11-02) | `░░░░░░░░░░░░░░░░░░░░` 0.2% | 355 of 179,698 (libGnm's command buffer methods; the engine's draw methods, state setters, mesh, model, material and lighting code; the synchronization primitives; the busiest functions) |
 
 Every function is generated; the ones left to the translator are the 660 import stubs, the 130
 functions that call `setjmp`, and 53 that the game's patches (51) or the runtime's live switches
@@ -321,7 +321,8 @@ are delegates, in FromSoftware's code only: a Havok function of that form is a f
 Two tables of 162 entries are the opcode handlers of EzState's expression evaluator, whose stack of tagged
 values (integer, float, object) sits at `+0x480`; `EzStateEventImpl` runs each event argument through it.
 Opcodes 0 to 127 push their number less 64, in all 256 handlers, and those from 128 are constants of
-other sizes, arithmetic and comparisons. One table also writes each value out as text.
+other sizes, a variable load, calls to the environment's functions (133 to 139 taken to add one argument each
+from their sizes, only 132 was read), arithmetic and comparisons. One table also writes each value out as text.
 
 **Object files.** The executable lists its static initialisers in one table of 18,444. 12,045 of them are
 the three standard error categories, initialised again in each of 4,015 source files that include them,
