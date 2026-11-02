@@ -1123,6 +1123,22 @@ for m in re.finditer(rb'[\x48\x4c]\x8d[\x05\x0d\x15\x1d\x25\x2d\x35\x3d](.{4})',
     how[f] = 'shape'
     step_roles += 1
 print('step templates', step_roles)
+# Its two small members have one shape around the failure "destination step undefined": one moves to the step it
+# is given, the other to the next one.
+STEP_FAIL = 0xf85b10
+step_moves = 0
+for r in rows('calls.tsv'):
+    f = int(r[0], 16)
+    role = {b'\x89\x77': 'setStep', b'\xff\x47': 'nextStep'}.get(code[f - text[3] + 27:f - text[3] + 29])
+    if int(r[1], 16) != STEP_FAIL or functions[f][1] != 67 or role is None or how.get(f) == 'hand':
+        continue
+    label = names.get(f, '').split('::')[0]
+    if not label or re.search(r'Class_|shared_', names.get(f, '')):
+        label = f'FD4Step_{f:x}'
+    names[f] = f'{label}::{role}'
+    how[f] = 'shape'
+    step_moves += 1
+print('step moves', step_moves)
 # 9c. Shader passes: a function that loads shader programs by name in wide text sets up that pass. Without a
 # role of its own it takes the name the programs share, or its first.
 PROGRAM = re.compile(rb'(?:[A-Za-z0-9_]\0){3,70}\.\0[a-z]\0p\0o\0\0\0')
