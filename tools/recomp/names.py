@@ -1504,6 +1504,10 @@ SLOT_ROLES = [(re.compile(r'FXEvaluatable.*::vf1'), 'evaluate'),
               (re.compile(r'FrpgMenuDlg\w*::vf17'), 'update'),
               # A GUI object's slot 3 drops what it owns and calls the base's slot 3 (five read).
               (re.compile(r'GUI\w*::vf3'), 'releaseChildren'),
+              # Debug tweakers: slot 5 compares the bound value with the shown one (combo and on/off read), a combo's slot 7
+              # stores the chosen item's value, a range's data parses text into its limits.
+              (re.compile(r'GUI(?:Combo|OnOff)Tweaker::vf5'), 'syncValue'), (re.compile(r'GUIComboTweaker::vf7'), 'selectItem'),
+              (re.compile(r'GUIRangeDataBase::vf5'), 'parseValue'),
               # A method invoker calls its member function pointer and stores the result.
               (re.compile(r'DLMethodInvoker_\w+::vf0'), 'invoke')]
 slot_named = 0
