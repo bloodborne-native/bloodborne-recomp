@@ -26,6 +26,10 @@ def rows(name):
 functions = {int(r[0], 16): (int(r[1]), int(r[2])) for r in rows('functions.tsv')}
 starts = sorted(functions)
 modules = {int(r[0], 16): (r[2], r[3] if len(r) > 3 else '') for r in rows('modules.tsv')}
+# The Direct3D 11 layer over Gnm (rule 23) sits among Havok's code, and is not Havok's.
+for f, (library, source) in modules.items():
+    if library == 'havok' and (0x11d0000 <= f < 0x11f6000 or 0x2a39000 <= f < 0x2a56000):
+        modules[f] = ('d3d11', source)
 names, how = {}, {}
 
 
@@ -1648,6 +1652,61 @@ for f, name in list(names.items()):
             names[f], how[f] = f'{words.pop()}::fieldAccess_{f:x}', 'shape'
             field_named += 1
 print('singleton fields', field_named)
+# 23. The renderer stands on a Direct3D 11 layer over Gnm: Map returns DXGI_ERROR_WAS_STILL_DRAWING, UpdateSubresource tiles
+# through GpuAddress, and the slots keep Microsoft's published order (the sizes agree: constant buffer and sampler setters
+# are one template per stage, shader resource setters another, the private data pair is the same size in every class).
+D3D_UNKNOWN = ['QueryInterface', 'AddRef', 'Release']
+D3D_CHILD = D3D_UNKNOWN + ['GetDevice', 'GetPrivateData', 'SetPrivateData', 'SetPrivateDataInterface']
+STAGE_SETTERS = lambda stage: [f'{stage}SetShaderResources', f'{stage}SetShader', f'{stage}SetSamplers', f'{stage}SetConstantBuffers']
+STAGE_GETTERS = lambda stage: [f'{stage}GetShaderResources', f'{stage}GetShader', f'{stage}GetSamplers', f'{stage}GetConstantBuffers']
+D3D_TABLES = {
+    0x530a380: ('D3D11DeviceContext', D3D_CHILD + """VSSetConstantBuffers PSSetShaderResources PSSetShader PSSetSamplers VSSetShader DrawIndexed Draw
+        Map Unmap PSSetConstantBuffers IASetInputLayout IASetVertexBuffers IASetIndexBuffer DrawIndexedInstanced DrawInstanced
+        GSSetConstantBuffers GSSetShader IASetPrimitiveTopology VSSetShaderResources VSSetSamplers Begin End GetData SetPredication
+        GSSetShaderResources GSSetSamplers OMSetRenderTargets OMSetRenderTargetsAndUnorderedAccessViews OMSetBlendState
+        OMSetDepthStencilState SOSetTargets DrawAuto DrawIndexedInstancedIndirect DrawInstancedIndirect Dispatch DispatchIndirect
+        RSSetState RSSetViewports RSSetScissorRects CopySubresourceRegion CopyResource UpdateSubresource CopyStructureCount
+        ClearRenderTargetView ClearUnorderedAccessViewUint ClearUnorderedAccessViewFloat ClearDepthStencilView GenerateMips
+        SetResourceMinLOD GetResourceMinLOD ResolveSubresource ExecuteCommandList""".split()
+        + STAGE_SETTERS('HS') + STAGE_SETTERS('DS') + ['CSSetShaderResources', 'CSSetUnorderedAccessViews', 'CSSetShader', 'CSSetSamplers', 'CSSetConstantBuffers']
+        + """VSGetConstantBuffers PSGetShaderResources PSGetShader PSGetSamplers VSGetShader PSGetConstantBuffers IAGetInputLayout
+        IAGetVertexBuffers IAGetIndexBuffer GSGetConstantBuffers GSGetShader IAGetPrimitiveTopology VSGetShaderResources VSGetSamplers
+        GetPredication GSGetShaderResources GSGetSamplers OMGetRenderTargets OMGetRenderTargetsAndUnorderedAccessViews OMGetBlendState
+        OMGetDepthStencilState SOGetTargets RSGetState RSGetViewports RSGetScissorRects""".split()
+        + STAGE_GETTERS('HS') + STAGE_GETTERS('DS') + ['CSGetShaderResources', 'CSGetUnorderedAccessViews', 'CSGetShader', 'CSGetSamplers', 'CSGetConstantBuffers']
+        + ['ClearState', 'Flush', 'GetType', 'GetContextFlags', 'FinishCommandList']),
+    0x5308810: ('D3D11Device', D3D_UNKNOWN + """CreateBuffer CreateTexture1D CreateTexture2D CreateTexture3D CreateShaderResourceView
+        CreateUnorderedAccessView CreateRenderTargetView CreateDepthStencilView CreateInputLayout CreateVertexShader CreateGeometryShader
+        CreateGeometryShaderWithStreamOutput CreatePixelShader CreateHullShader CreateDomainShader CreateComputeShader CreateClassLinkage
+        CreateBlendState CreateDepthStencilState CreateRasterizerState CreateSamplerState CreateQuery CreatePredicate CreateCounter
+        CreateDeferredContext OpenSharedResource CheckFormatSupport CheckMultisampleQualityLevels CheckCounterInfo CheckCounter
+        CheckFeatureSupport GetPrivateData SetPrivateData SetPrivateDataInterface GetFeatureLevel GetCreationFlags GetDeviceRemovedReason
+        GetImmediateContext SetExceptionMode GetExceptionMode""".split()),
+    0x530b800: ('D3D11Buffer', D3D_CHILD + ['GetType', 'SetEvictionPriority', 'GetEvictionPriority', 'GetDesc']),
+    0x530bc00: ('D3D11Texture2D', D3D_CHILD + ['GetType', 'SetEvictionPriority', 'GetEvictionPriority', 'GetDesc']),
+    0x530be80: ('D3D11Texture3D', D3D_CHILD + ['GetType', 'SetEvictionPriority', 'GetEvictionPriority', 'GetDesc']),
+}
+D3D_TABLES.update({table: (label, D3D_CHILD + extra) for table, label, extra in (
+    (0x530ae10, 'D3D11RenderTargetView', ['GetResource', 'GetDesc']), (0x530d0e0, 'D3D11DepthStencilView', ['GetResource', 'GetDesc']),
+    (0x530b5c0, 'D3D11ShaderResourceView', ['GetResource', 'GetDesc']), (0x530c100, 'D3D11UnorderedAccessView', ['GetResource', 'GetDesc']),
+    (0x530cc80, 'D3D11BlendState', ['GetDesc']), (0x530cfb0, 'D3D11DepthStencilState', ['GetDesc']), (0x530ace0, 'D3D11RasterizerState', ['GetDesc']),
+    (0x530afe0, 'D3D11SamplerState', ['GetDesc']), (0x530a870, 'D3D11InputLayout', []), (0x530ab90, 'D3D11Query', ['GetDataSize', 'GetDesc']),
+    *((t, 'D3D11' + n, []) for t, n in ((0x5309920, 'VertexShader'), (0x53097a0, 'PixelShader'), (0x5309860, 'GeometryShader'),
+                                        (0x53096e0, 'HullShader'), (0x5309620, 'DomainShader'), (0x5309560, 'ComputeShader'))))})
+d3d_named = 0
+for table, (label, slots) in D3D_TABLES.items():
+    for f, slot in zip(vtables.get(table, ()), slots):
+        if how.get(f) == 'hand':
+            continue
+        names[f], how[f] = f'{label}::{slot}', 'shape'
+        d3d_named += 1
+        # Most of the device's methods are a jump to the real one.
+        if functions[f][1] <= 2 and len(direct.get(f, ())) == 1:
+            target = next(iter(direct[f]))
+            if how.get(target) != 'hand' and functions.get(target, (0, 0))[1] > 2:
+                names[target], how[target] = f'{label}::{slot}Impl', 'shape'
+                d3d_named += 1
+print('Direct3D slots', d3d_named)
 # 22. A std::function is built where its table is written: the only writer outside the table's own slots says whose lambda it is.
 WEAK_OWNER = re.compile(r'^(?:Class_|shared_|fn_|Says::|Import::|std::|DL::)|::(?:near_|helper_|unit_|vf\d+$|fn_|writes_vtable)')
 lambdas = collections.Counter()

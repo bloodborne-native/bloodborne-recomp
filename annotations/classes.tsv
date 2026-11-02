@@ -85,3 +85,30 @@
 0x52e6d60	GraphicsParamChannel_52e6d60	built by the graphics setting groups; fades a typed setting between named states
 0x52e6e20	GraphicsParamChannel_52e6e20	built by the graphics setting groups; fades a typed setting between named states
 0x52e6ee0	GraphicsParamChannel_52e6ee0	built by the graphics setting groups; fades a typed setting between named states
+0x530a380	D3D11DeviceContext	Map and UpdateSubresource in their published slots
+0x5308810	D3D11Device	the private data pair in its published slots; its Create slots build the classes below
+0x530b800	D3D11Buffer	GetDesc copies a buffer description
+0x530bc00	D3D11Texture2D	GetDesc copies a 2D texture description
+0x530be80	D3D11Texture3D	GetDesc copies a 3D texture description
+0x530cc80	D3D11BlendState	built by the device's CreateBlendState slot
+0x530cfb0	D3D11DepthStencilState	built by the device's CreateDepthStencilState slot
+0x530d0e0	D3D11DepthStencilView	built by the device's CreateDepthStencilView slot
+0x530a870	D3D11InputLayout	built by the device's CreateInputLayout slot
+0x530ab90	D3D11Query	built by the device's CreateQuery slot
+0x530ace0	D3D11RasterizerState	built by the device's CreateRasterizerState slot
+0x530ae10	D3D11RenderTargetView	built by the device's CreateRenderTargetView slot
+0x530afe0	D3D11SamplerState	built by the device's CreateSamplerState slot
+0x530b5c0	D3D11ShaderResourceView	built by the device's CreateShaderResourceView slot
+0x530c100	D3D11UnorderedAccessView	built by the device's CreateUnorderedAccessView slot
+0x5309920	D3D11VertexShader	built by the device's CreateVertexShader slot
+0x53097a0	D3D11PixelShader	built by the device's CreatePixelShader slot
+0x5309860	D3D11GeometryShader	built by the device's CreateGeometryShader slot
+0x53096e0	D3D11HullShader	built by the device's CreateHullShader slot
+0x5309620	D3D11DomainShader	built by the device's CreateDomainShader slot
+0x5309560	D3D11ComputeShader	built by the device's CreateComputeShader slot
+0x530b130	D3D11VertexShaderImpl	derives from D3D11VertexShader
+0x530b190	D3D11HullShaderImpl	derives from D3D11HullShader
+0x530b1f0	D3D11DomainShaderImpl	derives from D3D11DomainShader
+0x530b250	D3D11GeometryShaderImpl	derives from D3D11GeometryShader
+0x530b2b0	D3D11PixelShaderImpl	derives from D3D11PixelShader
+0x530b310	D3D11ComputeShaderImpl	derives from D3D11ComputeShader
