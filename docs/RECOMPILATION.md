@@ -54,17 +54,17 @@ reads, and plain accesses to private frames gain nothing. The order of the work:
 
 ## Progress
 
-*Updated 2026-10-28.* The game's executable has 241,821 functions, about 11.3 million instructions.
+*Updated 2026-11-02.* The game's executable has 179,698 functions, about 10.7 million instructions.
 
 | | Progress | |
 |---|---|---|
-| Functions recompiled, running in the game | `████████████████████` 99.7% | 240,978 of 241,821 |
-| Instructions recompiled | `███████████████████░` 96.4% | 10,861,735 of 11,268,132 |
-| Instructions in plain C (of those recompiled) | `████████████████████` 99.1% | 10,761,111 of 10,861,735 |
+| Functions recompiled, running in the game | `████████████████████` 99.9% | 181,521 of 181,570, with the modules |
+| Instructions recompiled | `███████████████████░` 96.2% | 10,284,725 of 10,691,122 |
+| Instructions in plain C (of those recompiled) | `████████████████████` 99% | |
 | CPU time recompiled, against the translator | `█████████████████░░░` 86% | 344% of one core against 402% (1st Floor Sickroom), 360% against 397% (Iosefka's Clinic, 2026-10-27) |
-| Functions checked call by call (recordings) | `░░░░░░░░░░░░░░░░░░░░` 0.4% | 933 of 241,821 |
-| Functions labelled by library (2026-10-24) | `█████████████░░░░░░░` 62.7% | 151,562 of 241,821 |
-| Functions named (2026-11-02) | `░░░░░░░░░░░░░░░░░░░░` 0.1% | 268 of 241,821 (libGnm's command buffer methods; the engine's draw methods, state setters, mesh, model, material and lighting code; the synchronization primitives; the busiest functions) |
+| Functions checked call by call (recordings) | `░░░░░░░░░░░░░░░░░░░░` 0.5% | 933 of 179,698 |
+| Functions labelled by library (2026-11-02) | `█████████████████░░░` 82.8% | 148,858 of 179,698 |
+| Functions named (2026-11-02) | `░░░░░░░░░░░░░░░░░░░░` 0.2% | 312 of 179,698 (libGnm's command buffer methods; the engine's draw methods, state setters, mesh, model, material and lighting code; the synchronization primitives; the busiest functions) |
 
 Every function is generated; the ones left to the translator are the 660 import stubs, the 130
 functions that call `setjmp`, and 53 that the game's patches (51) or the runtime's live switches
@@ -228,12 +228,11 @@ python3 tools/recomp/build_library.py --game "$GAME" --work WORK --toolchain LLV
   these allowed undefined: `memcpy`, `memset`, `memmove` and the 128-bit division helpers, all in
   libSystem, which the game process has loaded. **Not `-ffreestanding`:** it turns built-ins off,
   the code grows 32% and frames took 42.4 ms against 26.3 ms with the usual library.
-- **Measured** (M3 Pro, 8 jobs): 15 minutes from the game folder to the library (generating the C
-  about 3, compiling the 384 files 12, linking 2 s); 241,821 functions; a 330 MB library. At the
+- **Measured** (M3 Pro, 8 jobs): 5.5 minutes from the game folder to the library, compiling 358 files;
+  182,514 functions with the modules; a 296 MB library. At the
   build's peak it needs about 2.5 GB (the toolchain, 1.4 GB of C, 400 MB of objects, the
-  library); the C and the objects are deleted once it links. The game ran it with 240,978
-  functions replaced and no faults; median frame 26.7 ms against 26.3 ms with the library built by
-  Xcode's clang, on the same save.
+  library); the C and the objects are deleted once it links. The game ran it with 181,521
+  functions replaced and no faults, at 48.1 FPS in Iosefka's Clinic.
 - **Progress and resuming:** one JSON object a line on stdout (steps, files compiled, done or
   error). `library.json` beside the library records the executable's SHA-256, this repository's
   version, the library interface (`api`: `BB_RECOMP_API_VERSION`), the compiler, the time and the
@@ -251,10 +250,10 @@ python3 tools/recomp/build_library.py --game "$GAME" --work WORK --toolchain LLV
 
 ## Annotations
 
-**What there is to understand.** Of the executable's 241,821 functions, about 61,800 are licensed
-middleware and need no naming. FromSoftware's own labelled code is 89,279 functions, 57,280 of them
-longer than five instructions. Of the 90,259 not labelled yet, 51,117 are longer than that, and by
-their neighbours about half are FromSoftware's. So the target is about 85,000 functions, an estimate
+**What there is to understand.** Of the executable's 179,698 functions, 62,120 by their labels are
+licensed middleware and need no naming. FromSoftware's own labelled code is 88,260 functions, 56,490 of
+them longer than five instructions. Of the 30,840 not labelled yet, 23,878 are longer than that, and by
+their neighbours about half are FromSoftware's. So the target is about 68,000 functions, an estimate
 because the labels are approximate.
 
 **What the executable gives by itself.** `tools/recomp/names.py` finds the vtables in the data and
@@ -494,32 +493,33 @@ replays, since other threads write what it reads.
 ## What the image contains
 
 162,959 functions with unwind information (median 80 bytes), about 10 million instructions;
-241,821 functions in all with those found through calls, jumps and code pointers (about 11.3
-million instructions). No
+179,698 functions in all with those found through calls, jumps and code pointers (about 10.7
+million instructions). The executable segment also holds the read-only data, after the import stubs,
+so `scan.c` takes no pointer into it for code. No
 C++ RTTI. About 500 source paths in assertion and log messages name the libraries
-(`tools/recomp/label.py`, 2026-10-24, all 241,821 functions):
+(`tools/recomp/label.py`, 2026-11-02, all 179,698 functions):
 
 | Library | Functions | Code | Known by |
 |---|---:|---:|---|
-| Game (`SPRJ\Source\SPRJ\Source\Game`, `Sys`) | ~37,100 | 7.8 MiB | source paths |
-| Dantelion2 (FromSoftware's core library) | ~35,800 | 7.4 MiB | source paths |
-| Havok 2014.1 (physics, AI, cloth) | ~28,500 | 9.7 MiB | source paths, names |
-| Scaleform GFx (menus, HUD) | ~20,700 | 4.2 MiB | messages |
-| FD4 (FromSoftware's engine) | ~16,400 | 4.1 MiB | source paths, names |
+| Game (`SPRJ\Source\SPRJ\Source\Game`, `Sys`) | ~37,000 | 7.8 MiB | source paths |
+| Dantelion2 (FromSoftware's core library) | ~34,900 | 7.4 MiB | source paths |
+| Havok 2014.1 (physics, AI, cloth) | ~27,600 | 9.7 MiB | source paths, names |
+| Scaleform GFx (menus, HUD) | ~20,400 | 4.2 MiB | messages |
+| FD4 (FromSoftware's engine) | ~16,300 | 4.1 MiB | source paths, names |
 | FMOD Ex 4.44.50 | ~7,200 | 1.4 MiB | source paths |
-| Lua (LuaPlus) | ~3,000 | 1.0 MiB | source paths |
-| YEBIS (post-processing) | ~2,400 | 0.8 MiB | source paths |
+| Lua (LuaPlus) | ~2,700 | 1.0 MiB | source paths |
+| YEBIS (post-processing) | ~2,300 | 0.8 MiB | source paths |
 | zlib | 44 | 34 KiB | messages |
 | Other paths | 454 | 0.1 MiB | source paths of no library above |
-| Not labelled yet | ~90,300 | 7.1 MiB | |
+| Not labelled yet | ~30,800 | 5.7 MiB | |
 
 The labels start from the paths and messages (5,742 functions) and spread from there: to the
 functions between two of the same library (109,686), then to the other entries of a vtable
-(25,116) and to functions whose callers or callees all belong to one library (11,018). Labelled
-functions hold 83.8% of the code. Hiding a tenth of the labels and running the last step again
-gives back 7,158 of 11,497, 96.4% of them the same: the steps agree with each other, but the
+(22,411) and to functions whose callers or callees all belong to one library (11,019). Labelled
+functions hold 86.5% of the code. Hiding a tenth of the labels and running the last step again
+gives back 7,096 of 11,497, 96.4% of them the same: the steps agree with each other, but the
 boundaries between game, FD4 and Dantelion2 stay approximate. The functions left are small
-(median 18 bytes) and most have no direct caller (84,456).
+(median 49 bytes) and most have no direct caller (25,057).
 
 ## Where the CPU time goes
 

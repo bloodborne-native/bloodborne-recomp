@@ -20,8 +20,8 @@ turned into code for the machine it is on, or at least separated from the PS4 it
 
 ## Where it stands
 
-10,861,735 of the 11,268,132 instructions are recompiled (96%), 99.1% of them in plain C, and
-240,978 of 241,821 functions run recompiled. CPU time is 14% lower than with the translator at the
+10,284,725 of the 10,691,122 instructions are recompiled (96%), about 99% of them in plain C, and
+181,521 of 181,570 functions run recompiled. CPU time is 14% lower than with the translator at the
 same frame rate.
 
 The library is opt-in: a player who has not built it runs on the translator.

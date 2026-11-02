@@ -79,7 +79,7 @@ A layer counts as native only when nothing in it is translated any more. Two of 
 
 ### The game's code
 
-- **Done:** 240,978 of 241,821 functions run recompiled, 99.1% of their instructions in plain C, with
+- **Done:** 181,521 of 181,570 functions run recompiled, about 99% of their instructions in plain C, with
   14% less CPU time than the translator at the same frame rate. Calls left to the translator went
   from 69,600 a second to 9,400. The launcher builds the library on the player's device, later updates
   compile only what changed, and the library no longer keeps the whole game decoded (peak footprint

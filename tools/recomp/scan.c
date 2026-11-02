@@ -164,10 +164,29 @@ static uint64_t follow(ZydisDecoder *dec, uint64_t start, uint64_t limit, List *
     return end - start;
 }
 
+/* The executable segment also holds the read-only data, which pointers reach as well. Code ends with
+ * the import stubs, 16 bytes each after a 16-byte header, just past the last unwound function. */
+static uint64_t end_of_code(const Function *f, uint32_t n) {
+    uint64_t end = 0;
+    for (uint32_t i = 0; i < n; ++i)
+        if (f[i].start + f[i].size > end) end = f[i].start + f[i].size;
+    for (uint64_t pc = end; pc < end + 0x10000 && pc + 16 <= code_hi; ++pc) {
+        const unsigned char *b = at(pc, 16);
+        if (!b) break;
+        if (b[0] == 0xff && b[1] == 0x35 && b[6] == 0xff && b[7] == 0x25) {
+            pc += 16;
+            for (b = at(pc, 2); b && b[0] == 0xff && b[1] == 0x25; b = at(pc, 2)) pc += 16;
+            return pc;
+        }
+    }
+    return end;
+}
+
 /* Adds the functions reached from the known ones and from the pointers, until none is new. */
 static uint32_t discover(Function **functions, uint32_t n, const char *pointers) {
     for (int i = 0; i < nloads; ++i)
         if (loads[i]->p_flags & PF_X) { code_lo = loads[i]->p_vaddr; code_hi = loads[i]->p_vaddr + loads[i]->p_filesz; }
+    code_hi = end_of_code(*functions, n);
     ZydisDecoder dec;
     ZydisDecoderInit(&dec, ZYDIS_MACHINE_MODE_LONG_64, ZYDIS_STACK_WIDTH_64);
     List candidates = {0};
