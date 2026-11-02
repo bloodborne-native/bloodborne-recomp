@@ -1472,6 +1472,29 @@ for i, (at_, target) in enumerate(leas):
             natives += 1
             break
 print('script natives', natives)
+# 16c. The same natives in data: tables of names and function pointers (Lua's name, function records; ActionScript's
+# with the name after the pointer). Samples read by hand: Lua's sin and setfenv.
+TABLE_TEXT = re.compile(rb'[a-z_][A-Za-z0-9_]{2,60}\0')
+slots = {int(r[0], 16): int(r[1], 16) for r in rows('pointer_slots.tsv')}
+tabled = 0
+for slot, target in slots.items():
+    if target not in functions or how.get(target, '') not in BOUND_WEAK:
+        continue
+    for step in (-8, 16, -24):
+        other = slots.get(slot + step)
+        if other is None or other in functions:
+            continue
+        hit = None
+        for p_ in loads:
+            if p_[3] <= other < p_[3] + p_[5]:
+                hit = TABLE_TEXT.match(image, p_[2] + other - p_[3])
+                break
+        if hit:
+            names[target] = f'Native::{hit.group(0)[:-1].decode()}_{target:x}'
+            how[target] = 'shape'
+            tabled += 1
+            break
+print('natives in tables', tabled)
 # 15. Text: a function no rule placed but that loads wide text says what it deals with. That is a hint, not its
 # role, so the name says only that (Says::), it never replaces another name, and it counts as placed, not identified.
 SAYS = re.compile(rb'(?:[\x20-\x7e]\0){5,60}\0\0')
