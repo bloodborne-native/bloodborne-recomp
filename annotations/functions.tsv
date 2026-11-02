@@ -55,6 +55,7 @@
 0xe57ad0	FD4::Material::end	guess	calls	void (FD4::Material *, void *pass)
 0xec9000	CG::CullVolume::testBox	guess	calls	bool (const CG::CullVolume *, const float (*box)[8])
 0xedca60	FD4::Material::applyInstanceParameters	guess	calls
+0xf5d720	DoubleBuffer::swap	guess	calls	
 0xf6f340	FD4::IdTable::find	guess	calls	
 0xf8e690	FD4BaseKeyAssign::bind	guess	calls	
 0xf9b740	FD4::DebugMenu::addItem	guess	calls	
@@ -63,6 +64,7 @@
 0xfaebc0	FD4::ScopedProfile::end	guess	calls	
 0xfe68f0	FD4::ResRepository::find	sure	calls	
 0xfe6a70	FD4::ResRepository::insert	guess	calls	
+0x103ee10	DL::LockedDeque::tryPop	sure	calls	
 0x104ac30	FD4HkEzDrawState::reset	guess	calls	
 0x1070960	Gnm::Buffer::initAsConstantBuffer	sure	pm4	void (Gnm::Buffer *, uint64_t address, uint32_t size)
 0x1072ed0	Gnm::DrawCommandBuffer::setScratchSize	sure	pm4
