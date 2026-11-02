@@ -314,12 +314,15 @@
 0x1d88600	TexRepository::releaseTexture	sure	calls	
 0x1d88680	TexRepository::addHold	sure	calls	
 0x1d88690	TexRepository::findOrCreate	guess	calls	
+0x1d88880	TexRepositoryImp::debugLineSummary	guess	calls	
 0x1d8a820	TexRepositoryImp::addDebugMenuItem	sure	calls	
+0x1d8a9a0	TexResCap::categoryFromName	guess	calls	
 0x1d8b980	TexResCap::releaseHandles	sure	calls	
 0x1d8ba40	TexResCap::addDebugMenuItems	guess	calls	
 0x1d8bef0	TexResCap::acquireHandle	guess	calls	
 0x1d8c0b0	TexResCap::acquireHandleWithLowRes	guess	calls	
 0x1d8c510	TexResCap::debugViewerInput	guess	calls	
+0x1d8c680	TexResCap::debugLine	guess	calls	
 0x1d8d4c0	TpfRepositoryImp::findOrCreate	guess	calls	
 0x1d8e180	TpfResCap::~TpfResCap	sure	calls	
 0x1d969f0	SprjGraphics::createGraphics	guess	calls	
@@ -499,9 +502,12 @@
 0x21b9f40	GXGUITexture::GXGUITexture	sure	calls	
 0x21ba300	GXGUITexture::createLinearView	guess	calls	
 0x21bf550	DdsTextureLoader::createTexture	guess	calls	
+0x21bf990	DdsTextureLoader::createTexture3D	guess	calls	
 0x21c0240	TpfResCap::setTextureIndex	guess	calls	
 0x21c02b0	TpfResCap::createTexture	guess	calls	
 0x21c0320	TpfResCap::createDeviceTexture	guess	calls	
+0x21c03f0	TpfResCap::createTexture3D	guess	calls	
+0x21c04c0	TpfResCap::createTextureArray	guess	calls	
 0x21c3f60	FD4::MaterialParameters::begin	guess	calls	void (FD4::MaterialParameters *, void *state_cache, void *pass)
 0x21c41a0	FD4::MaterialParameters::end	guess	calls	void (FD4::MaterialParameters *, void *state_cache, void *pass)
 0x21c8c50	CG::SkinningBuffer::update	guess	calls	void (CG::SkinningBuffer *, const float (*current)[12], const float (*previous)[12], uint32_t)
