@@ -162,6 +162,10 @@
 0x1399bf0	Sprj::EventFlagManager::getFlag	sure	message	bool (void *, uint32_t flag)
 0x13c97a0	WorldChrMan::findChrByEntityId	sure	calls	
 0x1421d40	SprjFile::loadFile	guess	calls	
+0x1588780	MapRes::holdTextures	guess	calls	
+0x1588fe0	MapRes::releaseHeldTextures	guess	calls	
+0x158ce80	MapRes::STEP_HiTex_Init	sure	calls	
+0x158d0e0	MapRes::STEP_HiTex_Release	sure	calls	
 0x193ac10	Sprj::World::update	guess	message	void (float frame_time, void *world)
 0x19c52a0	SprjSaveDataLoadStepForNotTitleFlow::STEP_SelectDefaultStorage_Wait	sure	step	
 0x1a89070	SprjGaitem::resolveHandle	sure	calls	
