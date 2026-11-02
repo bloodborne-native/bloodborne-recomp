@@ -155,6 +155,7 @@
 0x11fd230	Gnm::ConstantCommandBuffer::waitOnDeCounterDiff	sure	pm4
 0x11fd280	Gnm::ConstantCommandBuffer::writeToCpRam	guess	pm4
 0x11fd320	Gnm::ConstantCommandBuffer::cpRamDump	guess	pm4
+0x12334b0	NvmLocator::locate	guess	calls	
 0x125bad0	SprjAiFunc::IsApparentDeath	sure	binding	
 0x12acfa0	Sprj::ParamList::selectActive	guess	calls	void *(void *)
 0x1335870	SprjLuaEventProxy::DisableHpGauge	sure	binding	
@@ -162,9 +163,12 @@
 0x1399bf0	Sprj::EventFlagManager::getFlag	sure	message	bool (void *, uint32_t flag)
 0x13c97a0	WorldChrMan::findChrByEntityId	sure	calls	
 0x1421d40	SprjFile::loadFile	guess	calls	
-0x15556b0	WorldGroupTracker::update	guess	calls	
-0x1555c00	WorldGroupTracker::addCollision	guess	calls	
-0x1556040	WorldGroupTracker::ageCollisions	guess	calls	
+0x15553d0	WorldBackRead::deletingDestructor	guess	calls	
+0x15553f0	WorldBackRead::~WorldBackRead	guess	calls	
+0x1555510	WorldBackRead::clearCollisions	guess	calls	
+0x15556b0	WorldBackRead::update	guess	calls	
+0x1555c00	WorldBackRead::addCollision	guess	calls	
+0x1556040	WorldBackRead::ageCollisions	guess	calls	
 0x1587ed0	MapInsUpdateHelper::requestLevel	sure	calls	
 0x1588780	MapRes::holdTextures	guess	calls	
 0x1588fe0	MapRes::releaseHeldTextures	guess	calls	
