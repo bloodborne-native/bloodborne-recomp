@@ -38,26 +38,19 @@ The recompiled code is produced on the player's machine from their copy, and sta
 5. **Behind switches.** Generated functions can be turned off one by one, so a wrong one is found
    by bisection.
 
-## Milestones
+## The layers
 
-| | Goal | Status |
-|---|---|---|
-| R0 | Groundwork: function table, library labels, CPU profile, record and replay, native functions loaded into the game and called from translated code | Done |
-| R1 | Recompiler prototype: generated C for the recorded functions, checked by replay | Done |
-| R2 | Coverage: every function generated; the game runs recompiled, the translator as fallback | Done |
-| R3 | Speed: integer, flags and vector instructions in C; memory ordering relaxed where safe | Done: 99.1% of instructions in C; the library takes 14% less CPU time than the translator at the same frame rate |
-| R4 | Annotations: names, signatures and structs make the generated C readable; the engine's render functions first, for the native renderer's N6 | Done `████████████████████` (by its steps, below): 204 functions named and the engine's draw state, shaders, models, meshes, materials and shader programs described (`annotations/`); the draw paths counted in the game (mesh draw, deferred lighting, upload-ring draw); the synchronization primitives named and counted; the 20 busiest functions named with their signatures |
-| R5 | The engine's graphics on each platform's own GPU API: [native renderer](https://github.com/bloodborne-native/bloodborne-runtime/blob/main/docs/NATIVE_RENDERER.md) (bloodborne-runtime) | N0, N1 and N4 done; N5 (the Metal backend) the default on macOS, its acceptance pending; N6 (the engine's render boundary, from R4) next |
+The work is split by the [PS4 layers](https://github.com/bloodborne-native/bloodborne-mac/blob/main/docs/ROADMAP.md#the-ps4-layers), and a layer counts as native only when nothing in it
+is translated any more. This repository owns two:
 
-**Now and next.** The recompiler's milestones are done; the game runs on the recompiled library,
-which the launcher builds on the player's device. Next, in the app's
-[roadmap](https://github.com/bloodborne-native/bloodborne-mac/blob/main/docs/ROADMAP.md) order:
-the CPU work here. Its first plan is measured ("Where the CPU time goes"): clang already drops the
-flags nothing reads, and plain accesses to private frames gain nothing. Next: the runtime's share
-of the game's main thread (about 11% of its busy time in Iosefka's Clinic: `rc_call` 5%, host calls
-3.5%, code left to the translator 2.5%); then, with the maintainer's conditions (the generator's
-analysis, a safety case and a long play session), memory ordering kept only around the engine's
-synchronization.
+| Layer | Native | Where it stands | Next |
+|---|---|---|---|
+| [The game's code](layers/game-code.md) | 96% `███████████████████░` | Recompiled and built on the player's device; opt-in, the translator is the default | Making the library the default; the runtime's share of the game's main thread (about 11% of its busy time in Iosefka's Clinic: `rc_call` 5%, host calls 3.5%, code left to the translator 2.5%) |
+| [x86 memory ordering](layers/memory-ordering.md) | 0% `░░░░░░░░░░░░░░░░░░░░` | Kept on every access | Only around the engine's synchronization, with the maintainer's conditions: the generator's analysis, a safety case and a long play session |
+
+Measured with little or no gain ("Where the CPU time goes"): clang already drops the flags nothing
+reads, and plain accesses to private frames gain nothing. The order of the work: the app's
+[priorities](https://github.com/bloodborne-native/bloodborne-mac/blob/main/docs/ROADMAP.md#priorities).
 
 ## Progress
 
@@ -71,8 +64,7 @@ synchronization.
 | CPU time recompiled, against the translator | `█████████████████░░░` 86% | 344% of one core against 402% (1st Floor Sickroom), 360% against 397% (Iosefka's Clinic, 2026-10-27) |
 | Functions checked call by call (recordings) | `░░░░░░░░░░░░░░░░░░░░` 0.4% | 933 of 241,821 |
 | Functions labelled by library (2026-10-24) | `█████████████░░░░░░░` 62.7% | 151,562 of 241,821 |
-| R4 (annotations), by its steps | `████████████████████` 100% | R4.1 to R4.5 done |
-| Functions named (R4, 2026-10-28) | `░░░░░░░░░░░░░░░░░░░░` 0.05% | 204 of 241,821 (libGnm's command buffer methods; the engine's draw methods, state setters, mesh, model, material and lighting code; the synchronization primitives; the busiest functions) |
+| Functions named (2026-10-28) | `░░░░░░░░░░░░░░░░░░░░` 0.05% | 204 of 241,821 (libGnm's command buffer methods; the engine's draw methods, state setters, mesh, model, material and lighting code; the synchronization primitives; the busiest functions) |
 
 Every function is generated; the ones left to the translator are the 660 import stubs, the 130
 functions that call `setjmp`, and 53 that the game's patches (51) or the runtime's live switches
@@ -240,20 +232,20 @@ python3 tools/recomp/build_library.py --game "$GAME" --work WORK --toolchain LLV
 
 ## Annotations
 
-R4 gives the game's functions names, signatures and the layouts of the objects they use, the
-render functions of the engine first: the native renderer's N6 takes the engine's draws at that
+The annotations gives the game's functions names, signatures and the layouts of the objects they use, the
+render functions of the engine first: the native renderer's the render boundary takes the engine's draws at that
 boundary instead of decoding the PS4's command buffers.
 
-**Progress.** Each bar has 20 blocks, one per 5% of the step's items; R4 as a whole is the mean
+**Progress.** Each bar has 20 blocks, one per 5% of the step's items; the annotations as a whole is the mean
 of its steps (100%).
 
 | Step | Progress | Items |
 |---|---|---|
-| R4.1 · the annotation file | 100% `████████████████████` | the file (`annotations/functions.tsv`); the generator writes its names into the C; the app's kit carries it |
-| R4.2 · the render boundary | 100% `████████████████████` | done: CoreGraphics2's draw and dispatch methods, the state blocks they apply, the resource binder's steps, the render-target passes, the counts in the game, the compute passes |
-| R4.3 · the objects above it | 100% `████████████████████` | done: the draw state, the shader stages and their resources, the shader object, models and meshes, materials and shader programs, the materials' textures and constants, deferred lighting, the upload-ring draw's callers |
-| R4.4 · synchronization primitives | 100% `████████████████████` | done: Dantelion2's synchronization classes named, the middleware's locks named, the atomic instructions inventoried, the locks counted in the game |
-| R4.5 · the hottest signatures | 100% `████████████████████` | the 20 busiest functions (the CPU profile in "Where the CPU time goes") named with their signatures |
+| The annotations.1 · the annotation file | 100% `████████████████████` | the file (`annotations/functions.tsv`); the generator writes its names into the C; the app's kit carries it |
+| The annotations.2 · the render boundary | 100% `████████████████████` | done: CoreGraphics2's draw and dispatch methods, the state blocks they apply, the resource binder's steps, the render-target passes, the counts in the game, the compute passes |
+| The annotations.3 · the objects above it | 100% `████████████████████` | done: the draw state, the shader stages and their resources, the shader object, models and meshes, materials and shader programs, the materials' textures and constants, deferred lighting, the upload-ring draw's callers |
+| The annotations.4 · synchronization primitives | 100% `████████████████████` | done: Dantelion2's synchronization classes named, the middleware's locks named, the atomic instructions inventoried, the locks counted in the game |
+| The annotations.5 · the hottest signatures | 100% `████████████████████` | the 20 busiest functions (the CPU profile in "Where the CPU time goes") named with their signatures |
 
 `annotations/structs.h` describes the objects those functions use, as far as they are known (C, with
 the offsets checked by `_Static_assert`). `annotations/functions.tsv` holds one row per named function: its offset in the 1.09
@@ -300,7 +292,7 @@ context and resource binder: `CG::GraphicsContext::dispatch` itself did not run)
 Scaleform's renderer and one small wrapper outside CoreGraphics2. The breakdown is in
 bloodborne-runtime's NATIVE_RENDERER.md.
 
-**The draw state** (`annotations/structs.h`, R4.3): one object carries everything a draw sets,
+**The draw state** (`annotations/structs.h`, the annotations.3): one object carries everything a draw sets,
 0x1e70 bytes, modelled on Direct3D 11: its stages and slot counts, DXGI index formats,
 and a topology in Direct3D 11's order without its gaps. Known: the topology, the index
 buffer, format and offset; 32 vertex buffers with their strides and offsets; the
@@ -319,7 +311,7 @@ render-target passes come from there.
 
 A stage's shader object holds the code's GPU address (+0x108) and the PS4 shader's own header
 (+0x100, the code's size in its first word): the same code the runtime's shader recompiler reads
-from the command buffers, so N2's shaders ahead of time can key on it at the boundary.
+from the command buffers, so the draw-state work's shaders ahead of time can key on it at the boundary.
 
 The graphics context holds a draw state of its own (+0xb730), which its immediate draws fill:
 vertices (and indices) copied into GPU memory from an upload ring, as Direct3D 9's
@@ -378,7 +370,7 @@ with a compute shader of the engine's and the resource binder's compute steps: b
 or a batch split into 64-dword jobs), buffer fills with a 16-byte pattern, texture clears and
 texture region copies (1D, 2D and 3D shaders).
 
-**Synchronization (R4.4).** Dantelion2's synchronization classes are named from their own source
+**Synchronization (the annotations.4).** Dantelion2's synchronization classes are named from their own source
 files: `DLLightMutex`, `PthreadMutex`, `DLReadWriteLock`, `DLSemaphore` and `DLConditionSignal`
 (lock, unlock, wait, signal, create and destroy), and so are the middleware's locks (Havok's
 critical section, FMOD's, Scaleform's mutex). The executable has 12,734 atomic instructions
@@ -389,7 +381,7 @@ second, the read lock 13,800, condition signals 5,300, semaphore waits 1,800, FM
 Scaleform's 71, Havok's 35. These are what the generator's memory ordering has to respect when it
 relaxes everything else.
 
-**The busiest functions (R4.5).** The 20 busiest functions in the CPU profile (the main
+**The busiest functions (the annotations.5).** The 20 busiest functions in the CPU profile (the main
 thread in the Hunter's Dream) are named with their signatures: the job system's main loop
 (it runs jobs and waits for the workers), Lua's interpreter (`luaV_execute`), the game's
 per-frame world update (it touches 27 of the game's managers), the skeleton's bone matrices
@@ -401,7 +393,7 @@ the C library's block copy, Havok's animation sampling (it blends a character's 
 layers into a pose), a model instance's submission to the scene, and a priority choice in a typed
 list; several class names are guesses (the confidence column says which).
 
-R4's steps are done. Next, with R4's names: the native renderer's N6 (bloodborne-runtime's
+The annotations's steps are done. Next, with the annotations's names: the native renderer's the render boundary (bloodborne-runtime's
 NATIVE_RENDERER.md) and the generator's CPU work (the app's roadmap).
 
 ## Record and replay
@@ -462,8 +454,8 @@ boundaries between game, FD4 and Dantelion2 stay approximate. The functions left
 
 The game's main thread is spread thin in play: in 20 s in the Hunter's Dream 933 functions ran,
 the busiest 145 took half the time, and the largest, the job loop, 7.3%. No small set of functions
-dominates, so the CPU side gets faster by recompiling all of them (R2) and making that code cheaper
-(R3). The frame rate on the Mac is bound by rendering, so changes are measured in CPU time
+dominates, so the CPU side gets faster by recompiling all of them (recompiling every function) and making that code cheaper
+(the speed work). The frame rate on the Mac is bound by rendering, so changes are measured in CPU time
 (`ps -o cputime=` over 30 s in the level), in alternating runs.
 
 **Now:** the library takes 14% less CPU time than the translator at the same frame rate: 344% of
