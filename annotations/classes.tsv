@@ -1,0 +1,7 @@
+# The project's names for classes the executable does not name, by the address of their virtual
+# function table in the 1.09 executable. Columns: table, name, evidence. Read by tools/recomp/names.py.
+0x52e7bc0	LensSimuPass	calls the LensSimu shaders
+0x52e7dc0	LensSimu2Pass	calls the LensSimu2 shaders
+0x52e7f50	MotionBlurPass	calls the MotionBlur shaders
+0x52e9b00	ToneMapPass	calls the ToneMap shaders
+0x535fc50	DdsTextureLoader	creates textures from DDS files

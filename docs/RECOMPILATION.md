@@ -170,6 +170,7 @@ All write to `out/recomp/`.
 | `tools/recomp/pointers.py` | The code addresses relocations put into data (`pointers.txt`), for `scan.c`, and where each is stored (`pointer_slots.tsv`), for `label.py` |
 | `tools/recomp/imports.py` | The import stubs by name (`imports.tsv`) |
 | `annotations/functions.tsv` | The project's names for functions (below, "Annotations"); `bbrecomp` writes them into the generated C |
+| `annotations/classes.tsv` | The project's names for classes the executable does not name; `names.py` gives them to the classes' functions |
 | `tools/recomp/label.py` | The library of each function (`modules.tsv`), from source paths and messages, spread to neighbours, vtables, callers and callees (`--check`: their agreement) |
 | `tools/recomp/profile.py` | CPU time per function and library from a macOS `sample` (`profile.tsv`) |
 | `tools/recomp/inspect.sh` | Ghidra's view of chosen functions (`c/<offset>.c`, `.s`), for analysis and annotations |

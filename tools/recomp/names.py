@@ -399,6 +399,11 @@ print('slot 0 (instructions, first byte)', first.most_common(10))
 class_of, class_methods = {}, collections.Counter()
 how_named = {}
 class_names = {}
+# Classes the executable does not name, named by reading their code.
+hand_classes = {}
+for line in (Path(__file__).resolve().parents[2] / 'annotations' / 'classes.tsv').read_text().splitlines():
+    if line and not line.startswith('#'):
+        hand_classes[int(line.split('\t')[0], 16)] = line.split('\t')[1]
 # A name in the messages of many classes is one they use (a singleton), not what they are.
 spread = collections.defaultdict(set)
 for table, run in vtables.items():
@@ -466,6 +471,7 @@ for table, run in vtables.items():
     elif table in runtime_objects:
         name = runtime_objects[table] + '::DLRuntimeClass'
         how_named[table] = 'runtime'
+    name = hand_classes.get(table, name)
     class_names[table] = name
     label = name or f'Class_{table:x}'
     # Many functions writing one vtable are its users (objects built in place), not its constructors.
