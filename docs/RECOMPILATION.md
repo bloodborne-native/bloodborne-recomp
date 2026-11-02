@@ -65,8 +65,8 @@ reads, and plain accesses to private frames gain nothing. The order of the work:
 | Functions checked call by call (recordings) | `░░░░░░░░░░░░░░░░░░░░` 0.5% | 933 of 179,698 |
 | Functions labelled by library (2026-11-02) | `███████████████████░` 95.5% | 171,706 of 179,698 |
 | Functions named by hand (2026-11-02) | `░░░░░░░░░░░░░░░░░░░░` 0.2% | 535 of 179,698, 228 sure and 307 guesses (libGnm's command buffer methods; the engine's draw methods, state setters, mesh, model, material and lighting code; the synchronization primitives; the busiest functions; texture repositories) |
-| Functions placed, of those to understand (2026-11-02) | `███████████████░░░░░` 78% | 47,216 of 59,867 longer than five instructions, in FromSoftware's code or not labelled yet |
-| Functions identified, of the target (2026-11-02) | `█████████░░░░░░░░░░░` 45% | about 26,400 of about 58,000: 2,221 with the game's own name, 24,140 with a known role, much of that compiler and template code |
+| Functions placed, of those to understand (2026-11-02) | `███████████████░░░░░` 78% | 47,244 of 59,867 longer than five instructions, in FromSoftware's code or not labelled yet |
+| Functions identified, of the target (2026-11-02) | `█████████░░░░░░░░░░░` 45% | about 26,400 of about 58,000: 2,221 with the game's own name, 24,201 with a known role, much of that compiler and template code |
 
 Every function is generated; the ones left to the translator are the 660 import stubs, the 130
 functions that call `setjmp`, and 53 that the game's patches (51) or the runtime's live switches
@@ -296,10 +296,10 @@ that template. Longer ones have the template inlined in real work, so each kind 
 | | Functions | What it says |
 |---|---:|---|
 | The game's own name | 2,221 | Registered methods, steps, messages, singletons, tables |
-| A known role | 24,140 | Destructors, class getters, `std::function` slots, EzState opcodes, delegates: much is compiler or template code |
-| In a named class or file | 7,774 | Where it belongs, not what it does; 3,703 of them only by their callers, which about half of known functions agree with |
-| Only an anonymous class | 13,081 | A vtable or object file, no name |
-| Nowhere yet | 12,651 | |
+| A known role | 24,201 | Destructors, class getters, `std::function` slots, EzState opcodes, delegates: much is compiler or template code |
+| In a named class or file | 7,765 | Where it belongs, not what it does; 3,703 of them only by their callers, which about half of known functions agree with |
+| Only an anonymous class | 13,057 | A vtable or object file, no name |
+| Nowhere yet | 12,623 | |
 
 Text and compiler patterns are nearly used up, so what remains is mostly read by hand, a few functions at a
 time. A public name for a family of functions, or a subsystem that needs one, is what would speed it up.

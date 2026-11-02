@@ -1086,8 +1086,10 @@ print('settings', settings)
 STD_TEXT = {'vector<T> too long': 'vector::_Xlen', 'deque<T> too long': 'deque::_Xlen', 'string too long': 'string::_Xlen',
             'invalid vector<T> subscript': 'vector::_Xran', 'invalid string position': 'string::_Xran',
             'list<T> too long': 'list::insert', 'map/set<T> too long': 'tree::insert',
-            'invalid map/set<T> iterator': 'tree::iterator'}
-STD_LIMIT = {'list::insert': 70, 'tree::insert': 260, 'tree::iterator': 420}
+            'invalid map/set<T> iterator': 'tree::iterator', 'out of memory.': 'DLFixedVector::push_back',
+            'access to an out of range.': 'DLFixedVector::access'}
+STD_LIMIT = {'list::insert': 110, 'tree::insert': 260, 'tree::iterator': 420, 'vector::_Xlen': 100,
+             'DLFixedVector::access': 70}
 std_roles = 0
 for f in functions:
     said = {STD_TEXT[s] for s in by_function.get(f, ()) if s in STD_TEXT}
@@ -1098,7 +1100,7 @@ for f in functions:
             continue
         if role.endswith('_Xlen') and functions[f][1] > 8:
             role = role.replace('_Xlen', 'grow')
-        names[f] = f'std::{role}_{f:x}'
+        names[f] = f'{role}_{f:x}' if role.startswith('DL') else f'std::{role}_{f:x}'
         how[f] = 'shape'
         std_roles += 1
 print('standard library', std_roles)
