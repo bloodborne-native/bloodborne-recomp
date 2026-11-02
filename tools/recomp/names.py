@@ -1033,6 +1033,24 @@ for a_, b_ in zip(seeds, seeds[1:]):
                 in_directory += 1
 print('in a Dantelion directory', in_directory)
 
+# 9f. Wrappers of a system call: a short function whose only call is one SDK import, or the standard library's
+# failure, says what it is. Memory and string calls and delete are left out: they say nothing.
+imports_ = {int(r[0], 16): r[1] for r in rows('imports.tsv')}
+wrappers = 0
+for f, targets in callees.items():
+    if f in imports_ or f not in functions or functions[f][1] > 60 or (names.get(f) and how.get(f) not in ('near', 'unit', 'unitfile', 'helper', 'vtable')):
+        continue
+    called = {imports_[t] for t in targets if t in imports_} - {'__stack_chk_fail'}
+    if len(called) == 1 and all(t in imports_ for t in targets):
+        import_ = next(iter(called))
+        role = {'_ZSt14_Xlength_errorPKc': 'std::_Xlength', '_ZSt14_Xout_of_rangePKc': 'std::_Xran'}.get(import_)
+        if not role and not import_.startswith('sce'):
+            continue
+        names[f] = f"{role or 'SDK::' + import_}_{f:x}"
+        how[f] = 'shape'
+        wrappers += 1
+print('wrappers of a system call', wrappers)
+
 # 10. What was named by hand (annotations/functions.tsv) comes last and wins.
 for line in (Path(__file__).resolve().parents[2] / 'annotations' / 'functions.tsv').read_text().splitlines():
     if line and not line.startswith('#'):
