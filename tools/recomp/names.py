@@ -1233,7 +1233,9 @@ print('shader passes', shader_passes)
 # 11. Identical code: functions with the same instructions, constants aside, are copies of one template. Where a
 # group's known members mostly agree on a role the others take it (99.3% of 15,664 held-out names), and a group's
 # role can be read once in the code (SHAPE_ROLES). Short bodies say too little.
-SHAPE_ROLES = {0x1f11da0: 'SoloParamRepository::findRow', 0x1f189f0: 'SoloParamRepository::setRowFlag', 0x2b75af0: 'FX::serializeChildren',
+SHAPE_ROLES = {0x19b2d60: 'std::tree::constructor', 0x13ec140: 'std::vector::push_back', 0x1785460: 'SprjSessionManager::findMember',
+               0xe6c840: 'ShaderParamSet::release', 0xe6c950: 'ShaderParamSet::reset', 0xe6c9b0: 'ShaderParamSet::commit',
+               0x1f11da0: 'SoloParamRepository::findRow', 0x1f189f0: 'SoloParamRepository::setRowFlag', 0x2b75af0: 'FX::serializeChildren',
                0x2b3a3f0: 'FX::serializeMember', 0x2ae99d0: 'FX::freeKeys', 0x2935d50: 'std::unordered_map::erase', 0x2911290: 'std::vector::push_back',
                0x29117e0: 'std::vector::reallocate', 0xe73800: 'Template::destroyMembers', 0x2b767e0: 'FX::serializeChildren', 0x2aebdd0: 'FX::allocateKeys',
                0x2936200: 'std::unordered_map::insertUnique', 0x21e0120: 'std::unordered_map::clearNested',
