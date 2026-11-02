@@ -132,6 +132,33 @@ for name, fs in tables.items():
     if len(fs) == 1:
         give(next(iter(fs)), name, 'table')
 
+# 3b. Script bindings: the function stored into a slot, then its name passed to the registrar.
+code_text = loads_[0]
+IDENT = re.compile(rb'[A-Za-z_][A-Za-z0-9_]{3,60}\0')
+# Code ends at the import stubs; what follows in the segment is text and tables.
+code_end = max(int(r[0], 16) for r in rows('imports.tsv')) + 16
+pairs = collections.defaultdict(set)
+# lea rax, [function]; mov [global + 8], rax; ...; lea rdx, [name]; lea rcx, [text]; ...; call [reg + 0x58]
+# A slot may first get a descriptor the same way, so the function is the last store before the name.
+NAMED = re.compile(rb'\x48\x8d\x15(.{4})\x48\x8d\x0d', re.S)
+STORED = re.compile(rb'\x48\x8d\x05(.{4})\x48\x89\x05', re.S)
+REGISTERED = re.compile(rb'\xff[\x50-\x57]\x58')
+for m in NAMED.finditer(code_):
+    name_at = m.start(1) + 4 + struct.unpack('<i', m.group(1))[0]
+    hit = IDENT.match(code_, name_at) if 0 <= name_at < len(code_) else None
+    if not hit:
+        continue
+    start = max(max(0, m.start() - 96), *(c.end() for c in REGISTERED.finditer(code_, max(0, m.start() - 96), m.start())), 0)
+    stores = [s.start() + 7 + struct.unpack('<i', s.group(1))[0] + code_text[3] for s in STORED.finditer(code_, start, m.start())]
+    stores = [a for a in stores if a in functions and a < code_end]
+    if stores:
+        pairs[hit.group(0)[:-1].decode()].add(stores[-1])
+bound = 0
+for name, fs in pairs.items():
+    if len(fs) == 1:
+        bound += give(next(iter(fs)), name, 'binding')
+print('script bindings', bound)
+
 # 4. Source files: the file a function's messages name, spread only over short runs between two
 # functions of the same file (a file's functions stay together; a longer run can be anything).
 files = {}

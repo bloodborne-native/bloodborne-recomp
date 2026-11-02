@@ -286,6 +286,11 @@ read by hand: a singleton passed to a mutex or a container says nothing of what 
 calls required, and a function's own messages winning, none of eight read was clearly wrong, about four
 looked right and four could not be told from the code: small functions rarely show their class.
 
+**Script bindings.** The game registers the functions its event and AI scripts call by storing each
+one in a slot and passing the slot and its name to a registrar, which names 974 functions in the
+script's own words (`SetEventFlagValue`, `IsApparentDeath`). The name is the game's, so these are the
+most reliable names the executable gives.
+
 **What was read first.** The most-called functions give the most per function read. Dantelion2's heaps
 are objects whose vtable allocates at `+0x58` and frees at `+0x70`, which makes much of the code readable.
 
@@ -318,7 +323,7 @@ Dantelion2's CoreGraphics2, whose classes use a `CG` prefix. Evidence: `pm4` (a 
 named from the packets it writes, as `gpu/shim/bbport_gnm_table.inc` in bloodborne-runtime does),
 `calls` (the functions it calls and how its arguments reach them), `source` (a source path in its
 messages names the class), `message` (an error text, a profiler label or a singleton's name in it
-names the function). `DL::` is Dantelion2's core library, `FD4::` FromSoftware's engine, `FX::`
+names the function), `binding` (the script registers it under that name). `DL::` is Dantelion2's core library, `FD4::` FromSoftware's engine, `FX::`
 the visual effects (a guess); `hk::`, `FMOD::`, `Scaleform::` and `Lua::` the middleware. Class names are the project's unless the evidence is `source`. The
 names are the project's work, not the game's: no decompiled code goes into the file or its
 evidence.
