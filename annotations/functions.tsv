@@ -263,6 +263,7 @@
 0x1d8e180	TpfResCap::~TpfResCap	sure	calls	
 0x1d969f0	SprjGraphics::createGraphics	guess	calls	
 0x1d9b340	SprjGraphicsStep::STEP_Update	sure	step	
+0x1f156e0	WorldDecal::buildProjection	guess	calls	
 0x1f29aa0	EquipParamWeapon::findWithReinforcement	guess	calls	
 0x1fc0e60	SprjMemory::initialize	sure	calls	
 0x2067ac0	zlib::inflate#2	sure	message	
