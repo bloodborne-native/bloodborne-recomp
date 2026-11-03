@@ -2002,13 +2002,13 @@ for table, run in vtables.items():
         names[run[5]], how[run[5]] = names[run[5]][:-len('vf5')] + 'attachDebugPage', 'shape'
         watch_items += 1
 print('debug pages attached', watch_items)
-# 38. Graphics parameter sets: a GX...Param slot 2 that writes vectors into a constant buffer uploads the parameters; a slot
+# 38. Graphics parameter sets (named GX...Param or not): a slot 2 that writes vectors into a constant buffer uploads the parameters; a slot
 # 17 that adds range items to the debug menu adds the set's debug items.
 set_vectors = next((f for f, n in names.items() if n.endswith('ConstantBuffer::setVectors')), None)
 add_range = next((f for f, n in names.items() if n == 'FD4DebugMenu::addRangeItem'), None)
 param_roles = 0
 for f, name in list(names.items()):
-    m = re.fullmatch(r'(GX\w*Param)::vf(2|17)', name)
+    m = re.fullmatch(r'(.+)::vf(2|17)', name)
     if not m or how.get(f) == 'hand':
         continue
     if m.group(2) == '2' and set_vectors in callees.get(f, ()):
