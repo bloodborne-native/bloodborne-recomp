@@ -1103,6 +1103,9 @@
 0x21d1e40	PpfxBridge::allocate	guess	calls	
 0x21d1f00	PpfxBridge::free	guess	calls	
 0x21d2dd0	PpfxBridge::initialize	guess	calls	
+0x22071f0	DecalRenderer::initialize	guess	calls	
+0x2213270	Decal::initFromDesc	guess	calls	
+0x2213ff0	DecalRenderer::drawPass	guess	calls	
 0x2264d20	Class_5360b30::createCubeTargets	guess	calls	
 0x2279cf0	GXWaterInteractionNormalMap::loadShaders	guess	calls	
 0x227e230	FD4::SceneNode::collect	guess	calls	void (FD4::SceneNode *, void *pass)
