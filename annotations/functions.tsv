@@ -995,6 +995,9 @@
 0x21c41a0	FD4::MaterialParameters::end	guess	calls	void (FD4::MaterialParameters *, void *state_cache, void *pass)
 0x21c8c50	CG::SkinningBuffer::update	guess	calls	void (CG::SkinningBuffer *, const float (*current)[12], const float (*previous)[12], uint32_t)
 0x21cfb30	CG::ModelRenderer::drawModel	sure	calls	void (const CG::Model *model, void *materials, void *pass, uint32_t instance_count, void **instances, bool)
+0x21d01a0	CG::ModelRenderer::drawLodWithParams	guess	calls	
+0x21d0280	CG::ModelRenderer::drawLodWithParam	guess	calls	
+0x21d02f0	CG::ModelRenderer::drawLod	guess	calls	
 0x21d0640	CG::MeshRenderer::drawMesh	sure	calls	void (const CG::Model *model, void *pass, const CG::Mesh *mesh, const void *, const void *, uint32_t instances)
 0x21d1080	CG::MeshRenderer::uploadBonePalette	guess	calls	
 0x21d1650	CG::MeshRenderer::uploadBonePalette	guess	calls	
