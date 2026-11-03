@@ -996,6 +996,8 @@
 0x21c8c50	CG::SkinningBuffer::update	guess	calls	void (CG::SkinningBuffer *, const float (*current)[12], const float (*previous)[12], uint32_t)
 0x21cfb30	CG::ModelRenderer::drawModel	sure	calls	void (const CG::Model *model, void *materials, void *pass, uint32_t instance_count, void **instances, bool)
 0x21d0640	CG::MeshRenderer::drawMesh	sure	calls	void (const CG::Model *model, void *pass, const CG::Mesh *mesh, const void *, const void *, uint32_t instances)
+0x21d1080	CG::MeshRenderer::uploadBonePalette	guess	calls	
+0x21d1650	CG::MeshRenderer::uploadBonePalette	guess	calls	
 0x21d2dd0	PpfxBridge::initialize	guess	calls	
 0x2264d20	Class_5360b30::createCubeTargets	guess	calls	
 0x2279cf0	GXWaterInteractionNormalMap::loadShaders	guess	calls	
