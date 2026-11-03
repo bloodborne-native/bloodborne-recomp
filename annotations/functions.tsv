@@ -979,6 +979,7 @@
 0x26b2810	CG::SurfaceOps::copyBuffers	sure	calls
 0x26b2d30	CG::SurfaceOps::copyBufferByCompute	guess	calls	
 0x26b2f40	CG::SurfaceOps::copyTexture	sure	calls
+0x26b4230	CG::Device::uploadInitialData	guess	calls	
 0x26b4ef0	CG::SurfaceOps::clearTexture	sure	calls
 0x26b5380	CG::SurfaceOps::fillBuffer	sure	calls
 0x26b55a0	CG::SurfaceOps::resolve	sure	calls
