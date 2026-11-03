@@ -198,6 +198,7 @@
 0x10015d0	FD4DebugMenuItem::construct	guess	calls	
 0x1001720	FD4DebugMenuItem::detach	guess	calls	
 0x100a1f0	Class_52fb9d0::createAndAttach	guess	calls	
+0x1033080	Class_52fd3c0::debugDraw	guess	calls	
 0x103d540	FD4TaskRunnerQueue::constructor	guess	calls	
 0x103d690	FD4TaskRunnerQueue::destructor	guess	calls	
 0x103e210	FD4TaskCommandQueue::init	guess	calls	
