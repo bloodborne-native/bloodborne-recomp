@@ -1923,6 +1923,20 @@ for table, run in vtables.items():
         names[run[3]], how[run[3]] = re.sub(r'(::)?vf3$', '', names.get(run[3], f'Class_{table:x}::vf3')) + '::emitAndGetBounds', 'shape'
         appearance_slots += 1
 print('cluster appearances', appearance_slots)
+# 34. A short function of a known owner that calls exactly one system function, apart from locks, wraps it. The name says so
+# rather than guessing more: Ps4PadDevice::wraps_scePadClose.
+LOCK_IMPORT = re.compile(r'Import::(?:pthread_|scePthread|__)')
+wrapper_names = 0
+for f, name in list(names.items()):
+    if how.get(f) == 'hand' or '::' not in name or not 6 <= functions.get(f, (0, 0))[1] <= 60:
+        continue
+    if not re.search(r'::(?:near_|helper_|unit_|fn_|vf\d+$)', name):
+        continue
+    system = {names[g][8:] for g in callees.get(f, ()) if names.get(g, '').startswith('Import::sce') and not LOCK_IMPORT.match(names[g])}
+    if len(system) == 1:
+        names[f], how[f] = name.rsplit('::', 1)[0] + '::wraps_' + system.pop(), 'shape'
+        wrapper_names += 1
+print('system wrappers', wrapper_names)
 # 24b. A helper or near label far from everything solid in its class is a template or a shared utility that a class happens
 # to use (two of three read were: a vector assignment, a number parser). Those lose the label: 1 MiB, the width of a large
 # object file, measured against vtable slots, constructors and hand names.
