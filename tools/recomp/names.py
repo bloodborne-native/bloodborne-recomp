@@ -1880,7 +1880,8 @@ print('typed values', typed_tables)
 # 28. The texture interface: tables sharing slot 13 are textures, render targets and proxies that forward to an inner one at
 # +0x10. Read in the plain classes: slots 9 and 10 shift the width and height right by a mip, 8 and 7 read the mip count and
 # format out of the Direct3D-style description, 11 the depth (a volume's description has one, others return 1), 12 the byte
-# size used in the render target memory total.
+# size used in the render target memory total. Slot 6 gives the kind: 0 for 2D textures and render targets, 2 for volumes (a proxy
+# forwards it and gives -1 when empty).
 texture_slot = vtables.get(0x52e4070, [None] * 14)[13]
 texture_users = collections.Counter(g for run in vtables.values() if len(run) > 14 and run[13] == texture_slot for g in run[3:15])
 texture_tables = 0
@@ -1888,7 +1889,7 @@ for table, run in vtables.items():
     if len(run) > 14 and run[13] == texture_slot:
         texture_tables += 1
         for index, role in ((3, 'getShaderResourceView'), (5, 'getResource'), (7, 'getFormat'), (8, 'getMipCount'), (9, 'getWidth'),
-                            (10, 'getHeight'), (11, 'getDepth'), (12, 'getByteSize'), (14, 'isValid')):
+                            (10, 'getHeight'), (11, 'getDepth'), (12, 'getByteSize'), (14, 'isValid'), (6, 'getKind')):
             f = run[index]
             if how.get(f) != 'hand':
                 label = 'CG::TextureInterface' if texture_users[f] > 1 else (class_names.get(table) or f'Class_{table:x}')
