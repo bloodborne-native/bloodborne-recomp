@@ -1866,6 +1866,15 @@ for table, run in allocator_runs.items():
             label = 'DLAllocator' if allocator_users[f] > 1 else (class_names.get(table) or f'Class_{table:x}')
             names[f], how[f] = f'{label}::{role}', 'shape'
 print('allocator tables', len(allocator_runs))
+# 30. The file operator interface: tables sharing the disk operator's slot 35. The disk operator's slots call the system's
+# truncate, close, seek, read, write and stat; the cache system's read seeks and reads too.
+file_slot = vtables.get(0x53b2700, [None] * 36)[35]
+file_runs = {table: run for table, run in vtables.items() if len(run) > 36 and run[35] == file_slot}
+for table, run in file_runs.items():
+    for index, role in ((17, 'truncate'), (22, 'close'), (24, 'seek'), (26, 'read'), (27, 'write'), (36, 'getStatus')):
+        if how.get(run[index]) != 'hand':
+            names[run[index]], how[run[index]] = f"{class_names.get(table) or f'Class_{table:x}'}::{role}", 'shape'
+print('file operators', len(file_runs))
 # 24b. A helper or near label far from everything solid in its class is a template or a shared utility that a class happens
 # to use (two of three read were: a vector assignment, a number parser). Those lose the label: 1 MiB, the width of a large
 # object file, measured against vtable slots, constructors and hand names.
