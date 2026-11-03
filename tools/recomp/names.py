@@ -1309,6 +1309,9 @@ SHAPE_ROLES = {0x1495250: 'std::vector::push_back', 0x2acd200: 'FXResource::relo
                # GUI callback objects bind a named event to one of their member functions (the group differs only in the function):
                # the name's entry is found or made under the given owner, then bound to this object with two small arguments.
                0x2907970: 'registerCallback',
+               # FX sequence parameter runtimes: slot 8 copies this sequence into another after checking that its runtime class
+               # derives from the expected one (key count, then the key and value arrays).
+               0x2aefbe0: 'copyTo',
                # Typed-value arrays (three parallel arrays: a pointer and two ints) open a run of zeroed elements at an index, growing first.
                0x26f2780: 'insertEmpty',
                # FD4TemplateRepUnit<T> slot 4 (12 types): returns a copy of the unit's name (wide string at +0x30) with its value.
