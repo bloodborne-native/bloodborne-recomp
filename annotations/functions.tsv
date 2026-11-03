@@ -407,7 +407,15 @@
 0x12244e0	ChrInsAccessor::getCurrentWeaponSlot	guess	calls	
 0x1224790	ChrInsAccessor::getAiScriptId	guess	calls	
 0x12334b0	NvmLocator::locate	guess	calls	
+0x1256fc0	SprjAiFunc::AddTopGoal	guess	calls	
 0x125bad0	SprjAiFunc::IsApparentDeath	sure	binding	
+0x127b1a0	SprjAiFunc::REGISTER_GOAL	guess	calls	
+0x127b310	SprjAiFunc::REGISTER_LOGIC_FUNC	guess	calls	
+0x127b550	SprjAiFunc::REGISTER_DBG_GOAL_PARAM	guess	calls	
+0x127b6b0	SprjAiFunc::REGISTER_GOAL_NO_UPDATE	guess	calls	
+0x127b710	SprjAiFunc::REGISTER_GOAL_UPDATE_TIME	guess	calls	
+0x127b790	SprjAiFunc::REGISTER_GOAL_NO_INTERUPT	guess	calls	
+0x127b7f0	SprjAiFunc::ENABLE_COMBO_ATK_CANCEL	guess	calls	
 0x12acfa0	Sprj::ParamList::selectActive	guess	calls	void *(void *)
 0x12e6cf0	DL::WString::constructFormat	guess	calls	
 0x1335870	SprjLuaEventProxy::DisableHpGauge	sure	binding	
