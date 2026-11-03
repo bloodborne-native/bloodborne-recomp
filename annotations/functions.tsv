@@ -1167,6 +1167,7 @@
 0x26ad6e0	CG::recordApplyPipelineState	guess	calls	
 0x26adb90	CG::ResourceBinder::uploadConstants	guess	calls	void (void *, CG::ResourceBinder *, CG::DrawState *, const CG::ConstantBuffer *, const void *data)
 0x26addc0	CG::PageAllocator::allocate	guess	calls	
+0x26adf50	CG::ResourceBinder::flushPendingCopies	guess	calls	
 0x26ae840	CG::ResourceMap::find	guess	calls	
 0x26ae900	CG::ResourceMap::clearSlot	guess	calls	
 0x26ae9d0	CG::GnmContext::constructor	guess	calls	
