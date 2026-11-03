@@ -191,3 +191,7 @@
 0x53b62c0	CG::Texture3DBase	parent of the volume render target; its slot 18 releases the views and resource
 0x52e41c0	CG::CubeRenderTarget	its constructor sits beside the named create and clears seven surface slots
 0x52e3ff0	SceImeDialogHost	wraps the system text-input dialog: loads its module, opens it, polls its status and result, aborts
+0x52b84b0	Ps4PadDevice	opens and closes the system pad, drives rumble, keyed by the PS4 user id
+0x52e3800	MoviePlayer	runs the Mv_AudioPlayThread thread and creates textures and shader views for the frames
+0x5366810	SprjPlaylogData	serialises play log records through FD4RepData, reached through the SprjPlaylogSystem singleton
+0x5300710	FaceGenData	its methods are called about 100 times from FaceGen code and raise archive errors with longjmp
