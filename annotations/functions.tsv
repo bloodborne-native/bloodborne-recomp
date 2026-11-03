@@ -439,7 +439,10 @@
 0x127b790	SprjAiFunc::REGISTER_GOAL_NO_INTERUPT	guess	calls	
 0x127b7f0	SprjAiFunc::ENABLE_COMBO_ATK_CANCEL	guess	calls	
 0x12acfa0	Sprj::ParamList::selectActive	guess	calls	void *(void *)
+0x12d16f0	SprjAiPlatoonScriptCtrl::Class_53202b0::lookupMsb	guess	calls	
 0x12e6cf0	DL::WString::constructFormat	guess	calls	
+0x12f0a60	Class_53b1cf0::lookupEvd	guess	calls	
+0x12f0bd0	Class_53b1cf0::lookupEvd_12f0bd0	guess	calls	
 0x1335870	SprjLuaEventProxy::DisableHpGauge	sure	binding	
 0x13386d0	SprjLuaEventProxy::SetEventFlagValue	sure	binding	
 0x1398840	Sprj::World::updateEventRegions	guess	calls	
@@ -536,6 +539,7 @@
 0x1ad5b10	SprjScaleformDlg::update	guess	calls	
 0x1ae8cc0	Menu::messageText	sure	message	
 0x1ca0d10	std::vector::resize_1ca0d10	guess	calls	
+0x1ca7440	Class_539d100::lookupAnibnd	guess	calls	
 0x1d0da40	Sprj::World::updateGparam	guess	calls	
 0x1d1b170	ModelDrawInstance::updateIfVisible	guess	calls	
 0x1d1b360	ModelIns::drawMesh	guess	calls	
@@ -545,6 +549,8 @@
 0x1d25550	ModelIns::updateSkinnedBounds	guess	calls	
 0x1d25fd0	ModelIns::walkDecalReceiver	guess	calls	
 0x1d2ab70	SprjFade::fadeColor	guess	calls	
+0x1d2bcf0	Class_53a0cd0::lookupVertexShader	guess	calls	
+0x1d2bea0	Class_53a0cd0::lookupShaders	guess	calls	
 0x1d34880	FD4::Skeleton::getBoneMatrices	guess	calls	uint32_t (const FD4::Skeleton *, float (*matrices)[12], uint32_t count, uint32_t first)
 0x1d37400	FD4::ModelInstance::updateBoundsAndSkinning	guess	calls	void (FD4::ModelInstance *, void *)
 0x1d3ae20	FD4::Skeleton::getWorldBoneMatrices	guess	calls	int (const FD4::Skeleton *, float (*matrices)[12], uint32_t count, uint32_t first)
@@ -603,6 +609,7 @@
 0x1f021a0	MenuTagTable::formatItemText	guess	calls	
 0x1f027d0	MenuTagTable::formatInteger	guess	calls	
 0x1f02ad0	MenuTagTable::formatForgedCut	guess	calls	
+0x1f0c140	OnavResCap::lookupMsb	guess	calls	
 0x1f156e0	WorldDecal::buildProjection	guess	calls	
 0x1f29aa0	EquipParamWeapon::findWithReinforcement	guess	calls	
 0x1fc0e60	SprjMemory::initialize	sure	calls	
