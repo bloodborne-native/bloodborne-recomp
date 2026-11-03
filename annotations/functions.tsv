@@ -741,7 +741,9 @@
 0x21673e0	CG::Device::createShaderStage	guess	calls	
 0x2168630	CG::DeviceContext::clearRenderTargetView	guess	calls	
 0x2168660	CG::DeviceContext::copyResource	guess	calls	
+0x2168880	CG::DeviceContext::copyRegion	guess	calls	
 0x2168a20	CG::GraphicsContext::updateConstantBuffer	guess	calls
+0x2168b60	CG::DeviceContext::resolve	guess	calls	
 0x2168ca0	CG::GraphicsContext::setTopology	sure	calls	void (CG::GraphicsContext *, CG::DrawState *, uint32_t topology)
 0x2168cb0	CG::GraphicsContext::setIndexBuffer	sure	calls	void (CG::GraphicsContext *, CG::DrawState *, const CG::Buffer *, uint32_t format, uint32_t offset)
 0x2168cc0	CG::GraphicsContext::setVertexBuffers	sure	calls	void (CG::GraphicsContext *, CG::DrawState *, uint32_t first_slot, uint32_t count, const CG::Buffer *const *buffers, const uint32_t *strides, const uint32_t *offsets)
@@ -868,6 +870,12 @@
 0x228e3c0	RenderCommandList::end	guess	calls	
 0x228e430	RenderCommandList::begin	guess	calls	
 0x228e6a0	RenderCommandList::push	guess	calls	
+0x2290810	SceneRenderer::clearCommand	guess	calls	
+0x2290990	SceneRenderer::copyResourceCommand	guess	calls	
+0x22909b0	SceneRenderer::copyRegionCommand	guess	calls	
+0x2290a00	SceneRenderer::resolveCommand	guess	calls	
+0x2290a80	SceneRenderer::resolveCommand_2290a80	guess	calls	
+0x2290ab0	SceneRenderer::resolveCommand_2290ab0	guess	calls	
 0x2290dd0	RendCam::setWorldMatrix	guess	calls	
 0x22928a0	RendCam::testBox	guess	calls	
 0x22929b0	RendCam::testSphere	guess	calls	
