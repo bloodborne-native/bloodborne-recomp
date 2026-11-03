@@ -1851,6 +1851,21 @@ for table, run in vtables.items():
                 label = 'CG::TextureInterface' if texture_users[f] > 1 else (class_names.get(table) or f'Class_{table:x}')
                 names[f], how[f] = f'{label}::{role}', 'shape'
 print('texture tables', texture_tables)
+# 29. The allocator interface: 27-slot tables with the shared slot 3, or a heap or allocator class name. Read in a heap adapter:
+# slots 10 and 11 allocate (size; size and alignment), 12 and 13 reallocate (block size, new block, copy, free), 14 frees, and
+# 16 to 20 repeat those from the back. Slot 9 takes the size from a block's header, 7 walks the free bins, 22 tests ownership.
+allocator_slot = vtables.get(0x53b5110, [None] * 4)[3]
+allocator_runs = {table: run for table, run in vtables.items() if len(run) == 27 and (run[3] == allocator_slot or re.search('Heap|Allocator', class_names.get(table) or ''))}
+allocator_users = collections.Counter(g for run in allocator_runs.values() for g in run)
+for table, run in allocator_runs.items():
+    for index, role in ((7, 'getLargestFreeBlock'), (9, 'getBlockSize'), (10, 'allocate'), (11, 'allocateAligned'), (12, 'reallocate'),
+                        (13, 'reallocateAligned'), (14, 'free'), (16, 'allocateBack'), (17, 'allocateBackAligned'), (18, 'reallocateBack'),
+                        (19, 'reallocateBackAligned'), (20, 'freeBack'), (22, 'ownsBlock')):
+        f = run[index]
+        if how.get(f) != 'hand':
+            label = 'DLAllocator' if allocator_users[f] > 1 else (class_names.get(table) or f'Class_{table:x}')
+            names[f], how[f] = f'{label}::{role}', 'shape'
+print('allocator tables', len(allocator_runs))
 # 24b. A helper or near label far from everything solid in its class is a template or a shared utility that a class happens
 # to use (two of three read were: a vector assignment, a number parser). Those lose the label: 1 MiB, the width of a large
 # object file, measured against vtable slots, constructors and hand names.
