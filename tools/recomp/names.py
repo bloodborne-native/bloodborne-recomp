@@ -1296,7 +1296,9 @@ SHAPE_ROLES = {0x1495250: 'std::vector::push_back', 0x2acd200: 'FXResource::relo
                # step is not finished (state 3 or less), asks for the transition; its pair writes the item's text (stepDebugForceItem).
                0x1471520: 'FD4Step::onForceTransitionInput',
                # Class-specific operator delete into one fast small-object pool; a destructor pair that stores a base vtable first.
-               0x2885c20: 'operatorDelete', 0x26e1f00: 'destructor', 0x26e1f50: 'deletingDestructor'}
+               0x2885c20: 'operatorDelete', 0x26e1f00: 'destructor', 0x26e1f50: 'deletingDestructor',
+               # Typed-value arrays (three parallel arrays: a pointer and two ints) open a run of zeroed elements at an index, growing first.
+               0x26f2780: 'insertEmpty'}
 WEAK_ROLE = ('helper', 'near', 'unit', 'method', 'vf', 'writes_vtable', 'shared', 'fn', '_Do_call')
 role_of = lambda f: re.sub(r'_[0-9a-f]{5,}$', '', names.get(f, '').split('::')[-1])
 objdump = shutil.which('llvm-objdump') or shutil.which('objdump')
