@@ -1953,6 +1953,19 @@ for table, run in vtables.items():
             names[f], how[f] = f'{owner if not names.get(f, "").startswith("shared_") else "FD4DebugMenuItem"}::{role}', 'shape'
             item_names += 1
 print('debug menu item slots', item_names)
+# 36. Render commands: a short function that takes a command from the command ring, builds its sort key from the caller's
+# state and pushes it on the render queue (one read: it then stores the command's callback) enqueues one command.
+ring_allocate = next((f for f, n in names.items() if n == 'CG::CommandRing::allocate'), None)
+queue_push = next((f for f, n in names.items() if n == 'CG::RenderQueue::push'), None)
+enqueue_names = 0
+for f, name in list(names.items()):
+    if how.get(f) == 'hand' or functions.get(f, (0, 0))[1] > 200 or not re.search(r'(?:^|::)(?:near_|helper_|unit_|fn_|vf\d+$)', name):
+        continue
+    if ring_allocate in callees.get(f, ()) and queue_push in callees.get(f, ()):
+        owner = name.rsplit('::', 1)[0] if '::' in name else 'SceneRenderer'
+        names[f], how[f] = f'{owner}::enqueueCommand_{f:x}', 'shape'
+        enqueue_names += 1
+print('render command enqueues', enqueue_names)
 # 24b. A helper or near label far from everything solid in its class is a template or a shared utility that a class happens
 # to use (two of three read were: a vector assignment, a number parser). Those lose the label: 1 MiB, the width of a large
 # object file, measured against vtable slots, constructors and hand names.
