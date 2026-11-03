@@ -807,6 +807,7 @@
 0x216d420	CG::Device::allocateBufferStorage	guess	calls	
 0x216d690	CG::Buffer::release	guess	calls	
 0x216d8f0	CG::Texture::getDimension	guess	calls	
+0x216e1d0	CG::initGnmTargetFromTexture	guess	calls	
 0x216fa60	CG::initGnmTexture	guess	calls	
 0x21710a0	CG::initGnmDepthTarget	guess	calls	
 0x21711d0	CG::initGnmDepthTargetMultisampled	guess	calls	
