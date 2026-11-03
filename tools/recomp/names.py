@@ -1577,6 +1577,11 @@ SLOT_ROLES = [(re.compile(r'FXEvaluatable.*::vf1'), 'evaluate'),
               (re.compile(r'^FX(?!\w*Sequence)\w*Param(?:Real|ParentRef)::vf11$'), 'getValue'),
               (re.compile(r'^FX(?!\w*Sequence)\w*Param(?:Real|ParentRef)::vf12$'), 'setValue'),
               (re.compile(r'^FX\w*SequenceParam(?:Ref|Runtime|RandomSequenceBase)::vf18$'), 'getMaxValue'), (re.compile(r'^FX\w*SequenceParam(?:Ref|Runtime|RandomSequenceBase)::vf19$'), 'getMinValue'),
+              # Slot 5 makes the runtime object (a stored sequence copies its keys into a new runtime one; references forward), and
+              # slot 11 evaluates: a reference looks its sequence up and evaluates it, a random one scales its inner value by a
+              # random factor in its range.
+              (re.compile(r'^FX\w*SequenceParam(?:Real|Ref)::vf5$'), 'create'),
+              (re.compile(r'^FX\w*SequenceParam(?:Ref|RandomSequenceBase)::vf11$'), 'evaluate'),
               # A random range's slot 13 tests whether its two ends are equal; references forward it.
               (re.compile(r'FX\w*Param\w*::vf13'), 'isConstant'),
               # File capsules: slot 7 passes the loaded data on (two read). Location nodes: slot 8 copies a range of 0x30-byte
