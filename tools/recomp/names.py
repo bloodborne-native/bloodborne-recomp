@@ -1440,9 +1440,12 @@ print('constructors', built, 'virtual destructors', virtual_destructors)
 ITEM_MAKERS = ('addItem', 'addDebugItem', 'addDebugToggle', 'addDebugButton')
 page_fillers = 0
 for f, (size_, count_) in functions.items():
-    if count_ <= 120 and (not role_of(f) or role_of(f).startswith(WEAK_ROLE)) and how.get(f) not in OWN_NAME \
-            and any(role_of(c) in ITEM_MAKERS for c in callees[f]):
-        label = names.get(f, '').split('::')[0]
+    if (not role_of(f) or role_of(f).startswith(WEAK_ROLE)) and how.get(f) not in OWN_NAME and (
+            (count_ <= 120 and any(role_of(c) in ITEM_MAKERS for c in callees[f])) or
+            # Longer ones that add range items (sliders) fill a page too: the graphics passes' parameter pages (read three).
+            (not re.search(r'::vf\d+$', names.get(f, '')) and
+             any(names.get(c) == 'FD4DebugMenu::addRangeItem' for c in callees[f]))):
+        label = names.get(f, '').split('::')[0] if count_ <= 120 else ''
         names[f] = f'{label}::fillDebugPage' if label else f'FD4DebugMenu::fillDebugPage_{f:x}'
         how[f] = 'shape'
         page_fillers += 1
