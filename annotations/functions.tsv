@@ -184,6 +184,7 @@
 0xfaeaf0	FD4::ScopedProfile::begin	guess	calls	
 0xfaebc0	FD4::ScopedProfile::end	guess	calls	
 0xfc07f0	FD4RepData::addMember	guess	calls	
+0xfc1c10	FD4ReportSystem::sendLogReport	guess	calls	
 0xfd2050	Class_52f5470::initNetwork	guess	calls	
 0xfe67d0	FD4ResCapHolder::FD4ResCapHolder	sure	calls	
 0xfe68f0	FD4::ResRepository::find	sure	calls	
