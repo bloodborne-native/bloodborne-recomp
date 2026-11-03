@@ -1560,6 +1560,10 @@ SLOT_ROLES = [(re.compile(r'FXEvaluatable.*::vf1'), 'evaluate'),
               # reference's slot 11 forwards to the parent's slot 11.
               (re.compile(r'FX(?:(?!Sequence)\w)*ParamReal::vf9'), 'getStoredSize'), (re.compile(r'FX(?:(?!Sequence)\w)*ParamReal::vf10'), 'describeValue'),
               (re.compile(r'FX\w*ParamParentRef::vf11'), 'evaluate'),
+              # GUI windows: slot 53 builds the child widgets, 47 recomputes scroll bars and layout from the window rectangle, 56 draws
+              # (a button clips to its rectangle and draws its text). Item menus: slot 46 builds the list of rows from the inventory.
+              (re.compile(r'GUI\w*::vf53'), 'onCreate'), (re.compile(r'GUI\w*::vf47'), 'onResize'), (re.compile(r'GUI\w*::vf56'), 'draw'),
+              (re.compile(r'FrpgMenuDlg\w*::vf46'), 'buildItemList'),
               # A method invoker calls its member function pointer and stores the result.
               (re.compile(r'DLMethodInvoker_\w+::vf0'), 'invoke')]
 slot_named = 0
