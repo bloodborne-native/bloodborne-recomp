@@ -1376,6 +1376,12 @@ for group in shapes.values():
         how[f] = 'shape'
         identical += 1
 print('identical code', identical)
+if os.environ.get('SHAPE_DUMP'):
+    # Groups with no role yet, largest first: candidates to read once and add to SHAPE_ROLES.
+    open_groups = [g for g in shapes.values() if len(g) >= 4 and not any(f in SHAPE_ROLES for f in g)
+                   and sum(1 for f in g if not role_of(f) or role_of(f).startswith(WEAK_ROLE)) >= 4]
+    for g in sorted(open_groups, key=len, reverse=True)[:int(os.environ['SHAPE_DUMP'])]:
+        print('SHAPE', len(g), functions[g[0]][1], ' '.join(f'{f:#x}={names.get(f, "")}' for f in g[:4]))
 # 12. A function that stores its class's vtable and is no slot of it builds an object: its first argument
 # (a constructor) or, when short with one store, what it allocated (a factory: longer ones build debug pages).
 built = virtual_destructors = 0
@@ -1583,7 +1589,12 @@ SLOT_ROLES = [(re.compile(r'FXEvaluatable.*::vf1'), 'evaluate'),
               # call it first. Manipulators: slot 9 is the per-frame update that reads the pad, the AI or the network.
               (re.compile(r'(?:ChrIns|EnemyIns|PlayerIns|ReplayGhostIns)::vf26'), 'frameUpdate'), (re.compile(r'\w+Manipulator::vf9'), 'update'),
               # A method invoker calls its member function pointer and stores the result.
-              (re.compile(r'DLMethodInvoker_\w+::vf0'), 'invoke')]
+              (re.compile(r'DLMethodInvoker_\w+::vf0'), 'invoke'),
+              # Graphics parameter channels (16 tables): slot 0 jumps to the constructor, slot 18 moves the state with one id to
+              # another id when that one is free (unlinks the node, changes the id, links it back in order), slot 21 returns the
+              # channel's type bit (1, 2, 4, 8 or 16).
+              (re.compile(r'GraphicsParamChannel_\w+::vf0'), 'construct'), (re.compile(r'GraphicsParamChannel_\w+::vf18'), 'renameState'),
+              (re.compile(r'GraphicsParamChannel_\w+::vf21'), 'getTypeBit')]
 slot_named = 0
 for f, name in list(names.items()):
     if how.get(f) in ('class', 'vtable'):
