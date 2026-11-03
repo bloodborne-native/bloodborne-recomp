@@ -237,6 +237,7 @@
 0x1070390	FaceGen::loadCtl	guess	calls	
 0x1070650	Gnm::Buffer::initAsVertexBuffer	guess	calls	
 0x1070710	Gnm::Buffer::setBaseAddress	guess	calls	
+0x1070730	Gnm::Buffer::setStride	guess	calls	
 0x10707c0	Gnm::Buffer::initAsDataBuffer	guess	calls	
 0x1070960	Gnm::Buffer::initAsConstantBuffer	sure	pm4	void (Gnm::Buffer *, uint64_t address, uint32_t size)
 0x10710c0	Gnm::Buffer::setResourceMemoryType	guess	calls	
@@ -357,6 +358,8 @@
 0x1084f60	Gnm::PrimitiveSetup::setFrontFace	guess	calls	
 0x1084f70	Gnm::PrimitiveSetup::setPolygonMode	guess	calls	
 0x1084fa0	Gnm::PrimitiveSetup::setPolygonOffsetEnable	guess	calls	
+0x1085070	Gnm::DbRenderControl::setDepthTileWriteBackPolicy	guess	calls	
+0x1085080	Gnm::DbRenderControl::setStencilTileWriteBackPolicy	guess	calls	
 0x10850d0	Gnm::ClipControl::init	guess	calls	
 0x1085170	Gnm::ClipControl::setClipSpace	guess	calls	
 0x10851f0	Gnm::ClipControl::setZclipEnable	guess	calls	
