@@ -1569,6 +1569,9 @@ SLOT_ROLES = [(re.compile(r'FXEvaluatable.*::vf1'), 'evaluate'),
               # Compressed file streams: the DCX container. Slot 14 builds the size header, 15 checks the codec header, 16 accepts it, 17 writes it.
               (re.compile(r'(?:Edge|Zlib)CompressionStream::vf14'), 'makeSizeHeader'), (re.compile(r'(?:Edge|Zlib)CompressionStream::vf15'), 'checkCodecHeader'),
               (re.compile(r'(?:Edge|Zlib)CompressionStream::vf16'), 'acceptCodecHeader'), (re.compile(r'(?:Edge|Zlib)CompressionStream::vf17'), 'writeCodecHeader'),
+              # Characters: slot 26 is the frame update (regenerates HP by the time delta, runs the character's modules); subclasses
+              # call it first. Manipulators: slot 9 is the per-frame update that reads the pad, the AI or the network.
+              (re.compile(r'(?:ChrIns|EnemyIns|PlayerIns|ReplayGhostIns)::vf26'), 'frameUpdate'), (re.compile(r'\w+Manipulator::vf9'), 'update'),
               # A method invoker calls its member function pointer and stores the result.
               (re.compile(r'DLMethodInvoker_\w+::vf0'), 'invoke')]
 slot_named = 0
