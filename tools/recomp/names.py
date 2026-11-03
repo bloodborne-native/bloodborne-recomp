@@ -1866,13 +1866,14 @@ print('texture tables', texture_tables)
 # 29. The allocator interface: 27-slot tables with the shared slot 3, or a heap or allocator class name. Read in a heap adapter:
 # slots 10 and 11 allocate (size; size and alignment), 12 and 13 reallocate (block size, new block, copy, free), 14 frees, and
 # 16 to 20 repeat those from the back. Slot 9 takes the size from a block's header, 7 walks the free bins, 22 tests ownership.
+# Slot 4 returns the flags containers check, 23 steps a block iterator, 24 and 25 lock (the heap manager's take its mutex).
 allocator_slot = vtables.get(0x53b5110, [None] * 4)[3]
 allocator_runs = {table: run for table, run in vtables.items() if len(run) == 27 and (run[3] == allocator_slot or re.search('Heap|Allocator', class_names.get(table) or ''))}
 allocator_users = collections.Counter(g for run in allocator_runs.values() for g in run)
 for table, run in allocator_runs.items():
     for index, role in ((7, 'getLargestFreeBlock'), (9, 'getBlockSize'), (10, 'allocate'), (11, 'allocateAligned'), (12, 'reallocate'),
                         (13, 'reallocateAligned'), (14, 'free'), (16, 'allocateBack'), (17, 'allocateBackAligned'), (18, 'reallocateBack'),
-                        (19, 'reallocateBackAligned'), (20, 'freeBack'), (22, 'ownsBlock')):
+                        (19, 'reallocateBackAligned'), (20, 'freeBack'), (22, 'ownsBlock'), (4, 'getCapabilities'), (23, 'nextBlock'), (24, 'lock'), (25, 'unlock')):
         f = run[index]
         if how.get(f) != 'hand':
             label = 'DLAllocator' if allocator_users[f] > 1 else (class_names.get(table) or f'Class_{table:x}')
