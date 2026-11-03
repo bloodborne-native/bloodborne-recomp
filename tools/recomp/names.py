@@ -1614,7 +1614,10 @@ SLOT_ROLES = [(re.compile(r'FXEvaluatable.*::vf1'), 'evaluate'),
               # another id when that one is free (unlinks the node, changes the id, links it back in order), slot 21 returns the
               # channel's type bit (1, 2, 4, 8 or 16).
               (re.compile(r'GraphicsParamChannel_\w+::vf0'), 'construct'), (re.compile(r'GraphicsParamChannel_\w+::vf18'), 'renameState'),
-              (re.compile(r'GraphicsParamChannel_\w+::vf21'), 'getTypeBit')]
+              (re.compile(r'GraphicsParamChannel_\w+::vf21'), 'getTypeBit'),
+              # Menu dialog objects: slot 25 takes a message id and a typed value (float or int at +8), like the dialogs' slot 27
+              # (read in the equip icon, list item, arrow and face colour bar).
+              (re.compile(r'FrpgMenuDlgObj\w*::vf25'), 'onMessage')]
 slot_named = 0
 for f, name in list(names.items()):
     if how.get(f) in ('class', 'vtable'):
