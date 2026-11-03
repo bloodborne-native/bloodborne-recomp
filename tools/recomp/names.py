@@ -2036,6 +2036,36 @@ for f, (size, count) in functions.items():
         names[f], how[f] = f'{space}::near_{f:x}', 'near'
         sandwiched += 1
 print('placed between namespace neighbours', sandwiched)
+# 40. Overrides keep their slot's meaning: where an ancestor's slot has a role (a name read by hand or by a rule), a class's own
+# function at that index does the same for its class (read: Scaleform factory slots that build their object, a culling camera's
+# sphere and frustum tests, mutex lock and unlock). Roles that carry an address are labels, not meanings, and are not passed on.
+GENERIC_ROLE = re.compile(r'^(?:vf\d+|near_|helper_|fn_|method_|unit_|callback_|writes_vtable|recordCommand_|runCommand_|enqueueCommand_|wraps_|init_|constructor|destructor|deletingDestructor|_)')
+override_roles = 0
+override_samples = []
+for table, run in vtables.items():
+    label = class_names.get(table) or f'Class_{table:x}'
+    chain = list(ancestors(table))
+    if not chain:
+        continue
+    for index, f in enumerate(run):
+        current = names.get(f, '')
+        if not re.search(r'::vf\d+$', current) or current.split('::')[0] != label:
+            continue
+        for base in chain:
+            brun = vtables.get(base, ())
+            if index >= len(brun) or brun[index] == f:
+                continue
+            role = names.get(brun[index], '').split('::')[-1]
+            if role and not GENERIC_ROLE.match(role) and not re.search(r'_[0-9a-f]{5,}$', role) and how.get(brun[index]) in ('hand', 'shape', 'class', 'vtable'):
+                names[f], how[f] = f'{label}::{role}', 'shape'
+                override_roles += 1
+                if len(override_samples) < 400:
+                    override_samples.append((f, names[f], names.get(brun[index], '')))
+            break
+print('override roles', override_roles)
+if os.environ.get('OVERRIDE_SAMPLES'):
+    for f, n, b in override_samples:
+        print(f'  {f:#x} {n} <- {b}')
 # 24b. A helper or near label far from everything solid in its class is a template or a shared utility that a class happens
 # to use (two of three read were: a vector assignment, a number parser). Those lose the label: 1 MiB, the width of a large
 # object file, measured against vtable slots, constructors and hand names.
