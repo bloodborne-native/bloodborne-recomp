@@ -211,3 +211,4 @@
 0x535f300	CG::ContextHeapBack	DeviceContext::init gives it to type-0 contexts (which record their thread); its slots call the GpuHeap functions that use the free list from its other end
 0x535f350	CG::ContextHeap	DeviceContext::init gives it to other contexts; its slots call GpuHeap allocate, free and freeAfterGpu
 0x535f3c0	CG::Texture1DResource	between Buffer and Texture2DResource in table and code order; the Gnm texture builder handles resource dimension 2 (Direct3D 11 TEXTURE1D) as a 1D array
+0x53b3ba0	DL::RuntimeClass	the base of every class object: each X::DLRuntimeClass destructor calls its destructor (2,874 callers), which empties the registry entries and their mutexes

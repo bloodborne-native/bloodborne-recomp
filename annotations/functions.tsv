@@ -745,6 +745,7 @@
 0x20b6d00	DLRuntimeClass::construct	sure	calls	
 0x20b6dc0	DLRuntimeClass::setParent	sure	message	
 0x20b6e20	DL::RuntimeClass::registerMethod	sure	message	
+0x20b7b10	DL::RuntimeClass::registerClass	guess	calls	
 0x20b8500	DL::RuntimeClass::findByTypeTag	sure	calls	
 0x20bd7c0	DLResourceInfo::reset	guess	calls	
 0x20bd8a0	DLResourceInfo::destructor	guess	calls	
