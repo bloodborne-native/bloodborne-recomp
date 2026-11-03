@@ -1559,9 +1559,10 @@ SLOT_ROLES = [(re.compile(r'FXEvaluatable.*::vf1'), 'evaluate'),
                  (8, 'updateTargets'), (9, 'fadeIn'), (10, 'fadeOut'), (11, 'setScaled'), (12, 'hasState'))],
               # Menu dialogs: slot 32 takes a control event (2, 6, 8) and a value (two read, same comparisons).
               (re.compile(r'FrpgMenuDlg\w*::vf32'), 'onControlEvent'),
-              # FX constant parameters: slot 9 gives the size of the stored value, slot 10 describes it (one read each); a parent
+              # FX parameters: slot 9 gives the size of the stored value, slot 10 describes it (read in a constant, a random range and a
+# float sequence: the range stores 12 bytes or 4 or none, and its description says which); a parent
               # reference's slot 11 forwards to the parent's slot 11.
-              (re.compile(r'FX(?:(?!Sequence)\w)*ParamReal::vf9'), 'getStoredSize'), (re.compile(r'FX(?:(?!Sequence)\w)*ParamReal::vf10'), 'describeValue'),
+              (re.compile(r'FX\w*Param\w*::vf9'), 'getStoredSize'), (re.compile(r'FX\w*Param\w*::vf10'), 'describeValue'),
               (re.compile(r'FX\w*ParamParentRef::vf11'), 'evaluate'),
               # GUI windows: slot 53 builds the child widgets, 47 recomputes scroll bars and layout from the window rectangle, 56 draws
               # (a button clips to its rectangle and draws its text). Item menus: slot 46 builds the list of rows from the inventory.
