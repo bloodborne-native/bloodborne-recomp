@@ -1886,6 +1886,22 @@ for table, run in stream_runs.items():
         if index < len(run) and how.get(run[index]) != 'hand':
             names[run[index]], how[run[index]] = f"{class_names.get(table) or f'Class_{table:x}'}::{role}", 'shape'
 print('input streams', len(stream_runs))
+# 32. Scaleform dialogs: tables whose slot 3 is the shared update (it takes a time delta, ticks the Scaleform movie and walks the
+# queued input) or calls it after its own work. The classes get a family label; each one's slot 3 is its update.
+DIALOG_UPDATE = 0x1ad5b10
+dialog_tables = 0
+for table, run in vtables.items():
+    if len(run) > 3 and (run[3] == DIALOG_UPDATE or DIALOG_UPDATE in callees.get(run[3], ())):
+        dialog_tables += 1
+        label = class_names.get(table) or f'SprjScaleformDlg_{table:x}'
+        if not class_names.get(table):
+            old = f'Class_{table:x}::'
+            for f, name in list(names.items()):
+                if name.startswith(old) and how.get(f) != 'hand':
+                    names[f] = label + '::' + name[len(old):]
+        if how.get(run[3]) != 'hand':
+            names[run[3]], how[run[3]] = f'{label}::update', 'shape'
+print('scaleform dialogs', dialog_tables)
 # 24b. A helper or near label far from everything solid in its class is a template or a shared utility that a class happens
 # to use (two of three read were: a vector assignment, a number parser). Those lose the label: 1 MiB, the width of a large
 # object file, measured against vtable slots, constructors and hand names.

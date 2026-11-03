@@ -502,6 +502,7 @@
 0x1ac6da0	MapInsWorkList::push	guess	calls	
 0x1ac7220	MapInsWorkList::queueFlag10	guess	calls	
 0x1ac73c0	MapName::parse	guess	calls	
+0x1ad5b10	SprjScaleformDlg::update	guess	calls	
 0x1ae8cc0	Menu::messageText	sure	message	
 0x1ca0d10	std::vector::resize_1ca0d10	guess	calls	
 0x1d0da40	Sprj::World::updateGparam	guess	calls	
