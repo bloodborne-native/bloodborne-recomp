@@ -2018,6 +2018,24 @@ for f, name in list(names.items()):
         names[f], how[f] = m.group(1) + '::addDebugItems', 'shape'
         param_roles += 1
 print('graphics parameter slots', param_roles)
+# 39. An unplaced function between two named functions of the same namespace, each within 4 KiB, belongs to that namespace's
+# object file (sampled: a mip count from the largest dimension and a device teardown, both CG, between CG neighbours).
+named_starts = sorted(f for f, n in names.items() if '::' in n and not n.startswith(('Class_', 'shared_')))
+sandwiched = 0
+for f, (size, count) in functions.items():
+    if count <= 5 or names.get(f) or f >= code_end:
+        continue
+    j = bisect.bisect_left(named_starts, f)
+    if j == 0 or j >= len(named_starts):
+        continue
+    before, after = named_starts[j - 1], named_starts[j]
+    if f - before > 0x1000 or after - f > 0x1000:
+        continue
+    space = names[before].split('::')[0]
+    if space == names[after].split('::')[0] and not space.startswith(('std', 'Says', 'Import', 'Template', 'staticInit')):
+        names[f], how[f] = f'{space}::near_{f:x}', 'near'
+        sandwiched += 1
+print('placed between namespace neighbours', sandwiched)
 # 24b. A helper or near label far from everything solid in its class is a template or a shared utility that a class happens
 # to use (two of three read were: a vector assignment, a number parser). Those lose the label: 1 MiB, the width of a large
 # object file, measured against vtable slots, constructors and hand names.
