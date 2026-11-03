@@ -1297,6 +1297,11 @@ SHAPE_ROLES = {0x1495250: 'std::vector::push_back', 0x2acd200: 'FXResource::relo
                0x1471520: 'FD4Step::onForceTransitionInput',
                # Class-specific operator delete into one fast small-object pool; a destructor pair that stores a base vtable first.
                0x2885c20: 'operatorDelete', 0x26e1f00: 'destructor', 0x26e1f50: 'deletingDestructor',
+               # Havok-style deleting destructors: run the destructor (or none), then free the object to the thread's heap with its
+               # size from the memory-size field (+8 >> 16) or the class size; one through a secondary base (this - 0x10); one that
+               # frees an 8-byte object when not null. Scaleform's run the destructor and free to the global heap.
+               0x41a210: 'deletingDestructor', 0x4cc9b0: 'deletingDestructor', 0x546ca0: 'deletingDestructor',
+               0x435cc0: 'deletingDestructor', 0x1c0: 'deletingDestructor',
                # Typed-value arrays (three parallel arrays: a pointer and two ints) open a run of zeroed elements at an index, growing first.
                0x26f2780: 'insertEmpty',
                # FD4TemplateRepUnit<T> slot 4 (12 types): returns a copy of the unit's name (wide string at +0x30) with its value.
