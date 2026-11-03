@@ -298,6 +298,7 @@
 0x1077240	Gnm::DrawCommandBuffer::setAaSampleCount#internal	sure	pm4
 0x1077350	Gnm::DrawCommandBuffer::setCentroidPriority	sure	pm4
 0x10773b0	Gnm::DrawCommandBuffer::setCentroidPriority#internal	sure	pm4
+0x1077660	Gnm::DrawCommandBuffer::writeOcclusionQuery	guess	calls	
 0x10778f0	Gnm::DrawCommandBuffer::writeAtEndOfPipe	sure	pm4
 0x1077b30	Gnm::DrawCommandBuffer::waitOnAddress	sure	pm4
 0x1077f40	Gnm::DrawCommandBuffer::waitForGraphicsWrites	guess	pm4
@@ -805,6 +806,7 @@
 0x2168880	CG::DeviceContext::copyRegion	guess	calls	
 0x2168a20	CG::GraphicsContext::updateConstantBuffer	guess	calls
 0x2168b60	CG::DeviceContext::resolve	guess	calls	
+0x2168be0	CG::DeviceContext::copyStructureCount	guess	calls	
 0x2168ca0	CG::GraphicsContext::setTopology	sure	calls	void (CG::GraphicsContext *, CG::DrawState *, uint32_t topology)
 0x2168cb0	CG::GraphicsContext::setIndexBuffer	sure	calls	void (CG::GraphicsContext *, CG::DrawState *, const CG::Buffer *, uint32_t format, uint32_t offset)
 0x2168cc0	CG::GraphicsContext::setVertexBuffers	sure	calls	void (CG::GraphicsContext *, CG::DrawState *, uint32_t first_slot, uint32_t count, const CG::Buffer *const *buffers, const uint32_t *strides, const uint32_t *offsets)
@@ -845,6 +847,9 @@
 0x2169ba0	CG::GraphicsContext::applyPipelineState	guess	calls	
 0x2169c30	CG::DeviceContext::map	guess	calls	
 0x2169eb0	CG::DeviceContext::unmap	guess	calls	
+0x2169ec0	CG::DeviceContext::beginQuery	guess	calls	
+0x216a070	CG::DeviceContext::endQuery	guess	calls	
+0x216a2f0	CG::DeviceContext::getQueryData	guess	calls	
 0x216a770	CG::DeviceContext::setPredication	guess	calls	
 0x216bc70	CG::buildInputLayout	guess	calls	
 0x216c140	CG::buildInputLayoutFromIds	guess	calls	
