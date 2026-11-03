@@ -1302,6 +1302,10 @@ SHAPE_ROLES = {0x1495250: 'std::vector::push_back', 0x2acd200: 'FXResource::relo
                # frees an 8-byte object when not null. Scaleform's run the destructor and free to the global heap.
                0x41a210: 'deletingDestructor', 0x4cc9b0: 'deletingDestructor', 0x546ca0: 'deletingDestructor',
                0x435cc0: 'deletingDestructor', 0x1c0: 'deletingDestructor',
+               # Havok containers instantiated in game code: an array's clearAndDeallocate (frees capacity * 4 to the container
+               # allocator unless the storage is not owned, high bit of the capacity) and a reference pointer's assignment (adds a
+               # reference to the new object, removes one from the old, which deletes itself at zero).
+               0x427140: 'hkArray::clearAndDeallocate', 0x425c10: 'hkRefPtr::assign',
                # Typed-value arrays (three parallel arrays: a pointer and two ints) open a run of zeroed elements at an index, growing first.
                0x26f2780: 'insertEmpty',
                # FD4TemplateRepUnit<T> slot 4 (12 types): returns a copy of the unit's name (wide string at +0x30) with its value.
