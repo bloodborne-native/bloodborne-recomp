@@ -83,10 +83,10 @@ A layer counts as native only when nothing in it is translated any more. Two of 
   14% less CPU time than the translator at the same frame rate. Calls left to the translator went
   from 69,600 a second to 9,400. The launcher builds the library on the player's device, later updates
   compile only what changed, and the library no longer keeps the whole game decoded (peak footprint
-  7.8 GB to 5.7 GB on the Mac). 1086 functions are named by hand, with the engine's draw state, models,
+  7.8 GB to 5.7 GB on the Mac). 1088 functions are named by hand, with the engine's draw state, models,
   materials and shaders described ([`annotations/`](annotations)), which is what the renderer's work
   stands on. About 31,000 of the about 58,000 functions to understand have a name or a known role, and
-  48,685 are placed in a class or a source file ([where it stands](docs/RECOMPILATION.md#annotations)).
+  48,687 are placed in a class or a source file ([where it stands](docs/RECOMPILATION.md#annotations)).
 - **Left:** the import stubs and the code rewritten while the game
   runs, and building for other architectures.
 

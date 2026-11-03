@@ -967,6 +967,8 @@
 0x26b9850	CG::ResourceSyncContext::synchronize	guess	source	void (CG::ResourceSyncContext *, Gnm::DrawCommandBuffer *)
 0x26bad70	CG::isCpuReadable	sure	calls	
 0x26badd0	CG::isGpuReadable	sure	calls	
+0x26bb570	CG::loadShaderBinary	guess	calls	
+0x26bb670	CG::patchShaderAddress	guess	calls	
 0x26bba30	CG::InputAssemblyState::apply	sure	calls	void (CG::InputAssemblyState *, CG::GraphicsContext *, const CG::DrawState *, bool indexed)
 0x26bc2e0	CG::ResourceBinder::beforeDraw	guess	calls	void (CG::ResourceBinder *, CG::GraphicsContext *, const CG::DrawState *)
 0x26bc320	CG::ResourceBinder::commitGraphics	guess	calls	void (CG::ResourceBinder *, CG::GraphicsContext *, const CG::DrawState *)
