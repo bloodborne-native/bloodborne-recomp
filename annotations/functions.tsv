@@ -771,8 +771,10 @@
 0x2264d20	Class_5360b30::createCubeTargets	guess	calls	
 0x2279cf0	GXWaterInteractionNormalMap::loadShaders	guess	calls	
 0x227e230	FD4::SceneNode::collect	guess	calls	void (FD4::SceneNode *, void *pass)
-0x2287330	StreamingNode::updateVisibility	guess	calls	
-0x2287920	StreamingNode::updateLoadState	guess	calls	
+0x2287330	OcclusionNode::updateVisibility	guess	calls	
+0x2287920	OcclusionNode::updateQueryState	guess	calls	
+0x2287fc0	OcclusionNode::markChildrenInvisible	guess	calls	
+0x2288250	OcclusionNode::markVisibleRecursive	guess	calls	
 0x2289bb0	CG::CommandRing::allocate	guess	calls	
 0x2289db0	RenderCommandList::allocate	guess	calls	
 0x228a0a0	std::sort_228a0a0	guess	calls	
