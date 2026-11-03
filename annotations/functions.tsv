@@ -240,6 +240,7 @@
 0x1070730	Gnm::Buffer::setStride	guess	calls	
 0x10707c0	Gnm::Buffer::initAsDataBuffer	guess	calls	
 0x1070960	Gnm::Buffer::initAsConstantBuffer	sure	pm4	void (Gnm::Buffer *, uint64_t address, uint32_t size)
+0x1070990	Gnm::Buffer::initAsByteBuffer	guess	calls	
 0x10710c0	Gnm::Buffer::setResourceMemoryType	guess	calls	
 0x1071180	Gnm::Buffer::getBaseAddress	guess	calls	
 0x10711a0	Gnm::Buffer::getStride	guess	calls	
@@ -1346,6 +1347,7 @@
 0x26bb570	CG::loadShaderBinary	guess	calls	
 0x26bb670	CG::patchShaderAddress	guess	calls	
 0x26bb6d0	CG::GnmContext::writeAtEndOfPipe	guess	calls	
+0x26bb700	CG::GnmContext::writeTimestampAtEndOfPipe	guess	calls	
 0x26bb730	CG::CommandSegmentList::submit	guess	calls	
 0x26bba30	CG::InputAssemblyState::apply	sure	calls	void (CG::InputAssemblyState *, CG::GraphicsContext *, const CG::DrawState *, bool indexed)
 0x26bc090	CG::ContextStateCache::reset	guess	calls	
