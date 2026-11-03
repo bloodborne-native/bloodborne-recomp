@@ -1290,7 +1290,9 @@
 0x26bb4f0	CG::formatHasStencil	guess	calls	
 0x26bb570	CG::loadShaderBinary	guess	calls	
 0x26bb670	CG::patchShaderAddress	guess	calls	
+0x26bb730	CG::CommandSegmentList::submit	guess	calls	
 0x26bba30	CG::InputAssemblyState::apply	sure	calls	void (CG::InputAssemblyState *, CG::GraphicsContext *, const CG::DrawState *, bool indexed)
+0x26bc090	CG::ContextStateCache::reset	guess	calls	
 0x26bc2e0	CG::ResourceBinder::beforeDraw	guess	calls	void (CG::ResourceBinder *, CG::GraphicsContext *, const CG::DrawState *)
 0x26bc320	CG::ResourceBinder::commitGraphics	guess	calls	void (CG::ResourceBinder *, CG::GraphicsContext *, const CG::DrawState *)
 0x26cbd50	CG::ResourceBinder::afterDraw	guess	calls	void (CG::ResourceBinder *, CG::GraphicsContext *)
@@ -1311,6 +1313,9 @@
 0x26d2790	CG::bindRenderTargets	guess	calls	
 0x26d2c30	CG::SurfaceOps::setDepthClearValues	guess	calls	
 0x26d3370	CG::RasterizerState::apply	sure	calls	void (CG::RasterizerState *, CG::GraphicsContext *, const CG::DrawState *)
+0x26d3b80	CG::CommandChunkPool::acquireChunk	guess	calls	
+0x26d3c80	CG::CommandChunkPool::releaseAfterGpu	guess	calls	
+0x26d3d40	CG::CommandChunkPool::chunkBase	guess	calls	
 0x26d4920	CG::getVertexSamplers	guess	calls	
 0x26d4950	CG::getVertexShaderResources	guess	calls	
 0x26d4980	CG::getVertexConstantBuffers	guess	calls	
