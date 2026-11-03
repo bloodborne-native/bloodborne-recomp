@@ -208,3 +208,5 @@
 0x535f440	CG::RenderTargetView	the table CG::Device::createRenderTargetView gives the object it returns
 0x535f460	CG::ShaderResourceView	the table CG::Device::createShaderResourceView gives the object it returns
 0x535f480	CG::UnorderedAccessView	the table CG::Device::createUnorderedAccessView gives the object it returns
+0x535f300	CG::LockedContextHeap	DeviceContext::init gives it to type-0 contexts; its slots call GpuHeap with the lock
+0x535f350	CG::ContextHeap	DeviceContext::init gives it to other contexts; its slots call GpuHeap allocate, free and freeAfterGpu
