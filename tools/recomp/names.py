@@ -1469,6 +1469,7 @@ print('bound methods', bound)
 # text beside the code pointer, in either order (hkbFireEvent read by hand).
 NATIVE_TEXT = re.compile(rb'(?:hkb[A-Z][A-Za-z0-9]+|[a-z]+[A-Z][A-Za-z0-9]+|[a-z]{6,})\0')
 leas = [(m.start(), text[3] + m.end() + struct.unpack('<i', m.group(1))[0]) for m in re.finditer(rb'[\x48\x4c]\x8d[\x05\x0d\x15\x1d\x25\x2d\x35\x3d](.{4})', code, re.S)]
+code_base = text[3]
 natives = 0
 for i, (at_, target) in enumerate(leas):
     if target not in functions or functions[target][1] < 5 or how.get(target, '') not in BOUND_WEAK:
@@ -1966,6 +1967,20 @@ for f, name in list(names.items()):
         names[f], how[f] = f'{owner}::enqueueCommand_{f:x}', 'shape'
         enqueue_names += 1
 print('render command enqueues', enqueue_names)
+# 36b. The callback an enqueue stores in its command (the code address it loads after the push) runs the command.
+enqueuers = {f for f, n in names.items() if '::enqueueCommand_' in n}
+enqueue_starts = sorted(enqueuers)
+def enqueuer_at(address):
+    i = bisect.bisect_right(enqueue_starts, address) - 1
+    return enqueue_starts[i] if i >= 0 and address < enqueue_starts[i] + functions[enqueue_starts[i]][0] else None
+callback_names = 0
+for site, target in leas:
+    f = enqueuer_at(code_base + site)
+    if f in enqueuers and target in functions and target not in enqueuers and how.get(target) != 'hand' and \
+            (not names.get(target) or re.search(r'(?:^|::)(?:near_|helper_|unit_|fn_|callback_[0-9a-f]+|vf\d+$)', names[target])):
+        names[target], how[target] = f'{names[f].split("::enqueueCommand_")[0]}::runCommand_{target:x}', 'shape'
+        callback_names += 1
+print('render command callbacks', callback_names)
 # 24b. A helper or near label far from everything solid in its class is a template or a shared utility that a class happens
 # to use (two of three read were: a vector assignment, a number parser). Those lose the label: 1 MiB, the width of a large
 # object file, measured against vtable slots, constructors and hand names.
