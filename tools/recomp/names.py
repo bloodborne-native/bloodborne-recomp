@@ -1920,10 +1920,13 @@ for table, run in allocator_runs.items():
 print('allocator tables', len(allocator_runs))
 # 30. The file operator interface: tables sharing the disk operator's slot 35. The disk operator's slots call the system's
 # truncate, close, seek, read, write and stat; the cache system's read seeks and reads too.
+# In the disk operator slot 25 returns the position that seek and read move (+0x110), 20 whether the descriptor is set,
+# and 15 the size less the position.
 file_slot = vtables.get(0x53b2700, [None] * 36)[35]
 file_runs = {table: run for table, run in vtables.items() if len(run) > 36 and run[35] == file_slot}
 for table, run in file_runs.items():
-    for index, role in ((10, 'canRead'), (12, 'getModifiedTime'), (14, 'getSize'), (17, 'truncate'), (22, 'close'), (24, 'seek'), (26, 'read'), (27, 'write'), (36, 'getStatus'), (21, 'open'), (34, 'remove'), (39, 'rename'), (40, 'makeDirectory')):
+    for index, role in ((10, 'canRead'), (12, 'getModifiedTime'), (14, 'getSize'), (17, 'truncate'), (22, 'close'), (24, 'seek'), (26, 'read'), (27, 'write'), (36, 'getStatus'), (21, 'open'), (34, 'remove'), (39, 'rename'), (40, 'makeDirectory'),
+                        (15, 'getRemainingSize'), (20, 'isOpen'), (25, 'getPosition')):
         if index < len(run) and how.get(run[index]) != 'hand':
             names[run[index]], how[run[index]] = f"{class_names.get(table) or f'Class_{table:x}'}::{role}", 'shape'
 print('file operators', len(file_runs))
