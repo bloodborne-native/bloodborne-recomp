@@ -1834,6 +1834,23 @@ for table, run in vtables.items():
             if how.get(run[index]) != 'hand':
                 names[run[index]], how[run[index]] = f'DLTypedValue_{table:x}::{role}', 'shape'
 print('typed values', typed_tables)
+# 28. The texture interface: tables sharing slot 13 are textures, render targets and proxies that forward to an inner one at
+# +0x10. Read in the plain classes: slots 9 and 10 shift the width and height right by a mip, 8 and 7 read the mip count and
+# format out of the Direct3D-style description, 11 the depth (a volume's description has one, others return 1), 12 the byte
+# size used in the render target memory total.
+texture_slot = vtables.get(0x52e4070, [None] * 14)[13]
+texture_users = collections.Counter(g for run in vtables.values() if len(run) > 14 and run[13] == texture_slot for g in run[3:15])
+texture_tables = 0
+for table, run in vtables.items():
+    if len(run) > 14 and run[13] == texture_slot:
+        texture_tables += 1
+        for index, role in ((3, 'getShaderResourceView'), (5, 'getResource'), (7, 'getFormat'), (8, 'getMipCount'), (9, 'getWidth'),
+                            (10, 'getHeight'), (11, 'getDepth'), (12, 'getByteSize'), (14, 'isValid')):
+            f = run[index]
+            if how.get(f) != 'hand':
+                label = 'CG::TextureInterface' if texture_users[f] > 1 else (class_names.get(table) or f'Class_{table:x}')
+                names[f], how[f] = f'{label}::{role}', 'shape'
+print('texture tables', texture_tables)
 # 24b. A helper or near label far from everything solid in its class is a template or a shared utility that a class happens
 # to use (two of three read were: a vector assignment, a number parser). Those lose the label: 1 MiB, the width of a large
 # object file, measured against vtable slots, constructors and hand names.
