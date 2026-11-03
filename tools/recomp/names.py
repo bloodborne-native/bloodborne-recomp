@@ -1871,19 +1871,20 @@ print('allocator tables', len(allocator_runs))
 file_slot = vtables.get(0x53b2700, [None] * 36)[35]
 file_runs = {table: run for table, run in vtables.items() if len(run) > 36 and run[35] == file_slot}
 for table, run in file_runs.items():
-    for index, role in ((17, 'truncate'), (22, 'close'), (24, 'seek'), (26, 'read'), (27, 'write'), (36, 'getStatus')):
+    for index, role in ((10, 'canRead'), (12, 'getModifiedTime'), (14, 'getSize'), (17, 'truncate'), (22, 'close'), (24, 'seek'), (26, 'read'), (27, 'write'), (36, 'getStatus')):
         if how.get(run[index]) != 'hand':
             names[run[index]], how[run[index]] = f"{class_names.get(table) or f'Class_{table:x}'}::{role}", 'shape'
 print('file operators', len(file_runs))
 # 31. The input stream interface, read in the memory stream: slot 4 copies out and advances, 5 says whether anything is left,
 # 6 how much, 7 skips, 8 closes, 9 says whether it is open, 12 and 13 are the asynchronous read and its result; 14 seeks
 # (from the start, current position or end), 16 says whether the end is reached.
-stream_runs = {table: run for table, run in vtables.items() if re.search('InputStream|DLStreamDomainDecorator', class_names.get(table) or '') and len(run) >= 14}
+stream_slot = vtables.get(0x52b57e0, [None] * 11)[10]
+stream_runs = {table: run for table, run in vtables.items() if len(run) >= 14 and (run[10] == stream_slot or re.search('InputStream|DLStreamDomainDecorator', class_names.get(table) or ''))}
 for table, run in stream_runs.items():
     for index, role in ((4, 'read'), (5, 'hasMore'), (6, 'getRemaining'), (7, 'skip'), (8, 'close'), (9, 'isOpen'), (12, 'getAsyncResult'), (13, 'readAsync'),
                         (14, 'seek'), (16, 'isAtEnd')):
         if index < len(run) and how.get(run[index]) != 'hand':
-            names[run[index]], how[run[index]] = f"{class_names[table]}::{role}", 'shape'
+            names[run[index]], how[run[index]] = f"{class_names.get(table) or f'Class_{table:x}'}::{role}", 'shape'
 print('input streams', len(stream_runs))
 # 24b. A helper or near label far from everything solid in its class is a template or a shared utility that a class happens
 # to use (two of three read were: a vector assignment, a number parser). Those lose the label: 1 MiB, the width of a large
