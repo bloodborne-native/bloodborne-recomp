@@ -941,6 +941,7 @@
 0x277cb70	FXCurve::sampleLinear4	sure	calls	
 0x27c0e00	DL::WString::fromWideChars	sure	calls	
 0x2850500	Blob::assign	guess	calls	
+0x286d580	FXLibrary::getRandomState	guess	calls	
 0x28ec760	FX::PrimitiveRenderer::draw#1	guess	calls
 0x28efc10	FX::PrimitiveRenderer::draw#2	guess	calls
 0x28f05f0	FX::PrimitiveRenderer::draw#3	guess	calls
@@ -951,6 +952,9 @@
 0x28f83e0	FX::PrimitiveRenderer::draw#8	guess	calls
 0x28f89a0	CG::UploadRing::map	guess	calls
 0x28f8a30	CG::UploadRing::draw	guess	calls	void (CG::GraphicsContext *, CG::UploadRing *, uint32_t primitive, uint32_t index_count, uint32_t vertex_count, uint32_t stride, const int32_t *, const int32_t *)
+0x2903df0	SceImeDialogHost::pollResult	guess	calls	
+0x2903e70	SceImeDialogHost::terminate	guess	calls	
+0x2903f80	SceImeDialogHost::open	guess	calls	
 0x292a590	FD4DebugMenu::addRangeItem	guess	calls	
 0x292f510	CG::ShaderProgram::bind	sure	calls	void (const CG::ShaderProgram *, void *draw_state_builder)
 0x2967040	DL::WString::fromWide	sure	calls	

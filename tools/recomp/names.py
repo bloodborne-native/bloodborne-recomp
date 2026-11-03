@@ -1566,6 +1566,8 @@ SLOT_ROLES = [(re.compile(r'FXEvaluatable.*::vf1'), 'evaluate'),
               # (a button clips to its rectangle and draws its text). Item menus: slot 46 builds the list of rows from the inventory.
               (re.compile(r'GUI\w*::vf53'), 'onCreate'), (re.compile(r'GUI\w*::vf47'), 'onResize'), (re.compile(r'GUI\w*::vf56'), 'draw'),
               (re.compile(r'FrpgMenuDlg\w*::vf46'), 'buildItemList'),
+              # FX cluster appearances: slot 3 evaluates each new particle's values, drawing from the random state, and returns the bounds.
+              (re.compile(r'FXClusterAppearance_\w+::Class_\w+::vf3'), 'emitAndGetBounds'),
               # A method invoker calls its member function pointer and stores the result.
               (re.compile(r'DLMethodInvoker_\w+::vf0'), 'invoke')]
 slot_named = 0
