@@ -1573,10 +1573,10 @@ SLOT_ROLES = [(re.compile(r'FXEvaluatable.*::vf1'), 'evaluate'),
               (re.compile(r'FX\w*SequenceParamReal::vf11'), 'evaluate'), (re.compile(r'FX\w*SequenceParamReal::vf18'), 'getMaxValue'),
               (re.compile(r'FX\w*SequenceParamReal::vf19'), 'getMinValue'),
               # Plain FX values (float, int, tick, colour, model, sound, billboard): slot 11 returns the stored value and 12 stores
-              # one; a parent reference forwards 12 to its parent's slot 12. A sequence reference forwards 18 and 19 to its sequence.
+              # one; a parent reference forwards 12 to its parent's slot 12. A sequence reference forwards 18 and 19 to its sequence; a runtime sequence returns its largest and smallest value (scaled by a modulator when it has one), a random one its inner extreme widened by the random range.
               (re.compile(r'^FX(?!\w*Sequence)\w*Param(?:Real|ParentRef)::vf11$'), 'getValue'),
               (re.compile(r'^FX(?!\w*Sequence)\w*Param(?:Real|ParentRef)::vf12$'), 'setValue'),
-              (re.compile(r'^FX\w*SequenceParamRef::vf18$'), 'getMaxValue'), (re.compile(r'^FX\w*SequenceParamRef::vf19$'), 'getMinValue'),
+              (re.compile(r'^FX\w*SequenceParam(?:Ref|Runtime|RandomSequenceBase)::vf18$'), 'getMaxValue'), (re.compile(r'^FX\w*SequenceParam(?:Ref|Runtime|RandomSequenceBase)::vf19$'), 'getMinValue'),
               # A random range's slot 13 tests whether its two ends are equal; references forward it.
               (re.compile(r'FX\w*Param\w*::vf13'), 'isConstant'),
               # File capsules: slot 7 passes the loaded data on (two read). Location nodes: slot 8 copies a range of 0x30-byte
