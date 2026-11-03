@@ -1312,6 +1312,9 @@ SHAPE_ROLES = {0x1495250: 'std::vector::push_back', 0x2acd200: 'FXResource::relo
                # FX sequence parameter runtimes: slot 8 copies this sequence into another after checking that its runtime class
                # derives from the expected one (key count, then the key and value arrays).
                0x2aefbe0: 'copyTo',
+               # ... and slot 25 sets the key count and allocates the key and value arrays in one block (three values a key for
+               # Hermite curves, two more for cyclic ones).
+               0x2af0410: 'allocateKeys',
                # Typed-value arrays (three parallel arrays: a pointer and two ints) open a run of zeroed elements at an index, growing first.
                0x26f2780: 'insertEmpty',
                # FD4TemplateRepUnit<T> slot 4 (12 types): returns a copy of the unit's name (wide string at +0x30) with its value.
