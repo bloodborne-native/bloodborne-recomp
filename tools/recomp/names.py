@@ -1384,7 +1384,7 @@ if os.environ.get('SHAPE_DUMP'):
     open_groups = [g for g in shapes.values() if len(g) >= 4 and not any(f in SHAPE_ROLES for f in g)
                    and sum(1 for f in g if not role_of(f) or role_of(f).startswith(WEAK_ROLE)) >= 4]
     for g in sorted(open_groups, key=len, reverse=True)[:int(os.environ['SHAPE_DUMP'])]:
-        print('SHAPE', len(g), functions[g[0]][1], ' '.join(f'{f:#x}={names.get(f, "")}' for f in g[:4]))
+        print('SHAPE', len(g), functions[g[0]][1], ' '.join(f'{f:#x}' for f in g))
 # 12. A function that stores its class's vtable and is no slot of it builds an object: its first argument
 # (a constructor) or, when short with one store, what it allocated (a factory: longer ones build debug pages).
 built = virtual_destructors = 0
