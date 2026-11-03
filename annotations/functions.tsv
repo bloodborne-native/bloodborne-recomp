@@ -645,6 +645,7 @@
 0x1d84670	TextureProxy::pushOverride	guess	calls	
 0x1d84820	TextureProxy::popOverride	guess	calls	
 0x1d84cd0	TextureProxy::OverrideList::contains	guess	calls	
+0x1d851e0	TextureProxy::OverrideList::clear	guess	calls	
 0x1d852a0	DL::HashedWString::equals	guess	calls	
 0x1d859b0	TexResCap::ensureClassHeap	guess	calls	
 0x1d85ca0	TexResCap::setTexture	sure	calls	
