@@ -1884,8 +1884,8 @@ print('allocator tables', len(allocator_runs))
 file_slot = vtables.get(0x53b2700, [None] * 36)[35]
 file_runs = {table: run for table, run in vtables.items() if len(run) > 36 and run[35] == file_slot}
 for table, run in file_runs.items():
-    for index, role in ((10, 'canRead'), (12, 'getModifiedTime'), (14, 'getSize'), (17, 'truncate'), (22, 'close'), (24, 'seek'), (26, 'read'), (27, 'write'), (36, 'getStatus')):
-        if how.get(run[index]) != 'hand':
+    for index, role in ((10, 'canRead'), (12, 'getModifiedTime'), (14, 'getSize'), (17, 'truncate'), (22, 'close'), (24, 'seek'), (26, 'read'), (27, 'write'), (36, 'getStatus'), (21, 'open'), (34, 'remove'), (39, 'rename'), (40, 'makeDirectory')):
+        if index < len(run) and how.get(run[index]) != 'hand':
             names[run[index]], how[run[index]] = f"{class_names.get(table) or f'Class_{table:x}'}::{role}", 'shape'
 print('file operators', len(file_runs))
 # 31. The input stream interface, read in the memory stream: slot 4 copies out and advances, 5 says whether anything is left,
