@@ -199,3 +199,4 @@
 0x53a50e0	TextureProxyWithOverride	forwards to the texture at +0x18 when set, otherwise to the one at +0x10
 0x53af3b0	TextureProxyWithView	returns its own shader resource view at +0x18 when set, otherwise the inner texture's
 0x53a39a0	TextureProxy	forwards each texture interface call to the texture at +0x10
+0x535f3a0	CG::Buffer	CG::Device::createBuffer writes this table into the object it returns
