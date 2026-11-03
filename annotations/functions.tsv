@@ -1277,7 +1277,11 @@
 0x26b82b0	CG::ResourceSyncContext::setDefaultState	guess	calls	
 0x26b8420	CG::ResourceSyncContext::recordTransition	guess	calls	
 0x26b8c90	CG::ResourceSyncContext::setResourceState	guess	calls	
+0x26b8e20	CGResourceSyncContext_gnm::synchronizeResource	guess	calls	
 0x26b9850	CG::ResourceSyncContext::synchronize	guess	source	void (CG::ResourceSyncContext *, Gnm::DrawCommandBuffer *)
+0x26b9a60	CGResourceSyncContext_gnm::recordWrite	guess	calls	
+0x26b9cf0	CG::createGnmVsShader	guess	calls	
+0x26b9fc0	CG::createGnmEsLsShader	guess	calls	
 0x26ba280	CG::initVertexShader	guess	calls	
 0x26ba540	CG::initHullShader	guess	calls	
 0x26ba800	CG::initPixelShader	guess	calls	
