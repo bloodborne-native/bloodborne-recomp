@@ -1551,7 +1551,7 @@ SLOT_ROLES = [(re.compile(r'FXEvaluatable.*::vf1'), 'evaluate'),
               # Fading setting channels (one class per value type): a list of named states, a list of bound targets.
               # Read in one class: the slots do the same in the rest, only the value's size differs.
               *[(re.compile(r'GraphicsParamChannel_\w+::vf%d' % slot), role) for slot, role in
-                ((13, 'setStateValue'), (14, 'getStateCount'), (15, 'getStateIdAt'), (16, 'getStateValue'), (20, 'getStateAt'),
+                ((17, 'blendState'), (13, 'setStateValue'), (14, 'getStateCount'), (15, 'getStateIdAt'), (16, 'getStateValue'), (20, 'getStateAt'),
                  (2, 'addTarget'), (4, 'fadeTargetsIn'), (5, 'fadeTargetsOut'), (6, 'setTargetsScaled'), (7, 'update'),
                  (8, 'updateTargets'), (9, 'fadeIn'), (10, 'fadeOut'), (11, 'setScaled'), (12, 'hasState'))],
               # Menu dialogs: slot 32 takes a control event (2, 6, 8) and a value (two read, same comparisons).

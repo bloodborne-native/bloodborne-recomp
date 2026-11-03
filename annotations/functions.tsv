@@ -23,6 +23,7 @@
 0x3a7bf0	zlib::inflate	sure	message	
 0x422270	hk::CriticalSection::enter	sure	calls
 0x422340	hk::CriticalSection::leave	sure	source
+0x429a90	hk::alignedFree	guess	calls	
 0x429b00	hk::Rotation::setFromQuaternion	guess	calls	
 0x43b7e0	hk::Matrix4::setTransform	sure	calls	void (const float (*transform)[16], float (*matrix)[16])
 0x43d4d0	hk::QsTransform::toMatrix	sure	calls	void (const hk::QsTransform *, float (*matrix)[16])
@@ -384,6 +385,7 @@
 0x11fd320	Gnm::ConstantCommandBuffer::cpRamDump	guess	pm4
 0x12241d0	ChrInsAccessor::getName	guess	calls	
 0x1224220	ChrInsAccessor::getHandle	guess	calls	
+0x12242b0	ChrInsAccessor::getChr	guess	calls	
 0x12244e0	ChrInsAccessor::getCurrentWeaponSlot	guess	calls	
 0x1224790	ChrInsAccessor::getAiScriptId	guess	calls	
 0x12334b0	NvmLocator::locate	guess	calls	
