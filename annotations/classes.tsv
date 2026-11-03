@@ -195,3 +195,7 @@
 0x52e3800	MoviePlayer	runs the Mv_AudioPlayThread thread and creates textures and shader views for the frames
 0x5366810	SprjPlaylogData	serialises play log records through FD4RepData, reached through the SprjPlaylogSystem singleton
 0x5300710	FaceGenData	its methods are called about 100 times from FaceGen code and raise archive errors with longjmp
+0x53a3a40	TextureProxyWithFallback	forwards to the texture at +0x10 while it is valid (interface slot 14), otherwise to the one at +0x18
+0x53a50e0	TextureProxyWithOverride	forwards to the texture at +0x18 when set, otherwise to the one at +0x10
+0x53af3b0	TextureProxyWithView	returns its own shader resource view at +0x18 when set, otherwise the inner texture's
+0x53a39a0	TextureProxy	forwards each texture interface call to the texture at +0x10
