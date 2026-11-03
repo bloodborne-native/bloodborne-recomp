@@ -1566,6 +1566,9 @@ SLOT_ROLES = [(re.compile(r'FXEvaluatable.*::vf1'), 'evaluate'),
               # (a button clips to its rectangle and draws its text). Item menus: slot 46 builds the list of rows from the inventory.
               (re.compile(r'GUI\w*::vf53'), 'onCreate'), (re.compile(r'GUI\w*::vf47'), 'onResize'), (re.compile(r'GUI\w*::vf56'), 'draw'),
               (re.compile(r'FrpgMenuDlg\w*::vf46'), 'buildItemList'),
+              # Compressed file streams: the DCX container. Slot 14 builds the size header, 15 checks the codec header, 16 accepts it, 17 writes it.
+              (re.compile(r'(?:Edge|Zlib)CompressionStream::vf14'), 'makeSizeHeader'), (re.compile(r'(?:Edge|Zlib)CompressionStream::vf15'), 'checkCodecHeader'),
+              (re.compile(r'(?:Edge|Zlib)CompressionStream::vf16'), 'acceptCodecHeader'), (re.compile(r'(?:Edge|Zlib)CompressionStream::vf17'), 'writeCodecHeader'),
               # A method invoker calls its member function pointer and stores the result.
               (re.compile(r'DLMethodInvoker_\w+::vf0'), 'invoke')]
 slot_named = 0
