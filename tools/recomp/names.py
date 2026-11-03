@@ -1303,7 +1303,9 @@ SHAPE_ROLES = {0x1495250: 'std::vector::push_back', 0x2acd200: 'FXResource::relo
                0x29a6b90: 'getNamedValue',
                # A bound method's slot 2 (14 copies): calls the stored member pointer (virtual when its low bit is set) on the stored
                # object with the event's object and two stored ints.
-               0x1429500: 'invoke'}
+               0x1429500: 'invoke',
+               # A map keyed by wide strings: walk the tree comparing keys with wmemcmp, insert a node where the key is missing.
+               0x29648f0: 'std::map::insertUnique'}
 WEAK_ROLE = ('helper', 'near', 'unit', 'method', 'vf', 'writes_vtable', 'shared', 'fn', '_Do_call')
 role_of = lambda f: re.sub(r'_[0-9a-f]{5,}$', '', names.get(f, '').split('::')[-1])
 objdump = shutil.which('llvm-objdump') or shutil.which('objdump')
