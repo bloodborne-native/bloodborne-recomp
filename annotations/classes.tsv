@@ -179,3 +179,4 @@
 0x5360f40	RendCam	constructor sets 1280x720, a 55 degree field of view and near and far planes; RendCam text uses it
 0x52f20a0	CbLinkItem	its constructor passes that name to the debug menu item base
 0x5360ed0	OcclusionNode	hierarchical occlusion culling: states follow GPU query results (sample count against a threshold), frustum tests and camera distance
+0x5361220	SceneDrawView	built by one 0x31c0-byte factory with a RendCam inside; holds what one view of the scene draws
