@@ -67,6 +67,7 @@
 0xe48060	DL::Crc64::update	sure	calls	
 0xe48400	TextureReadback::update	guess	calls	
 0xe49180	TextureReadback::readTile	guess	calls	
+0xe4a6b0	Frustum::testPlane	guess	calls	
 0xe4b060	FD4::ConstantBuffer::setVectors	sure	calls	void (FD4::ConstantBuffer *, uint32_t first_register, uint32_t count, const float (*)[4])
 0xe4b0c0	FD4::MaterialTextures::bindToStages	guess	calls	
 0xe553b0	FD4::MaterialTextures::bind	guess	calls	bool (FD4::MaterialTextures *, void *pass)
@@ -769,7 +770,7 @@
 0x2264d20	Class_5360b30::createCubeTargets	guess	calls	
 0x2279cf0	GXWaterInteractionNormalMap::loadShaders	guess	calls	
 0x227e230	FD4::SceneNode::collect	guess	calls	void (FD4::SceneNode *, void *pass)
-0x2287330	Class_5360ed0::cullNode	guess	calls	
+0x2287330	SceneCullNode::cull	guess	calls	
 0x2289bb0	CG::CommandRing::allocate	guess	calls	
 0x2289db0	RenderCommandList::allocate	guess	calls	
 0x228a0a0	std::sort_228a0a0	guess	calls	
@@ -777,6 +778,7 @@
 0x228e430	RenderCommandList::begin	guess	calls	
 0x228e6a0	RenderCommandList::push	guess	calls	
 0x2290dd0	RendCam::setWorldMatrix	guess	calls	
+0x2292ca0	RendCam::testFrustum	guess	calls	
 0x229a680	GXDeferred::loadShaders	guess	calls	
 0x22bc720	FD4::LightRenderer::drawLightBatches	sure	calls
 0x22bd110	FD4::LightRenderer::drawLightBatches#2	guess	calls

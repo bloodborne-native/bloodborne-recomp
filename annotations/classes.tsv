@@ -178,3 +178,4 @@
 0x53a02f0	ModelDrawInstance	holds the parts of a drawn model with their matrices; updates them only when a RendMan camera mask sees it
 0x5360f40	RendCam	constructor sets 1280x720, a 55 degree field of view and near and far planes; RendCam text uses it
 0x52f20a0	CbLinkItem	its constructor passes that name to the debug menu item base
+0x5360ed0	SceneCullNode	its slot tests frustum planes, keeps a last-visible frame and recurses into children
