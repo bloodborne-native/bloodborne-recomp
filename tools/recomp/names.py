@@ -1566,8 +1566,6 @@ SLOT_ROLES = [(re.compile(r'FXEvaluatable.*::vf1'), 'evaluate'),
               # (a button clips to its rectangle and draws its text). Item menus: slot 46 builds the list of rows from the inventory.
               (re.compile(r'GUI\w*::vf53'), 'onCreate'), (re.compile(r'GUI\w*::vf47'), 'onResize'), (re.compile(r'GUI\w*::vf56'), 'draw'),
               (re.compile(r'FrpgMenuDlg\w*::vf46'), 'buildItemList'),
-              # FX cluster appearances: slot 3 evaluates each new particle's values, drawing from the random state, and returns the bounds.
-              (re.compile(r'FXClusterAppearance_\w+::Class_\w+::vf3'), 'emitAndGetBounds'),
               # A method invoker calls its member function pointer and stores the result.
               (re.compile(r'DLMethodInvoker_\w+::vf0'), 'invoke')]
 slot_named = 0
@@ -1910,6 +1908,15 @@ for table, run in vtables.items():
         if how.get(run[3]) != 'hand':
             names[run[3]], how[run[3]] = f'{label}::update', 'shape'
 print('scaleform dialogs', dialog_tables)
+# 33. FX cluster appearances: a slot 3 that draws from the FX random state evaluates each new particle's values and returns the
+# bounds. Tables of 8 or 9 slots; the class label comes from the appearance's own name where one is known.
+FX_RANDOM_STATE = 0x286d580
+appearance_slots = 0
+for table, run in vtables.items():
+    if len(run) in (8, 9) and FX_RANDOM_STATE in callees.get(run[3], ()) and how.get(run[3]) != 'hand':
+        names[run[3]], how[run[3]] = re.sub(r'(::)?vf3$', '', names.get(run[3], f'Class_{table:x}::vf3')) + '::emitAndGetBounds', 'shape'
+        appearance_slots += 1
+print('cluster appearances', appearance_slots)
 # 24b. A helper or near label far from everything solid in its class is a template or a shared utility that a class happens
 # to use (two of three read were: a vector assignment, a number parser). Those lose the label: 1 MiB, the width of a large
 # object file, measured against vtable slots, constructors and hand names.
