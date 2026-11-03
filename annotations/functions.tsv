@@ -1076,6 +1076,7 @@
 0x231cd40	GUIStyle::getMetric	guess	calls	
 0x231cd60	GUIStyle::getEntry	guess	calls	
 0x231cd70	GUIStyle::scalePercent	guess	calls	
+0x23224c0	GUIWidget::processEvent	guess	calls	
 0x2329810	GUIWindowBase::capturePointer	guess	calls	
 0x23298f0	GUIWindowBase::releasePointer	guess	calls	
 0x2348ca0	GUITextureViewer::setTexture	guess	calls	
