@@ -995,6 +995,10 @@
 0x26b6810	CG::SurfaceOps::decompressDepth	sure	calls
 0x26b6cb0	CG::GnmContext::setupScreenViewport	guess	calls	
 0x26b7310	CG::toGnmDataFormat	guess	calls	
+0x26b7720	CG::toGnmZFormat	guess	calls	
+0x26b77e0	CG::toGnmDepthTextureFormat	guess	calls	
+0x26b78a0	CG::toGnmStencilFormat	guess	calls	
+0x26b7960	CG::toGnmStencilTextureFormat	guess	calls	
 0x26b7ab0	CG::toGnmSampleCount	guess	calls	
 0x26b7b60	CG::toGnmPrimitiveType	sure	calls	uint32_t (uint32_t topology)
 0x26b82b0	CG::ResourceSyncContext::setDefaultState	guess	calls	
