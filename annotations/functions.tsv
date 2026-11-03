@@ -83,6 +83,8 @@
 0xebb960	GXWaterInteractionHeightMap::loadShaders	guess	calls	
 0xebe910	GXOceanWave::loadShaders	guess	calls	
 0xec4190	GXOceanWave::loadShaders#2	guess	calls	
+0xec6920	OcclusionQueryPool::release	guess	calls	
+0xec7f70	CameraView::setView	guess	calls	
 0xec9000	CG::CullVolume::testBox	guess	calls	bool (const CG::CullVolume *, const float (*box)[8])
 0xedb160	FD4::MaterialParameters::applyByName	guess	calls	
 0xedca60	FD4::Material::applyInstanceParameters	guess	calls
@@ -723,6 +725,7 @@
 0x2190d30	CG::ImmediateDraw::drawIndexedUserPrimitives	sure	calls	void (CG::ImmediateDraw *, uint32_t topology, uint32_t min_index, uint32_t max_index, uint32_t index_count, const void *indices, uint32_t index_format, const void *vertices, uint32_t stride)
 0x21916d0	GXSimple::loadShaders	guess	calls	
 0x2192660	CG::Resource::deferRelease	guess	calls	
+0x2192d20	CameraView::updateMatrices	guess	calls	
 0x2194580	GXGraphics::initialize	guess	calls	
 0x219a170	GXDrawSystem::initialize	guess	calls	
 0x219ef50	CG::DepthTarget::release	sure	calls	
