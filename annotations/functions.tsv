@@ -536,6 +536,7 @@
 0x151c6c0	ComManipulator::resetToPosition	guess	calls	
 0x151c8a0	ComManipulator::getLookAtPoint	guess	calls	
 0x151cbc0	ComManipulator::getTargetInfo	guess	calls	
+0x151cd00	ComManipulator::addDebugItems	guess	calls	
 0x15296f0	PadManipulator::addDebugItems	guess	calls	
 0x15486b0	WorldRes::stepWaitBlockLoaded	guess	calls	
 0x1548740	Sprj::World::updateInstances	guess	calls	
