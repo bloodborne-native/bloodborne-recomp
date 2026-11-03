@@ -1306,6 +1306,9 @@ SHAPE_ROLES = {0x1495250: 'std::vector::push_back', 0x2acd200: 'FXResource::relo
                # allocator unless the storage is not owned, high bit of the capacity) and a reference pointer's assignment (adds a
                # reference to the new object, removes one from the old, which deletes itself at zero).
                0x427140: 'hkArray::clearAndDeallocate', 0x425c10: 'hkRefPtr::assign',
+               # GUI callback objects bind a named event to one of their member functions (the group differs only in the function):
+               # the name's entry is found or made under the given owner, then bound to this object with two small arguments.
+               0x2907970: 'registerCallback',
                # Typed-value arrays (three parallel arrays: a pointer and two ints) open a run of zeroed elements at an index, growing first.
                0x26f2780: 'insertEmpty',
                # FD4TemplateRepUnit<T> slot 4 (12 types): returns a copy of the unit's name (wide string at +0x30) with its value.
