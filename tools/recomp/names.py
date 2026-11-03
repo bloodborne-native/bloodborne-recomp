@@ -1990,6 +1990,14 @@ for table, run in vtables.items():
         names[run[2]], how[run[2]] = names[run[2]][:-len('vf2')] + 'evaluate', 'shape'
         watch_items += 1
 print('debug watch items', watch_items)
+# Their siblings with the detach in slot 6 create their page in slot 5 (it creates a named page and attaches it).
+PAGE_CREATE = 0x100a1f0
+for table, run in vtables.items():
+    if len(run) == 7 and names.get(run[6], '').endswith('::detachDebugPage') and PAGE_CREATE in callees.get(run[5], ()) and \
+            how.get(run[5]) != 'hand' and re.search(r'(?:^|::)vf5$', names.get(run[5], '')):
+        names[run[5]], how[run[5]] = names[run[5]][:-len('vf5')] + 'attachDebugPage', 'shape'
+        watch_items += 1
+print('debug pages attached', watch_items)
 # 24b. A helper or near label far from everything solid in its class is a template or a shared utility that a class happens
 # to use (two of three read were: a vector assignment, a number parser). Those lose the label: 1 MiB, the width of a large
 # object file, measured against vtable slots, constructors and hand names.
