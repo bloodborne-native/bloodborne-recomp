@@ -1541,7 +1541,7 @@ SLOT_ROLES = [(re.compile(r'FXEvaluatable.*::vf1'), 'evaluate'),
               # Location nodes combine two inputs: slot 5 one transform, 6 its inverse (a determinant, read), 7 a range of them.
               (re.compile(r'SprjFD4LocationNode_\w+::vf5'), 'getTransform'), (re.compile(r'SprjFD4LocationNode_\w+::vf6'), 'getInverseTransform'),
               (re.compile(r'SprjFD4LocationNode_\w+::vf7'), 'getTransforms'),
-              (re.compile(r'FD4DebugMenuItem_\w+::vf2'), 'getLabel'), (re.compile(r'FD4DebugMenuItem_\w+::vf15'), 'onEvent'),
+              (re.compile(r'FD4DebugMenuItem_\w+::vf2'), 'getLabel'),
               # Tweaker values (one read each): 6 formats the value, 7 steps and clamps it, 10 reads it back; range tweakers sync in slot 5.
               (re.compile(r'GUI\w*DataBase\w*::vf6'), 'formatValue'), (re.compile(r'GUI\w*DataBase\w*::vf7'), 'stepValue'),
               (re.compile(r'GUI\w*DataBase\w*::vf10'), 'readValue'), (re.compile(r'GUI\w*RangeTweaker\w*::vf5'), 'syncValue'),
@@ -1938,6 +1938,21 @@ for f, name in list(names.items()):
         names[f], how[f] = name.rsplit('::', 1)[0] + '::wraps_' + system.pop(), 'shape'
         wrapper_names += 1
 print('system wrappers', wrapper_names)
+# 35. Debug menu items outside the FD4DebugMenuItem_ names: tables whose slot 7 is the base input handler or calls it, or whose
+# slot 8 calls the base text writer, take the item roles (2 label, 7 input, 8 text) where their names are weak. Slot 15
+# differs by branch (one removes a child, another formats a value) and is left unnamed.
+ITEM_INPUT, ITEM_TEXT = 0xf9c240, 0xf9c2f0
+item_names = 0
+for table, run in vtables.items():
+    if len(run) < 16 or not (run[7] == ITEM_INPUT or ITEM_INPUT in callees.get(run[7], ()) or ITEM_TEXT in callees.get(run[8], ())):
+        continue
+    for index, role in ((2, 'getLabel'), (7, 'onInput'), (8, 'writeText')):
+        f = run[index]
+        if how.get(f) != 'hand' and re.search(r'(?:^|::)(?:vf\d+|shared_[0-9a-f]+)$', names.get(f, '')) and f not in (ITEM_INPUT, ITEM_TEXT):
+            owner = class_names.get(table) or f'Class_{table:x}'
+            names[f], how[f] = f'{owner if not names.get(f, "").startswith("shared_") else "FD4DebugMenuItem"}::{role}', 'shape'
+            item_names += 1
+print('debug menu item slots', item_names)
 # 24b. A helper or near label far from everything solid in its class is a template or a shared utility that a class happens
 # to use (two of three read were: a vector assignment, a number parser). Those lose the label: 1 MiB, the width of a large
 # object file, measured against vtable slots, constructors and hand names.
