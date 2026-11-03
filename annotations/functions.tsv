@@ -1311,6 +1311,7 @@
 0x26cbe50	CG::ResourceBinder::beforeDispatch	sure	calls	void (CG::ResourceBinder *, CG::GraphicsContext *, const CG::ComputeState *)
 0x26cbe90	CG::ResourceBinder::commitCompute	sure	calls	void (CG::ResourceBinder *, CG::GraphicsContext *, const CG::ComputeState *)
 0x26ccf20	CG::ResourceBinder::afterDispatch	guess	calls	void (CG::ResourceBinder *, CG::GraphicsContext *, const CG::ComputeState *)
+0x26cd190	CG::ContextStateCache::resetWithHardwareDefaults	guess	calls	
 0x26cd400	CG::ResourceBinder::setComputeShader	guess	calls
 0x26cd5d0	CG::ResourceBinder::commitComputePass	guess	calls
 0x26ce110	CG::ResourceBinder::endComputePass	guess	calls
@@ -1318,6 +1319,11 @@
 0x26ce5e0	CG::ResourceBinder::commitStageResources	guess	calls	
 0x26cfc20	CG::ResourceBinder::endSurfaceOp	guess	calls	
 0x26d0360	CG::ResourceBinder::bindComputeStage	guess	calls	
+0x26d04e0	CG::ResourceBinder::setStageShader	guess	calls	
+0x26d0660	CG::ResourceBinder::setStageShader	guess	calls	
+0x26d07e0	CG::ResourceBinder::setStageShader	guess	calls	
+0x26d0960	CG::ResourceBinder::setStageShader	guess	calls	
+0x26d0d30	CG::MappedResourceList::mapDiscard	guess	calls	
 0x26d1e30	CG::GnmContext::bindColorTarget	guess	calls	
 0x26d1e70	CG::GnmContext::bindDepthTarget	guess	calls	
 0x26d2110	CG::SurfaceOps::decompressDepthMips	guess	calls	
