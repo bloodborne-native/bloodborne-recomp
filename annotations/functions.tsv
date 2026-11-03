@@ -801,6 +801,9 @@
 0x2169eb0	CG::DeviceContext::unmap	guess	calls	
 0x216d8f0	CG::Texture::getDimension	guess	calls	
 0x216fa60	CG::initGnmTexture	guess	calls	
+0x21710a0	CG::initGnmDepthTarget	guess	calls	
+0x21711d0	CG::initGnmDepthTargetMultisampled	guess	calls	
+0x2171340	CG::initGnmDepthTarget_2171340	guess	calls	
 0x2171d60	CG::Device::allocateTexture2DStorage	guess	calls	
 0x21722c0	CG::Texture::getDesc	guess	calls	
 0x21723a0	CG::Device::allocateTexture3DStorage	guess	calls	
@@ -1011,6 +1014,7 @@
 0x26baac0	CG::initShaderStage	guess	calls	
 0x26bad70	CG::isCpuReadable	sure	calls	
 0x26badd0	CG::isGpuReadable	sure	calls	
+0x26baf60	CG::initDepthStencilTextures	guess	calls	
 0x26bb570	CG::loadShaderBinary	guess	calls	
 0x26bb670	CG::patchShaderAddress	guess	calls	
 0x26bba30	CG::InputAssemblyState::apply	sure	calls	void (CG::InputAssemblyState *, CG::GraphicsContext *, const CG::DrawState *, bool indexed)
