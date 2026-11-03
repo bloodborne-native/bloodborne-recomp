@@ -576,6 +576,7 @@
 0x2084290	DL::PthreadMutex::unlock	sure	source
 0x2085730	DL::RegularHeap::allocateBlock	sure	calls	
 0x20858a0	DL::RegularHeap::freeBlock	sure	message	
+0x20b01c0	Geom::intersectBoxCapsule	guess	calls	
 0x20b55b0	DL::assertFailed	sure	calls	
 0x20b5d80	DL::RuntimeClass::registry	guess	calls	
 0x20b6d00	DLRuntimeClass::construct	sure	calls	
@@ -770,7 +771,8 @@
 0x2264d20	Class_5360b30::createCubeTargets	guess	calls	
 0x2279cf0	GXWaterInteractionNormalMap::loadShaders	guess	calls	
 0x227e230	FD4::SceneNode::collect	guess	calls	void (FD4::SceneNode *, void *pass)
-0x2287330	SceneCullNode::cull	guess	calls	
+0x2287330	StreamingNode::updateVisibility	guess	calls	
+0x2287920	StreamingNode::updateLoadState	guess	calls	
 0x2289bb0	CG::CommandRing::allocate	guess	calls	
 0x2289db0	RenderCommandList::allocate	guess	calls	
 0x228a0a0	std::sort_228a0a0	guess	calls	
