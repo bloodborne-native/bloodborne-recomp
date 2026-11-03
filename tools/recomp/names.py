@@ -1525,8 +1525,10 @@ SLOT_ROLES = [(re.compile(r'FXEvaluatable.*::vf1'), 'evaluate'),
               (re.compile(r'GUI(?:Combo|OnOff)Tweaker::vf5'), 'syncValue'), (re.compile(r'GUIComboTweaker::vf7'), 'selectItem'),
               (re.compile(r'GUIRangeDataBase::vf5'), 'parseValue'),
               # FX sequences: slot 11 evaluates at a tick, slot 18 finds the smallest key, slot 19 beside it the largest.
-              (re.compile(r'FX\w*SequenceParamReal::vf11'), 'evaluate'), (re.compile(r'FX\w*SequenceParamReal::vf18'), 'getMinValue'),
-              (re.compile(r'FX\w*SequenceParamReal::vf19'), 'getMaxValue'),
+              (re.compile(r'FX\w*SequenceParamReal::vf11'), 'evaluate'), (re.compile(r'FX\w*SequenceParamReal::vf18'), 'getMaxValue'),
+              (re.compile(r'FX\w*SequenceParamReal::vf19'), 'getMinValue'),
+              # A random range's slot 13 tests whether its two ends are equal; references forward it.
+              (re.compile(r'FX\w*Param\w*::vf13'), 'isConstant'),
               # File capsules: slot 7 passes the loaded data on (two read). Location nodes: slot 8 copies a range of 0x30-byte
               # matrices out (one read).
               (re.compile(r'\w+FileCap::vf7'), 'onFileLoaded'), (re.compile(r'SprjFD4LocationNode_\w+::vf8'), 'getMatrices'),
