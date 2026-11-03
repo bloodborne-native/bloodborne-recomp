@@ -1981,6 +1981,15 @@ for site, target in leas:
         names[target], how[target] = f'{names[f].split("::enqueueCommand_")[0]}::runCommand_{target:x}', 'shape'
         callback_names += 1
 print('render command callbacks', callback_names)
+# 37. Debug watch items: 7-slot tables whose slot 4 detaches their debug page. Slot 2 tests a condition in the game (a
+# character by entity id, an event flag, an item's level against a range) and stores the result in bit 0 at +0x10.
+watch_items = 0
+for table, run in vtables.items():
+    if len(run) == 7 and names.get(run[4], '').endswith('::detachDebugPage') and how.get(run[2]) != 'hand' and \
+            re.search(r'(?:^|::)vf2$', names.get(run[2], '')):
+        names[run[2]], how[run[2]] = names[run[2]][:-len('vf2')] + 'evaluate', 'shape'
+        watch_items += 1
+print('debug watch items', watch_items)
 # 24b. A helper or near label far from everything solid in its class is a template or a shared utility that a class happens
 # to use (two of three read were: a vector assignment, a number parser). Those lose the label: 1 MiB, the width of a large
 # object file, measured against vtable slots, constructors and hand names.
