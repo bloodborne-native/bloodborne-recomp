@@ -187,3 +187,6 @@
 0x53b6860	CG::DepthTarget	its slot 18 is the named DepthTarget release; same shared accessors as the render target
 0x53b6940	CG::RenderTarget	holds one surface per mip at +0x60; slot 19 is the named attachTexture
 0x53b6a20	CG::Texture2D	its slots 18 and 20 are the named TextureRegistry remove and Texture2D create
+0x52e4110	CG::VolumeRenderTarget	reads the volume description and releases one surface per depth at +0x60; sits beside the named create
+0x53b62c0	CG::Texture3DBase	parent of the volume render target; its slot 18 releases the views and resource
+0x52e41c0	CG::CubeRenderTarget	its constructor sits beside the named create and clears seven surface slots
