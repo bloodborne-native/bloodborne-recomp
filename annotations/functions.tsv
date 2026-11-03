@@ -530,7 +530,10 @@
 0x1335870	SprjLuaEventProxy::DisableHpGauge	sure	binding	
 0x13386d0	SprjLuaEventProxy::SetEventFlagValue	sure	binding	
 0x1398840	Sprj::World::updateEventRegions	guess	calls	
+0x1399b90	SprjEventFlagMan::setFlagIfValid	guess	calls	
 0x1399bf0	Sprj::EventFlagManager::getFlag	sure	message	bool (void *, uint32_t flag)
+0x1399cf0	SprjEventFlagMan::setFlagByte	guess	calls	
+0x1399d50	SprjEventFlagMan::getFlagByte	guess	calls	
 0x13c97a0	WorldChrMan::findChrByEntityId	sure	calls	
 0x13c99e0	WorldObjMan::findObjByEntityId	guess	calls	
 0x13d1d40	std::tree::eraseKey_13d1d40	guess	calls	
