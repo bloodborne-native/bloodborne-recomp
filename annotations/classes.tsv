@@ -200,3 +200,11 @@
 0x53af3b0	TextureProxyWithView	returns its own shader resource view at +0x18 when set, otherwise the inner texture's
 0x53a39a0	TextureProxy	forwards each texture interface call to the texture at +0x10
 0x535f3a0	CG::Buffer	CG::Device::createBuffer writes this table into the object it returns
+0x53b6240	CG::ResourceBase	loaded beside the buffer and texture tables by createBuffer, createTexture2D and createTexture3D
+0x535f3e0	CG::Texture2DResource	the table CG::Device::createTexture2D gives the object it returns
+0x535f400	CG::Texture3DResource	the table CG::Device::createTexture3D gives the object it returns
+0x53b6260	CG::ViewBase	loaded beside every view table by the four view creators
+0x535f420	CG::DepthStencilView	the table CG::Device::createDepthStencilView gives the object it returns
+0x535f440	CG::RenderTargetView	the table CG::Device::createRenderTargetView gives the object it returns
+0x535f460	CG::ShaderResourceView	the table CG::Device::createShaderResourceView gives the object it returns
+0x535f480	CG::UnorderedAccessView	the table CG::Device::createUnorderedAccessView gives the object it returns
