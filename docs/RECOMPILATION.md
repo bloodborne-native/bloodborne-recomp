@@ -64,9 +64,9 @@ reads, and plain accesses to private frames gain nothing. The order of the work:
 | CPU time recompiled, against the translator | `█████████████████░░░` 86% | 344% of one core against 402% (1st Floor Sickroom), 360% against 397% (Iosefka's Clinic, 2026-10-27) |
 | Functions checked call by call (recordings) | `░░░░░░░░░░░░░░░░░░░░` 0.5% | 933 of 179,698 |
 | Functions labelled by library (2026-11-02) | `███████████████████░` 95.5% | 171,706 of 179,698 |
-| Functions named by hand (2026-11-02) | `░░░░░░░░░░░░░░░░░░░░` 0.2% | 1216 of 179,698, 228 sure and 988 guesses (libGnm's command buffer methods; the engine's draw methods, state setters, mesh, model, material and lighting code; the synchronization primitives; the busiest functions; texture repositories) |
-| Functions placed, of those to understand (2026-11-02) | `████████████████░░░░` 82% | 49,291 of 59,867 longer than five instructions, in FromSoftware's code or not labelled yet |
-| Functions identified, of the target (2026-11-02) | `██████████░░░░░░░░░░` 53% | about 31,200 of about 58,000: 2,746 with the game's own name, 28,477 with a known role, much of that compiler and template code |
+| Functions named by hand (2026-11-02) | `░░░░░░░░░░░░░░░░░░░░` 0.2% | 1219 of 179,698, 228 sure and 991 guesses (libGnm's command buffer methods; the engine's draw methods, state setters, mesh, model, material and lighting code; the synchronization primitives; the busiest functions; texture repositories) |
+| Functions placed, of those to understand (2026-11-02) | `████████████████░░░░` 82% | 49,293 of 59,867 longer than five instructions, in FromSoftware's code or not labelled yet |
+| Functions identified, of the target (2026-11-02) | `██████████░░░░░░░░░░` 53% | about 31,200 of about 58,000: 2,749 with the game's own name, 28,477 with a known role, much of that compiler and template code |
 
 Every function is generated; the ones left to the translator are the 660 import stubs, the 130
 functions that call `setjmp`, and 53 that the game's patches (51) or the runtime's live switches
@@ -296,11 +296,11 @@ that template. Longer ones have the template inlined in real work, so each kind 
 
 | | Functions | What it says |
 |---|---:|---|
-| The game's own name | 2,746 | Registered methods, steps, messages, singletons, tables |
+| The game's own name | 2,749 | Registered methods, steps, messages, singletons, tables |
 | A known role | 28,477 | Destructors, class getters, `std::function` slots, EzState opcodes, delegates: much is compiler or template code |
-| In a named class or file | 6,941 | Where it belongs, not what it does; 3,703 of them only by their callers, which about half of known functions agree with |
+| In a named class or file | 6,940 | Where it belongs, not what it does; 3,703 of them only by their callers, which about half of known functions agree with |
 | Only an anonymous class | 11,127 | A vtable or object file, no name |
-| Nowhere yet | 10,576 | 5,198 of them have no reference at all |
+| Nowhere yet | 10,574 | 5,198 of them have no reference at all |
 
 Scripts and debug menus register methods with their names in wide text next to the code pointer, so those methods carry the names the game gives them.
 
