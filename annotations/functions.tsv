@@ -1140,10 +1140,16 @@
 0x26d3370	CG::RasterizerState::apply	sure	calls	void (CG::RasterizerState *, CG::GraphicsContext *, const CG::DrawState *)
 0x26d7510	DdsFile::isValid	guess	calls	
 0x26d7530	DdsFile::getDxgiFormat	guess	calls	
+0x26d7a00	DdsFile::checkFormat	guess	calls	
 0x26d7a20	DdsFile::getArraySize	guess	calls	
 0x26d7a50	DdsFile::getRowPitch	guess	calls	
 0x26d7ab0	DdsFile::getSlicePitch	guess	calls	
 0x26d7b40	DdsFile::getSurfaceOffset	guess	calls	
+0x26d80b0	DdsFile::getBytesPerBlock	guess	calls	
+0x26d80d0	DdsFile::getBlockWidth	guess	calls	
+0x26d80f0	DdsFile::getBlockHeight	guess	calls	
+0x26d81a0	Tpf::isValid	guess	calls	
+0x26d81f0	Tpf::getEntryCount	guess	calls	
 0x26d8230	Tpf::getHeaderFormat	guess	calls	
 0x26d8280	Tpf::getEntryFlags	guess	calls	
 0x26d8480	Tpf::getEntryFormat	guess	calls	
