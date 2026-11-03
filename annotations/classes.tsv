@@ -184,3 +184,5 @@
 0x5317d60	XmlArchiveLoader
 0x5317e70	XmlArchiveSaver
 0x52ef430	DebugDrawQueue	buffers debug primitives under a lock in one of two buffers; its line command replays into a coloured two-vertex draw and its text commands into FD4 font drawing
+0x53b6860	CG::DepthTarget	its slot 18 is the named DepthTarget release; same shared accessors as the render target
+0x53b6940	CG::RenderTarget	holds one surface per mip at +0x60; slot 19 is the named attachTexture
